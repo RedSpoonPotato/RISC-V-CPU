@@ -33,3 +33,23 @@ module flipflop_async_rst #(parameter WIDTH=32) (
     end  
 endmodule
 
+module sram_w_n #(
+    parameter W = 16, 
+    parameter N = 8) (
+    input wire clk,
+    input wire we,
+    input wire [N-1:0] addr,
+    input wire [W-1:0] data_in,
+    output reg [W-1:0] data_out
+);
+    reg [W-1:0] mem [(2**N)-1:0];
+
+    always @(posedge clk) begin
+        if (we) begin
+            mem[addr] <= data_in;
+        end else begin
+            data_out <= mem[addr];
+        end
+    end
+
+endmodule

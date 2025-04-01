@@ -1,25 +1,11 @@
 `timescale 1ns / 1ps
 
-module InstructionMem #(
-    parameter DATA_WIDTH = global_params::DATA_WIDTH,
-    parameter INSTR_WIDTH = global_params::INSTR_WIDTH,
-    parameter DEPTH = global_params::INSTR_MEM_DEPTH
-) (
-    input [DATA_WIDTH-1:0] pc,
-    output reg [INSTR_WIDTH-1:0] instr
-);
-    // can implement caching later aswell combined instr/data mem
-    reg [INSTR_WIDTH-1:0] ram [0:DEPTH-1];
-    always @(*) begin
-        instr <= ram[pc];
-    end
-endmodule
-
 module DirectMappedMemory #(
     parameter INPUT_WIDTH,
     parameter DEPTH,
     parameter OUTPUT_WIDTH,
 ) (
+    input clk,
     input [INPUT_WIDTH-1:0] read_in,
     input write_en,
     input [INPUT_WIDTH-1:0] write_in,
@@ -36,17 +22,18 @@ module DirectMappedMemory #(
     localparam OUTPUT_MSB = OUTPUT_WIDTH - 1;
     localparam OUTPUT_LSB = 0;
 
-    always @(write_en) begin
-        ram[write_in[DEPTH-1:0]][INPUT_MSB:INPUT_LSB] = write_in[INPUT_MSB:INPUT_LSB];
-        ram[write_in[DEPTH-1:0]][OUTPUT_MSB:OUTPUT_LSB] = write_out;
-    end
-
-    always @(read_in) begin
-        if (ram[read_in[DEPTH-1:0]][INPUT_MSB:INPUT_LSB] == read_in[INPUT_MSB:INPUT_LSB]) begin
-            hit = true;
-            out = ram[read_in[DEPTH-1:0]][OUTPUT_MSB:OUTPUT_LSB];
-        end else begin
-            hit = false;
+    always_ff @(posedge clk) begin
+        if (read_in) begin
+            if (ram[read_in[DEPTH-1:0]][INPUT_MSB:INPUT_LSB] == read_in[INPUT_MSB:INPUT_LSB]) begin
+                hit <= true;
+                out <= ram[read_in[DEPTH-1:0]][OUTPUT_MSB:OUTPUT_LSB];
+            end else begin
+                hit <= false;
+            end
+        end
+        if (write_en) begin
+            ram[write_in[DEPTH-1:0]][INPUT_MSB:INPUT_LSB] <= write_in[INPUT_MSB:INPUT_LSB];
+            ram[write_in[DEPTH-1:0]][OUTPUT_MSB:OUTPUT_LSB] <= write_out;
         end
     end
 endmodule
@@ -56,6 +43,7 @@ module BranchTargetBuffer #(
     parameter DEPTH = global_params::BTB_DEPTH,
     parameter STALL_CYCLES = global_params::BRANCH_STALL_CYCLES
 ) (
+    input clk,
     input [DATA_WIDTH-1:0] pc,
     input write_btb,
     input [DATA_WIDTH-1:0] trgt_in,
@@ -76,6 +64,7 @@ module BranchTargetBuffer #(
     end
 
     DirectMappedMemory #(.INPUT_WIDTH(DATA_WIDTH), .DEPTH(DEPTH), .OUTPUT_WIDTH(DATA_WIDTH)) btb_cache (
+        .clk(clk),
         .read_in(pc),
         .write_en(write_btb),
         .write_in(pc_shift_reg[STALL_CYCLES]),
@@ -113,8 +102,13 @@ endmodule
 
 module IF #(
     parameter DATA_WIDTH = global_params::DATA_WIDTH,
-    parameter INSTR_WIDTH = global_params::INSTR_WIDTH
+    parameter INSTR_WIDTH = global_params::INSTR_WIDTH,
+    parameter INSTR_SIZE = global_params::INSTR_SIZE
 ) (
+
+    parameter INSTR_SIZE_LOG2 = $clog2(INSTR_SIZE);
+    assert(INSTR_SIZE_LOG2 ** 2 == INSTR_SIZE) else $error("Instruction Memory size error: ");
+
     input clk,
     input pc_write,
     // other input control signals
@@ -122,7 +116,7 @@ module IF #(
     input [DATA_WIDTH-1:0] brnch_trgt,
     //
     output reg instr_addr,
-    output reg instr,
+    output wire instr,
     output reg cntrl, // unsure how many bits
 
     wire [DATA_WIDTH-1:0] pc,
@@ -132,7 +126,6 @@ module IF #(
     wire [DATA_WIDTH-1:0] mux_pc;
     wire [INSTR_WIDTH-1:0] instr_wire;
 
-
     mux_2_to_1 #(DATA_WIDTH) mux(
         .a(pc_plus_4),
         .b(brnch_trgt),
@@ -140,18 +133,32 @@ module IF #(
         .y(mux_pc)
     );
 
-    // always @(posedge clk) begin
-    //     if (branch)
-    // end
+    /* helpful way:
+        think about: 
+            the dataflow that goes into PC
+            the dataflow that goes out of PC
+    */
 
+    // new signals
+    wire instr_we;
+    reg [DATA_WIDTH-1:0] pc;
+    wire [DATA_WIDTH-1:0] pc_plus_4;
 
-    // branch logic
+    // into pc
+    
 
-    InstructionMem #(DATA_WIDTH, INSTR_WIDTH, INSTR_MEM_DEPTH) instr_mem(
-        .pc(pc),
-        .instr(instr_wire)
+    // out of pc
+    assign pc_plus_4 = pc + 4;
+
+    sram_w_n #(INSTR_WIDTH, INSTR_SIZE_LOG2) instr_mem (
+        .clk(clk),
+        .we(instr_we),
+        .addr(pc),
+        .data_in(),
+        .data_out(instr)
     );
 
+    BranchTargetBuffer();
 
     flipflop #(DATA_WIDTH) ff(
         .d(mux_pc),
