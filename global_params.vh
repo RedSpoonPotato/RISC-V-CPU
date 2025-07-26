@@ -1,3 +1,0 @@
-`define INSTR_WIDTH 32
-`define DATA_WIDTH 32
-`define INSTR_SIZE 1024
