@@ -21,3 +21,11 @@ Fetch a Branch or Jump
         - if yes, then is target contained within buffer?
             - if yes, no, then compute the target
                 - requires an adder
+
+
+Targetted Features:
+    those such that a small linux instance can run
+    - needs to have out-of-order execution
+    - dual core
+    - hardware prefetchers
+    

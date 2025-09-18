@@ -101,9 +101,9 @@ endmodule
 
 
 module IF #(
-    parameter DATA_WIDTH = global_params::DATA_WIDTH,
+    parameter DATA_WIDTH  = global_params::DATA_WIDTH,
     parameter INSTR_WIDTH = global_params::INSTR_WIDTH,
-    parameter INSTR_SIZE = global_params::INSTR_SIZE
+    parameter INSTR_SIZE  = global_params::INSTR_SIZE
 ) (
 
     parameter INSTR_SIZE_LOG2 = $clog2(INSTR_SIZE);
@@ -165,5 +165,29 @@ module IF #(
         .clk(clk),
         .q(pc)
     );
+
+endmodule
+
+
+module if_stage #(
+    parameter DATA_WIDTH = global_params::DATA_WIDTH,
+    parameter INSTR_WIDTH = global_params::INSTR_WIDTH,
+    parameter INSTR_SIZE = global_params::INSTR_SIZE
+) (
+
+);
+    assert(INSTR_SIZE_LOG2 ** 2 == INSTR_SIZE) else $error("Instruction Memory size error: ");
+
+    /* 
+        Modules:
+            pc
+            instr_mem
+            btb_buffer
+            adder
+    */
+
+    
+    
+
 
 endmodule
