@@ -33,7 +33,15 @@ Special Cases:
         
     
 
+ (could be false)assumption: branch predictor and btb have same non transient entries
 
+Setup: additonal adder in ID stage, conditionals determined in EX stage
+
+1: 	btb empty, branch decision history empty
+fetch instr, query btb/query branch_pred, see no hit, thus cant make a prediction
+id stage: determine its branching, compute branch_trgt_addr using adder 
+
+2: 	
         
 
 
