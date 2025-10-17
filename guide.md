@@ -31,7 +31,7 @@ Special Cases:
     Branching:
         Determined at EX stage, sent back at MEM stage
         
-    
+###########################
 
  (could be false)assumption: branch predictor and btb have same non transient entries
 
@@ -43,5 +43,11 @@ id stage: determine its branching, compute branch_trgt_addr using adder
 
 2: 	
         
+###############################
+
+ID stage: relevant instruction cases
+
+reference:
+https://www.cs.sfu.ca/~ashriram/Courses/CS295/assets/notebooks/RISCV/RISCV_CARD.pdf
 
 
