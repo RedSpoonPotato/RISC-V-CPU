@@ -1,55 +1,71 @@
 `timescale 1ns / 1ps
 
 module if_stage #(
-    // parameter
+    parameter DATA_WIDTH = 32,
+    parameter INSTR_WIDTH = 32,
 ) (
+    input [INSTR_WIDTH-1:0] pc_trgt_i,
+    ///cntrl
+    
+
     input clk,
+
+    output logic [INSTR_WIDTH-1:0] instr_o,
+    output logic [DATA_WIDTH-1:0] pc_o
 
 );
 
-    // mem
-    /*  will eventually change due to having external memory,
-        but for now, will keep it
-    */
-
     // pc
+
+    // mem
 
     // brancher
 
 endmodule
 
 
-/* 
-    For now will just do a direct-mapped implementation, thus must use same ofr btb_mem
-*/
 module branch_predictor #(
     parameter ADDR_WIDTH = 32,
     parameter CACHE_LINES = 2 ** 6,
     parameter SET_ASSOCIATIVITY = 1,
+    parameter OUTCOME_DELAY = 2 // # of cycles until the "brnch_taken_i" result comes in
 ) (
 
-    input [ADDR_WIDTH-1:0] pc_i,
+    input [ADDR_WIDTH-1:0] addr_i,
     input brnch_taken_i,
     input write_en_i, // not sure if i need this
 
     input clk,
     input rst,
 
-    output hit_o,
-    output pred_o
+    output logic hit_o,
+    output logic pred_o
 );
     localparam INDEX_WIDTH = $clog2(CACHE_LINES);
-
-    // assigning addr_i slices
     localparam TAG_WIDTH = ADDR_WIDTH - INDEX_WIDTH;
-
-    logic [TAG_WIDTH-1:0] tag;
-    logic [INDEX_WIDTH-1:0] index;
-
     localparam INDEX_MSB = ADDR_WIDTH - 1 - TAG_WIDTH;
 
-    assign tag          = addr_i[ADDR_WIDTH-1:INDEX_MSB+1];
-    assign index        = addr_i[INDEX_MSB:0];
+    // for reading the current address in the IF stage
+    logic [TAG_WIDTH-1:0] curr_tag;
+    logic [INDEX_WIDTH-1:0] curr_index;
+    assign curr_tag   = addr_i[ADDR_WIDTH-1:INDEX_MSB+1];
+    assign curr_index = addr_i[INDEX_MSB:0];
+
+    // for storing addresses to later be written into memory
+    logic [INSTR_WIDTH-1:0] prev_addr [OUTCOME_DELAY-1:0];
+    logic [TAG_WIDTH-1:0] tag;
+    logic [INDEX_WIDTH-1:0] index;
+    assign tag   = prev_addr[OUTCOME_DELAY-1][ADDR_WIDTH-1:INDEX_MSB+1];
+    assign index = prev_addr[OUTCOME_DELAY][INDEX_MSB:0];
+
+    assert(CACHE_LINES <= INDEX_WIDTH ** 2);
+
+    always_ff @(negedge clk) begin : ShiftRegister
+        prev_addr[0] <= addr_i;
+        for (int i = 1; i < OUTCOME_DELAY; i++) begin
+            prev_addr[i] <= prev_addr[i-1];
+        end
+    end
 
     function automatic bit branch_prediction(input logic [1:0] brnch_hist);
         branch_prediction = brnch_hist[1];
@@ -66,7 +82,6 @@ module branch_predictor #(
     generate
         if (SET_ASSOCIATIVITY == 1) begin : DirectMapped
             // internal memory
-            assert(CACHE_LINES <= INDEX_WIDTH ** 2);
             logic [1:0]             brnch_hist  [CACHE_LINES-1:0]; // this intializes to strongly not taken
             logic [TAG_WIDTH-1:0]   tag_array   [CACHE_LINES-1:0];
             logic                   valid_array [CACHE_LINES-1:0];
@@ -86,7 +101,7 @@ module branch_predictor #(
             end
 
             always_comb begin : ReadingFromMem
-                if (!valid_array[index] || tag_array[index] != tag)
+                if (!valid_array[index] || tag_array[index] != curr_tag)
                     hit_o = 1'b0;
                 else begin
                     hit_o = 1'b1;
@@ -95,7 +110,6 @@ module branch_predictor #(
             end
         end else begin : SetAssociative
             // internal memory
-            assert(CACHE_LINES <= INDEX_WIDTH ** 2);
             logic [1:0]             brnch_hist  [CACHE_LINES-1:0][SET_ASSOCIATIVITY-1:0]; // this intializes to strongly not taken
             logic [TAG_WIDTH-1:0]   tag_array   [CACHE_LINES-1:0][SET_ASSOCIATIVITY-1:0];
             logic                   valid_array [CACHE_LINES-1:0][SET_ASSOCIATIVITY-1:0];
@@ -128,15 +142,16 @@ module branch_predictor #(
             end
 
             always_comb begin : ReadingFromMem
-                if (!valid_array[index] || tag_array[index] != tag)
-                    hit_o = 1'b0;
-                else begin
-                    hit_o = 1'b1;
-                    pred_o = branch_prediction(brnch_hist[index]);
+                logic [SET_ASSOCIATIVITY-1:0] hit_array_r;
+                for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin : Hit
+                    hit_array_r[i] = (valid_array[curr_index][i] && tag_array[curr_index][i] == curr_tag) ? 
+                        1'b1 : 1'b0;
+                    if (hit_array_r[i] == 1'b1) begin
+                        pred_o = branch_prediction(brnch_hist[curr_index][i]);
+                    end
                 end
+                hit_o = |hit_array_r;
             end
-
-
         end
         endgenerate
     
@@ -162,7 +177,8 @@ module btb_mem #(
     parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 32,
     parameter CACHE_LINES = 2 ** 6,
-    parameter SET_ASSOCIATIVITY = 1
+    parameter SET_ASSOCIATIVITY = 1,
+    parameter OUTCOME_DELAY = 2 // # of cycles until the "brnch_taken_i" result comes in
 ) (
     input [ADDR_WIDTH-1:0] addr_i,
     input [DATA_WIDTH-1:0] data_i,
@@ -178,19 +194,33 @@ module btb_mem #(
 
     // assigning addr_i slices
     localparam TAG_WIDTH = ADDR_WIDTH - INDEX_WIDTH;
-
-    logic [TAG_WIDTH-1:0] tag;
-    logic [INDEX_WIDTH-1:0] index;
-
     localparam INDEX_MSB = ADDR_WIDTH - 1 - TAG_WIDTH;
 
-    assign tag          = addr_i[ADDR_WIDTH-1:INDEX_MSB+1];
-    assign index        = addr_i[INDEX_MSB:0];
+    // for reading the current address in the IF stage
+    logic [TAG_WIDTH-1:0] curr_tag;
+    logic [INDEX_WIDTH-1:0] curr_index;
+    assign curr_tag          = addr_i[ADDR_WIDTH-1:INDEX_MSB+1];
+    assign curr_index        = addr_i[INDEX_MSB:0];
+
+    // for storing addresses to later be written into memory
+    logic [INSTR_WIDTH-1:0] prev_addr [OUTCOME_DELAY-1:0];
+    logic [TAG_WIDTH-1:0] tag;
+    logic [INDEX_WIDTH-1:0] index;
+    assign tag          = prev_addr[OUTCOME_DELAY-1][ADDR_WIDTH-1:INDEX_MSB+1];
+    assign index        = prev_addr[OUTCOME_DELAY][INDEX_MSB:0];
+
+    assert(CACHE_LINES <= INDEX_WIDTH ** 2);
+
+    always_ff @(negedge clk) begin : ShiftRegister
+        prev_addr[0] <= addr_i;
+        for (int i = 1; i < OUTCOME_DELAY; i++) begin
+            prev_addr[i] <= prev_addr[i-1];
+        end
+    end
     
     generate
         if (SET_ASSOCIATIVITY == 1) begin : DirectMapped
             // internal memory
-            assert(CACHE_LINES <= INDEX_WIDTH ** 2);
             logic [DATA_WIDTH-1:0]  mem_array   [CACHE_LINES-1:0];
             logic [TAG_WIDTH-1:0]   tag_array   [CACHE_LINES-1:0];
             logic                   valid_array [CACHE_LINES-1:0];
@@ -210,7 +240,7 @@ module btb_mem #(
             end
 
             always_comb begin : ReadingFromMem
-                if (tag_array[index] == tag && valid_array[index]) begin
+                if (tag_array[index] == curr_tag && valid_array[index]) begin
                     block_data_o = mem_array[index]
                     hit_o = 1'b1;
                 end else begin
@@ -219,7 +249,6 @@ module btb_mem #(
             end
         end else begin : SetAssociative
             // internal memory
-            assert(CACHE_LINES <= INDEX_WIDTH ** 2);
             logic [DATA_WIDTH-1:0]  mem_array   [CACHE_LINES-1:0][SET_ASSOCIATIVITY-1:0];
             logic [TAG_WIDTH-1:0]   tag_array   [CACHE_LINES-1:0][SET_ASSOCIATIVITY-1:0];
             logic                   valid_array [CACHE_LINES-1:0][SET_ASSOCIATIVITY-1:0];
@@ -256,9 +285,9 @@ module btb_mem #(
             always_comb begin : ReadingFromMem
                 logic [SET_ASSOCIATIVITY-1:0] hit_array_r;
                 for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin
-                    hit_array_r[i] = (tag_array[index][i] == tag && valid_array[index][i]) ? 1'b1 : 1'b0;
+                    hit_array_r[i] = (tag_array[curr_index][i] == tag && valid_array[curr_index][i]) ? 1'b1 : 1'b0;
                     if (hit_array_r[i] == 1'b1)
-                        block_data_o = mem_array[index][i];
+                        block_data_o = mem_array[curr_index][i];
                 end
                 hit_o = |hit_array_r;
             end
@@ -318,11 +347,37 @@ module branch_unit #(
     
 endmodule
 
+
 module instr_mem #(
     parameter INSTR_WIDTH = 32,
     parameter ADDR_WIDTH  = 32,
     parameter ENTRIES = 2 ** 20
 ) (
-    
+    // reading
+    input addr_r_i,
+    output logic instr_r_o,
+
+    input clk,
+    input rst,
+
+    // writing
+    input addr_w_i,
+    input instr_w_i,
+    input write_en_i
 );
+    assert($clog2(ENTRIES) <= ADDR_WIDTH);
+
+    logic [ENTRIES-1:0] mem [ADDR_WIDTH-1:0];
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            mem <= '0;
+        end else begin
+            instr_r_o <= mem[addr_r_i];
+            if (write_en_i)
+                mem[addr_w_i] <= instr_w_i;
+        end
+    end
 endmodule
+
+
