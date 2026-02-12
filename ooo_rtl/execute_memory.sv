@@ -1,6 +1,6 @@
 
 
-module ex_stage #(
+module execute_memory_stage #(
     parameter DATA_WIDTH = 32,
     parameter INSTR_WIDTH = 32,
 
@@ -10,7 +10,8 @@ module ex_stage #(
     input [14:12] instr_14_12_i,
 
     // cntrls
-    input alu_cntrl_i, // how many bits?
+    // input alu_cntrl_i, // how many bits?
+
 
 );
     // integer path
