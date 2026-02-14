@@ -28,18 +28,27 @@ module decode_stage #(
     // modules
     // rename table
     // issue queue
+
+
         
 
 endmodule
 
 // used for knowing where to commit
+// assumption: data can be in ROB or ARF
 module rename_table #(
     parameter ROB_COUNT = 32
 ) (
     input clk,
+    input rst,
+    // initial write
     input logic [$clog2(ROB_COUNT)-1:0] rob_ptr_i,
-    input logic [4:0] arf_ptr,
+    input logic [4:0] arf_ptr_i,
     input logic wr_en_i,
+    // to signal its in ROB, can have the scoreboard tell the RT
+    input logic 
+    // to signal its in ARF
+    
     output logic [$clog2(ROB_COUNT)-1:0] rob_ptr_o
 );
     typedef struct packed {
@@ -50,15 +59,19 @@ module rename_table #(
 
     rt_entry_t rename_table [0:31];
 
+    // write logic
     always_ff @(posedge clk) begin
-        if (wr_en_i) begin
-            rename_table[arf_ptr].rob_ptr <= rob_ptr_i;
-            rename_table[arf_ptr].valid <= 1'b1;
-            rename_table[arf_ptr].pending <= 1'b1;
+        if (rst) begin
+            rename_table = '0;
+        end
+        else if (wr_en_i) begin
+            rename_table[arf_ptr_i].rob_ptr <= rob_ptr_i;
+            rename_table[arf_ptr_i].valid <= 1'b1;
+            rename_table[arf_ptr_i].pending <= 1'b1;
         end 
     end
 
-    // Read logic
+    // read logic
     assign rob_ptr_o = rename_table[arf_ptr].rob_ptr;
 endmodule
 
