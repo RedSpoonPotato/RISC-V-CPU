@@ -34,6 +34,8 @@ module decode_stage #(
 
 endmodule
 
+// possible optimzation: merge rename table and scoreboard
+
 // used for knowing where to commit
 // assumption: data can be in ROB or ARF
 module rename_table #(
@@ -44,13 +46,18 @@ module rename_table #(
     // initial write
     input logic [$clog2(ROB_COUNT)-1:0] rob_ptr_i,
     input logic [4:0] arf_ptr_i,
-    input logic wr_en_i,
+    input logic decode_en_i, 
     // to signal its in ROB, can have the scoreboard tell the RT
-    input logic 
-    // to signal its in ARF
-    
+    input logic [$clog2(ROB_COUNT)-1:0] rob_ptr_sb_i,
+    input logic writeback_en_i,
+    // to signal its in ARF, can have the ROB tell the RT
+    input logic [4:0] arf_ptr_rob_i,
+    input logic [$clog2(ROB_COUNT)-1:0] rob_ptr_rob_i,
+    input logic commit_en_i,
+      
     output logic [$clog2(ROB_COUNT)-1:0] rob_ptr_o
 );
+
     typedef struct packed {
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         logic valid;
@@ -58,17 +65,23 @@ module rename_table #(
     } rt_entry_t;
 
     rt_entry_t rename_table [0:31];
+    
 
-    // write logic
+    // initial write logic
     always_ff @(posedge clk) begin
         if (rst) begin
             rename_table = '0;
         end
-        else if (wr_en_i) begin
-            rename_table[arf_ptr_i].rob_ptr <= rob_ptr_i;
-            rename_table[arf_ptr_i].valid <= 1'b1;
-            rename_table[arf_ptr_i].pending <= 1'b1;
-        end 
+        else begin
+            if (decode_en_i) begin
+                rename_table[arf_ptr_i].rob_ptr <= rob_ptr_i;
+                // rename_table[arf_ptr_i].valid <= 1'b1;
+                // rename_table[arf_ptr_i].pending <= 1'b1;
+            end
+            if (decode_en_i && rob_ptr_i == rob_ptr_sb_i) begin
+                rename
+            end
+        end
     end
 
     // read logic
