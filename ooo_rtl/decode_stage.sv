@@ -59,15 +59,16 @@ module rename_table #(
 );
 
     typedef struct packed {
-        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
-        logic valid;
+        logic [$...clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [DATA_WIDTH-1:0] imm;
+        logic spec
         logic pending;
+        logic valid;
     } rt_entry_t;
 
     rt_entry_t rename_table [0:31];
-    
 
-    // initial write logic
+    // write logic
     always_ff @(posedge clk) begin
         if (rst) begin
             rename_table = '0;
@@ -75,31 +76,51 @@ module rename_table #(
         else begin
             if (decode_en_i) begin
                 rename_table[arf_ptr_i].rob_ptr <= rob_ptr_i;
-                // rename_table[arf_ptr_i].valid <= 1'b1;
-                // rename_table[arf_ptr_i].pending <= 1'b1;
+                rename_table[arf_ptr_i].pending <= 1'b1;
+                rename_table[arf_ptr_i].valid <= 1'b1;
             end
-            if (decode_en_i && rob_ptr_i == rob_ptr_sb_i) begin
-                rename
+            if (writeback_en_i) begin
+                for (int i = 0; i < 32; i++) begin
+                    if (rename_table[arf_ptr_i].rob_ptr == rob_ptr_sb_i) begin
+                        rename_table[i].pending <= 1'b0;
+                    end
+                end
+            end
+            if (commit_en_i) begin
+                if (rename_table[arf_ptr_rob_i].rob_ptr == rob_ptr_rob_i) begin
+                    rename_table.valid <= 1'b0;
+                end
             end
         end
     end
 
     // read logic
-    assign rob_ptr_o = rename_table[arf_ptr].rob_ptr;
+    assign rob_ptr_o = rename_table[arf_ptr_i].rob_ptr;
 endmodule
 
 module issue_queue #(
     parameter DATA_WIDTH = 32,
-    parameter IQ_SIZE = 16
+    parameter IQ_SIZE = 16,
+    parameter ROB_COUNT = 32
 ) (
     input clk,
     input logic [DATA_WIDTH-1:0] instr_i,
     input logic wr_en_i,
     output logic [DATA_WIDTH-1:0] instr_o
-);
+);  
+
     typedef struct packed {
-        logic [DATA_WIDTH-1:0] instr;
-        logic valid;
+        logic [...-1:0] op;
+        logic [DATA_WIDTH-1:0] imm;
+        logic speculative;
+        logic dest_valid;
+        logic [$clog2(ROB_COUNT)-1:0] dest_ptr;
+        logic src0_valid;
+        logic src0_pending;
+        logic [$clog2(ROB_COUNT)-1:0] src0_ptr;
+        logic src1_valid;
+        logic src1_pending;
+        logic [$clog2(ROB_COUNT)-1:0] src1_ptr;
     } iq_entry_t;
 
     iq_entry_t iq [0:IQ_SIZE-1];
