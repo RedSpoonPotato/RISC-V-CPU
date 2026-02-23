@@ -57,9 +57,8 @@ module rename_table #(
       
     output logic [$clog2(ROB_COUNT)-1:0] rob_ptr_o
 );
-
     typedef struct packed {
-        logic [$...clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         logic [DATA_WIDTH-1:0] imm;
         logic spec
         logic pending;
@@ -101,12 +100,15 @@ endmodule
 module issue_queue #(
     parameter DATA_WIDTH = 32,
     parameter IQ_SIZE = 16,
-    parameter ROB_COUNT = 32
+    parameter ROB_COUNT = 32,
+    parameter INSTR_COMPRESS_WIDTH = 17
 ) (
     input clk,
-    input logic [DATA_WIDTH-1:0] instr_i,
+    input logic [31:0] instr_i,
     input logic wr_en_i,
-    output logic [DATA_WIDTH-1:0] instr_o
+    // signal from exterior
+    
+    output logic [INSTR_COMPRESS_WIDTH-1:0] compr_instr_o;
 );  
 
     typedef struct packed {
