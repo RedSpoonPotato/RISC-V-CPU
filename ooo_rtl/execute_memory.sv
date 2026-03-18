@@ -18,6 +18,8 @@ module execute_memory_stage #(
     
     // floating-point path
 
+    // as the instruction is flowing down the pipe, have the rob ptr for the destination flow down with it
+
     
 
 endmodule
