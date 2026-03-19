@@ -2,7 +2,7 @@ package general_pkg;
 
     typedef enum { R_TYPE, I_TYPE, S_TYPE, B_TYPE, U_TYPE, J_TYPE} instruction_t;
 
-    function instruction_t classify_instr (
+    function automatic instruction_t classify_instr (
         input [6:0] opcode
     );
     case (opcode)
@@ -27,17 +27,38 @@ package general_pkg;
     endcase
     endfunction
 
-    function instruction_t is_speculative (
+    function automatic logic is_speculative (
         input [6:0] opcode
     );
-        return opcode == B_TYPE || opcode == U_TYPE || opcode == J_TYPE;
+        instruction_t instr;
+        instr = classify_instr(opcode);
+        return instr == B_TYPE || instr == J_TYPE;
     endfunction
 
-    function instruction_t no_dest (
+    function automatic logic has_dest (
+        instruction_t instr;
+        instr = classify_instr(opcode);
         input [6:0] opcode
     );
-        return opcode == S_TYPE || opcode == B_TYPE;
+        return !(instr == S_TYPE || instr == B_TYPE);
     endfunction
+
+    function automatic logic has_src0 (
+        input [6:0] opcode
+    );
+        instruction_t instr;
+        instr = classify_instr(opcode);
+        return !(instr == U_TYPE || instr == J_TYPE);
+    endfunction
+
+    function automatic logic has_src1 (
+        input [6:0] opcode
+    );
+        instruction_t instr;
+        instr = classify_instr(opcode);
+        return instr == R_TYPE || instr == S_TYPE || instr == B_TYPE;
+    endfunction
+
 endpackage
 
 

@@ -34,38 +34,83 @@ module decode_stage #(
 
 endmodule
 
-// possible optimzation: merge rename table and scoreboard
 
-// used for knowing where to commit
-// assumption: data can be in ROB or ARF
-module rename_table #(
-    parameter ROB_COUNT = 32
+// automatically outputs the next available free prf pointer
+module free_list #(
+    parameter PRF_COUNT
+) (
+    input clk,
+    input rst,
+    // writing
+    input logic wr_en_i,
+    input logic [PRF_COUNT-1:0] commited_ptr_i,
+    // reading
+    input logic rd_en_i,
+    output logic [PRF_COUNT-1:0] free_ptr_o,
+    // state
+    output logic empty_o
+);
+    logic [0:PRF_COUNT-1] free_list; // 1'b1 means free
+    // state
+    assign empty_o = ~|free_list;
+    // writing
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            free_list <= '1;
+        end else begin
+            if (wr_en_i)
+                free_list[commited_ptr_i] <= 1;
+        end
+    end
+    // reading
+    logic found;
+    always_comb begin
+        free_ptr_o = PRF_COUNT-1;
+        found = 0;
+        for (int i = 0; i < PRF_COUNT; i++) begin
+            if (free_list[i] == 1 && !found) begin
+                free_ptr_o = i;
+                found = 1;
+            end
+        end
+    end
+    always_ff @(posedge clk) begin
+        if (!empty_o && rd_en_i) begin
+            free_list[free_ptr_o] <= 0;
+        end
+    end
+endmodule
+
+// used for knowing where to commit: idk bout that
+/* NOTE: 
+    could potentially optimize the updating of the pending signal sent by scoreboard
+    by bringing the scoreboard into the decode stage
+*/
+module rename_table_async_read #(
+    parameter PRF_COUNT = 32
 ) (
     input clk,
     input rst,
     // initial write
-    input logic [$clog2(ROB_COUNT)-1:0] rob_ptr_i,
+    input logic [$clog2(PRF_COUNT)-1:0] prf_ptr_i,
     input logic [4:0] arf_ptr_i,
     input logic decode_en_i, 
-    // to signal its in ROB, can have the scoreboard tell the RT
-    input logic [$clog2(ROB_COUNT)-1:0] rob_ptr_sb_i,
+    // to signal its in PRF, can have the scoreboard tell the RT
+    input logic [$clog2(PRF_COUNT)-1:0] prf_ptr_sb_i,
+    input logic [4:0] arf_ptr_sb_i,
     input logic writeback_en_i,
-    // to signal its in ARF, can have the ROB tell the RT
-    input logic [4:0] arf_ptr_rob_i,
-    input logic [$clog2(ROB_COUNT)-1:0] rob_ptr_rob_i,
-    input logic commit_en_i,
     // ports for issue queue to read from 
-      
-    output logic [$clog2(ROB_COUNT)-1:0] rob_ptr_o
+    output logic [$clog2(PRF_COUNT)-1:0] prf_ptr_o
 );
     typedef struct packed {
-        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
-        logic [DATA_WIDTH-1:0] imm;
-        logic spec;
+        logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
+        // logic [DATA_WIDTH-1:0] imm;
+        // logic spec;
         logic pending;
-        logic valid;
+        // logic valid;
     } rt_entry_t;
 
+    // will synthesize to flip flops
     rt_entry_t rename_table [0:31];
 
     // write logic
@@ -75,30 +120,19 @@ module rename_table #(
         end 
         else begin
             if (decode_en_i) begin
-                rename_table[arf_ptr_i].rob_ptr <= rob_ptr_i;
+                rename_table[arf_ptr_i].prf_ptr <= prf_ptr_i;
                 rename_table[arf_ptr_i].pending <= 1'b1;
-                rename_table[arf_ptr_i].valid <= 1'b1;
             end
             if (writeback_en_i) begin
-                for (int i = 0; i < 32; i++) begin
-                    if (rename_table[arf_ptr_i].rob_ptr == rob_ptr_sb_i) begin
-                        rename_table[i].pending <= 1'b0;
-                    end
-                end
-            end
-            if (commit_en_i) begin
-                if (rename_table[arf_ptr_rob_i].rob_ptr == rob_ptr_rob_i) begin
-                    rename_table.valid <= 1'b0;
-                end
+                if (rename_table[arf_ptr_sb_i].prf_ptr == prf_ptr_sb_i)
+                    rename_table[i].pending <= 1'b0;
             end
         end
     end
-
-    // read logic
-    assign rob_ptr_o = rename_table[arf_ptr_i].rob_ptr;
+    
+    // read logic (asynchronous)
+    assign prf_ptr_o = rename_table[arf_ptr_i].rob_ptr;
 endmodule
-
-
 
 // should be the module that determines which is the next instruction to be issued
 module issue_queue 
@@ -106,16 +140,19 @@ module issue_queue
     (
     input clk,
     input rst,
-    // could optmize, but would have to change the "write" functions
+    // could optimize, but would have to move some of the write logic outside module
     input logic [31:0] instr_i,
-    input logic []
-
+    input logic src_
+    input logic [$clog2(PRF_COUNT)-1:0] src0_ptr,
+    input logic [$clog2(PRF_COUNT)-1:0] src1_ptr,
+    input logic [$clog2(PRF_COUNT)-1:0] dst_ptr,
     input logic wr_en_i,
     // signal from exterior
 
+    // updating state of pending bit
     // for writing from right before writeback stage into decode stage
-    input logic [$clog2(ROB_COUNT)-1:0] rob_dst_i,
-    input logic rob_wr_en_i,
+    input logic [$clog2(PRF_COUNT)-1:0] prf_dst_i,
+    input logic prf_wr_en_i,
     
     // output logic [INSTR_COMPRESS_WIDTH-1:0] compr_instr_o;
     output logic [INSTR_OUTPUT_WIDTH-1:0] instr_o;
@@ -137,17 +174,18 @@ module issue_queue
             all_stalled_o <= 0;
         end 
         else begin
-            if (wr_en_i && ~full_o) begin
+            if (wr_en_i && !full_o) begin
                 // find first empty slot and write instruction
                 for (int i = 0; i < IQ_SIZE; i++) begin
-                    if (~iq[i].valid) begin
+                    if (!iq[i].valid) begin
                         iq[i].valid <= 1;
                         iq[i].op <= grab_compr_instr(instr);
                         iq[i].imm <= imm_gen(instr);
                         iq[i].speculative <= is_speculative(instr[6:0]);
-                        iq[i].dest_valid <= ~no_dest(instr[6:0]);
-                        iq[i].dest_ptr <= instr[11:7];
-                        iq[i]
+                        iq[i].dest_valid <= is_dest(instr[6:0]);
+                        iq[i].dest_ptr <= dest_ptr;
+                        iq[i].src0_valid <= has_src0(instr[6:0]);
+                        // iq[i].pe
 
                             
                         end
@@ -172,8 +210,8 @@ module issue_queue
     always_comb begin
         for (int i = 0; i < IQ_SIZE; i++) begin
             ready_array[i] = (
-                (~iq[i].src0_valid | (iq[i].src0_pending & (iq[i].src0_ptr == rob_dst_i))) & 
-                (~iq[i].src1_valid | (iq[i].src1_pending & (iq[i].src1_ptr == rob_dst_i)))
+                (!iq[i].src0_valid | (iq[i].src0_pending & (iq[i].src0_ptr == rob_dst_i))) & 
+                (!iq[i].src1_valid | (iq[i].src1_pending & (iq[i].src1_ptr == rob_dst_i)))
             );
         end
     end
@@ -181,7 +219,7 @@ module issue_queue
 
     always_ff @(posedge clk) begin
 
-        if (~empty && ~all_stalled_o) begin
+        if (!empty && !all_stalled_o) begin
             // search for highest priority valid entry
             for (int i = 0; i < IQ_SIZE; i++) begin
                 if (iq[i].valid) begin

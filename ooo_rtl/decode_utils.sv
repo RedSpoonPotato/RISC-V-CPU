@@ -6,9 +6,11 @@ package issue_queue_pkg;
         logic []
     } rob_instr;
 
-    localparam DATA_WIDTH = 32;
+
+    // localparam DATA_WIDTH = 32;
     localparam IQ_SIZE = 16;
-    localparam ROB_COUNT = 32;
+    // localparam ROB_COUNT = 32;
+    localparam PRF_COUNT = 32;
     localparam INSTR_COMPRESS_WIDTH = 17;
 
     // could optimize by diverging from diaram
@@ -18,19 +20,20 @@ package issue_queue_pkg;
         logic [DATA_WIDTH-1:0] imm;
         logic speculative;
         logic dest_valid;
-        logic [$clog2(ROB_COUNT)-1:0] dest_ptr;
+        logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
         logic src0_valid;
         logic src0_pending;
-        logic [$clog2(ROB_COUNT)-1:0] src0_ptr;
+        logic [$clog2(PRF_COUNT)-1:0] src0_ptr;
         logic src1_valid;
         logic src1_pending;
-        logic [$clog2(ROB_COUNT)-1:0] src1_ptr;
+        logic [$clog2(PRF_COUNT)-1:0] src1_ptr;
     } iq_entry_t;
 
     // SUBJECT TO CHANGE, CAN OPTIMIZE
-    localparam INSTR_OUTPUT_WIDTH = $bits(iq_entry_t) - 1;
+    // "-5" b/c we are removing valid and pending bits
+    localparam INSTR_OUTPUT_WIDTH = $bits(iq_entry_t) - 5;
 
-    function logic [INSTR_COMPRESS_WIDTH-1:0] grab_compr_instr (
+    function automatic logic [INSTR_COMPRESS_WIDTH-1:0] grab_compr_instr (
         input [31:0] full_instr
     );
         logic [6:0] funct7 = full_instr[31:25];
@@ -39,16 +42,16 @@ package issue_queue_pkg;
         return {funct7, funct3, opcode};
     endfunction
 
-    function logic [19:0] grab_compr_imm (
-        input [31:0] full_instr
-    );
+    // function automatic logic [19:0] grab_compr_imm (
+    //     input [31:0] full_instr
+    // );
 
-    endfunction
+    // endfunction
 
     import general_pkg::instruction_t;
     import general_pkg::classify_instr;
 
-    function imm_gen #(
+    function automatic imm_gen #(
         parameter DATA_WIDTH = 32
     ) (
         input  logic [31:0] instruction,
