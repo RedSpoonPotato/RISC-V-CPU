@@ -36,10 +36,10 @@ package general_pkg;
     endfunction
 
     function automatic logic has_dest (
+        input [6:0] opcode
+    );        
         instruction_t instr;
         instr = classify_instr(opcode);
-        input [6:0] opcode
-    );
         return !(instr == S_TYPE || instr == B_TYPE);
     endfunction
 
@@ -57,6 +57,14 @@ package general_pkg;
         instruction_t instr;
         instr = classify_instr(opcode);
         return instr == R_TYPE || instr == S_TYPE || instr == B_TYPE;
+    endfunction
+
+    function automatic logic has_imm (
+        input [6:0] opcode
+    );
+        instruction_t instr;
+        instr = classify_instr(opcode);
+        return instr != R_TYPE;
     endfunction
 
 endpackage
