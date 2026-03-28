@@ -1,5 +1,5 @@
 module decode_stage 
-    import general_pkg::*;
+    import decode_pkg::*;
 #(
     parameter DATA_WIDTH = 32,
 ) (
@@ -130,6 +130,7 @@ module decode_stage
     logic [INSTR_COMPRESS_WIDTH-1:0] mini_scoreboard_op;
     logic mini_scoreboard_clear;
 
+    // case: account for when there is a faield branch rpediiton and must clear
     mini_scoreboard mini_scoreboard_inst (
         .clk(clk),
         .rst(rst),
@@ -147,18 +148,33 @@ module decode_stage
     // keep track of next avail rob ptr val (increment by 1 using an adder each time we get an instruciton that writes to a register)
 
 
-
-    // setting cntrl instructions
     logic dispatch_instr;
     logic new_instr_ready; // all operands are avail
+
+    // setting issue queue entry values
+    always_comb begin
+        issue_queue_entry = issue_queue_pkg::instr_to_iq_entry_partial(instr_i);
+        // filling in remanining values
+        issue_queue_entry.valid = new_instr_ready && 
+            (issue_queue_empty || issue_queue_all_stalled);
+        issue_queue_entry.dest_ptr = free_list_free_ptr;
+        issue_queue_entry.src0_pending = rename_table_src0_pending;
+        issue_queue_entry.src0_ptr = rename_table_prf_src0;
+        issue_queue_entry.src1_pending = rename_table_src1_pending;
+        issue_queue_entry.src1_ptr = rename_table_prf_src1;
+    end
+
+    // setting cntrl instructions
     always_comb begin
         
         free_list_rd_en = 1;
+        if ((free_list_empty && issue_queue_entry.dest_valid) || issue_queue_full)
+            free_list_rd_en = 0;
 
         // determined by operands being ready
         // free list not being empty, assuming it needs it
         new_instr_ready = 
-            !(has_dest(instr_i[6:0]) && free_list_empty) ||
+            !(has_dest(instr_i[6:0]) && free_list_empty_o) ||
             !(has_src0(instr_i[6:0]) && rename_table_src0_pending) ||
             !(has_src1(instr_i[6:0]) && rename_table_src1_pending);
         
@@ -166,10 +182,13 @@ module decode_stage
             new_instr_ready || 
             (!issue_queue_empty && !issue_queue_all_stalled);
 
-        if (!dispatch_instr) begin
-            free_list_rd_en = 0;
+        // might need to modify to acocount for stalling/flushing
+        mini_scoreboard_wr_en = dispatch_instr;
+        
+        // if (!dispatch_instr) begin
+        //     free_list_rd_en = 0;
 
-        end
+        // end
 
     end
 
@@ -465,12 +484,6 @@ import issue_queue_pkg::*;
     // stalling or clearing
     input clear_i, // same functionality as rst
 );
-    // SUBJECT TO CHANGE
-    function int get_exec_stage_delays (
-        input [INSTR_COMPRESS_WIDTH-1:0] op;
-    );
-        return 3;
-    endfunction
 
     // 2 extra: 1 for reg fetch stage, 1 for wb to follow design from slides
     logic [MAX_EXEC_CYCLE+1:0] exec_stage_slots_int;
