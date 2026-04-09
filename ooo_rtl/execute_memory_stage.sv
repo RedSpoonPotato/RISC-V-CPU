@@ -1,26 +1,32 @@
+/*
+    what moves through each stage
 
+*/
 
-module execute_memory_stage #(
-    parameter DATA_WIDTH = 32,
-    parameter INSTR_WIDTH = 32,
-
+module execute_memory_stage 
+import issue_queue_pkg::*;
+#(
+    parameter DATA_WIDTH = 32
 ) (
     input clk,
-    input [30] instr_30_i,
-    input [14:12] instr_14_12_i,
+    input rst,
+
+
+    input fetch_packet_t fetch_i,
+    input logic fetch_valid_i,
 
     // cntrls
     // input alu_cntrl_i, // how many bits?
 
 
 );
-    // integer path
-    
-    // floating-point path
+    // integer path (1 cycle)
 
-    // as the instruction is flowing down the pipe, have the rob ptr for the destination flow down with it
+    // load path (atleast 2 cycles: add, then load)
 
-    
+    // store path
+
+    // could add multiply later
 
 endmodule
 

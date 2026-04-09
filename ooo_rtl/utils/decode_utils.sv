@@ -16,6 +16,7 @@ package issue_queue_pkg;
         logic imm_valid;
         logic [IMM_COMPRESS-1:0] imm_compr;
         logic speculative;
+        logic store;
         logic dest_valid;
         logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
         logic src0_valid;
@@ -28,10 +29,11 @@ package issue_queue_pkg;
     
     typedef struct packed {
         logic [INSTR_COMPRESS_WIDTH-1:0] op;
-        logic [$clog2(MAX_EXEC_CYCLE)-1:0] exec_dur;
+        logic [$clog2(MAX_EXEC_CYCLE)-1:0] exec_dur; // unsure if we need to output this
         logic imm_valid;
         logic [IMM_COMPRESS-1:0] imm_compr;
         logic speculative;
+        logic store;
         logic dest_valid;
         logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
         logic src0_valid;
@@ -55,16 +57,17 @@ package issue_queue_pkg;
     endfunction
 
     // sets some entries to be 0, will be overwritten later
-    function automatic iq_output_t instr_to_iq_entry_partial (
+    function automatic iq_entry_t instr_to_iq_entry_partial (
         input [31:0] instr;
     );
-        iq_output_t iq_entry;
+        iq_entry_t iq_entry;
         iq_entry.valid = 0;
         iq_entry.op = grab_compr_instr(instr);
         iq_entry.exec_dur = get_exec_stage_delays_from_instr(instr);
         iq_entry.imm_valid = decode_pkg::has_imm(instr[6:0]);
         iq_entry.imm_compr = extract_20b_imm(instr);
         iq_entry.speculative = decode_pkg::is_speculative(instr[6:0]);
+        iq_entry.store = decode_pkg::is_store(instr[6:0]);
         iq_entry.dest_valid = decode_pkg::has_dest(instr[6:0]);
         iq_entry.dest_ptr = 0;
         iq_entry.src0_valid = decode_pkg::has_src0(instr[6:0]);
@@ -113,8 +116,8 @@ package issue_queue_pkg;
 
     // endfunction
 
-    import decode_pkg::instruction_t;
-    import decode_pkg::classify_instr;
+    // import decode_pkg::instruction_t;
+    // import decode_pkg::classify_instr;
 
     // UNSURE IF THIS CORRECT
     function automatic imm_gen_32 (

@@ -1,6 +1,10 @@
 // package general_pkg;
 package decode_pkg;
 
+
+    localparam PRF_COUNT = 32;
+    localparam DATA_WIDTH = 32;
+
     typedef enum { R_TYPE, I_TYPE, S_TYPE, B_TYPE, U_TYPE, J_TYPE} instruction_t;
 
     function automatic instruction_t classify_instr (
@@ -34,6 +38,14 @@ package decode_pkg;
         instruction_t instr;
         instr = classify_instr(opcode);
         return instr == B_TYPE || instr == J_TYPE;
+    endfunction
+
+    function automatic logic is_store (
+        input [6:0] opcode
+    );
+        instruction_t instr;
+        instr = classify_instr(opcode);
+        return instr == S_TYPE;
     endfunction
 
     function automatic logic has_dest (

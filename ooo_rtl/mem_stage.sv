@@ -1,6 +1,5 @@
 module mem_stage #(
-    parameter DATA_WIDTH = 32,
-    parameter ADDR_WIDTH = 32
+    parameter DATA_WIDTH = 32
 ) (
     input  clk,
     input  rst,

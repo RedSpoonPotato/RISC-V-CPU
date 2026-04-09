@@ -1,5 +1,16 @@
+/*
+    TO DO:
+        rob logic
+        stalling logic for all cases
+            branch mispredciting
+        arf restoring on the case of branch mispredict
+        communicaiton between wb and decode
+        what about intrusciton fetch stuff?
+*/
+
 module decode_stage 
     import decode_pkg::*;
+    import writeback_pkg::*;
 #(
     parameter DATA_WIDTH = 32,
 ) (
@@ -22,12 +33,12 @@ module decode_stage
 
     // free list
     input free_list_wr_en_i,
-    input [PRF_COUNT-1:0] free_list_commited_ptr_i, // from scoreboard
-    output logic free_list_empty_o;
+    input [PRF_COUNT-1:0] free_list_commited_ptr_i,
+    // output logic free_list_empty_o;
 
     // rename table
     // to signal its in PRF, can have the scoreboard tell the RT
-    // actually i think it should coe frommright before 
+    // actually i think it should come frommright before 
     input logic [$clog2(PRF_COUNT)-1:0] rename_table_prf_ptr_i,
     input logic [4:0] rename_table_arf_ptr_sb_i,
     input logic rename_table_wb_en_i,
@@ -38,7 +49,11 @@ module decode_stage
     input logic issue_queue_prf_wr_en_i,
     
     // output logic
-    
+    output iq_output_t decode_instr_o,
+    output logic decode_instr_valid_o
+
+    // instantiating rob entry
+    output rob_instance_pkt_t rob_instance_pkt_o
 );
     // addr for branch targets
 
@@ -49,7 +64,7 @@ module decode_stage
     /* free list */
     logic free_list_rd_en;
     logic [PRF_COUNT-1:0] free_list_free_ptr;
-    // logic free_list_empty;
+    logic free_list_empty;
 
     free_list free_list_inst #(
         parameter PRF_COUNT
@@ -63,7 +78,7 @@ module decode_stage
         .rd_en_i(free_list_rd_en),
         .free_ptr_o(free_list_free_ptr),
         // state
-        .empty_o(free_list_empty_o)
+        .empty_o(free_list_empty)
     );
 
     /* rename table */
@@ -71,13 +86,16 @@ module decode_stage
     logic [$clog2(PRF_COUNT)-1:0] rename_table_prf_dest_ptr;
     logic [4:0] rename_table_arf_ptr;
     logic rename_table_decode_en;
-    // reading
+    // reading from issue queue
     logic [4:0] rename_table_arf_src0;
     logic [4:0] rename_table_arf_src1;
     logic [$clog2(PRF_COUNT)-1:0] rename_table_prf_src0;
     logic [$clog2(PRF_COUNT)-1:0] rename_table_prf_src1;
     logic rename_table_src0_pending;
     logic rename_table_src1_pending;
+    // reading from rob logic
+    logic [4:0] rename_table_rob_dest_arf;
+    logic [$clog2(PRF_COUNT)-1:0] rename_table_rob_dest_prf;
 
     rename_table_async_read rename_table_async_read_inst #(
         parameter PRF_COUNT = 32
@@ -88,7 +106,7 @@ module decode_stage
         .prf_ptr_i(rename_table_prf_dest_ptr),
         .arf_ptr_i(rename_table_arf_ptr),
         .decode_en_i(rename_table_decode_en),
-        // to signal its in PRF, can have the scoreboard tell the RT
+        // to signal its in PRF, can have the WB stage tell the RT
         .prf_ptr_sb_i(rename_table_prf_ptr_i),
         .arf_ptr_sb_i(rename_table_arf_ptr_sb_i),
         .writeback_en_i(rename_table_wb_en_i),
@@ -98,7 +116,10 @@ module decode_stage
         .prf_src0_o(rename_table_prf_src0),
         .prf_src1_o(rename_table_prf_src1),
         .src0_pending_o(rename_table_src0_pending),
-        .src1_pending_o(rename_table_src1_pending)
+        .src1_pending_o(rename_table_src1_pending),
+        // ports for rob_instance_creation logic to read from
+        .rob_dest_arf_i(rename_table_rob_dest_arf),
+        .rob_dest_prf_o(rename_table_rob_dest_prf)
     );
 
     /* issue queue */
@@ -144,26 +165,9 @@ module decode_stage
         .clear_i(mini_scoreboard_clear), // same functionality as rst
     );
 
-    // idk what this in reference to
-    // keep track of next avail rob ptr val (increment by 1 using an adder each time we get an instruciton that writes to a register)
-
-
-    logic dispatch_instr;
     logic new_instr_ready; // all operands are avail
-
-    // setting issue queue entry values
-    always_comb begin
-        issue_queue_entry = issue_queue_pkg::instr_to_iq_entry_partial(instr_i);
-        // filling in remanining values
-        issue_queue_entry.valid = new_instr_ready && 
-            (issue_queue_empty || issue_queue_all_stalled);
-        issue_queue_entry.dest_ptr = free_list_free_ptr;
-        issue_queue_entry.src0_pending = rename_table_src0_pending;
-        issue_queue_entry.src0_ptr = rename_table_prf_src0;
-        issue_queue_entry.src1_pending = rename_table_src1_pending;
-        issue_queue_entry.src1_ptr = rename_table_prf_src1;
-    end
-
+    logic iq_instr_ready;
+    logic dispatch_instr;
     // setting cntrl instructions
     always_comb begin
         
@@ -174,69 +178,85 @@ module decode_stage
         // determined by operands being ready
         // free list not being empty, assuming it needs it
         new_instr_ready = 
-            !(has_dest(instr_i[6:0]) && free_list_empty_o) ||
+            !(has_dest(instr_i[6:0]) && free_list_empty) ||
             !(has_src0(instr_i[6:0]) && rename_table_src0_pending) ||
             !(has_src1(instr_i[6:0]) && rename_table_src1_pending);
         
-        dispatch_instr = 
-            new_instr_ready || 
-            (!issue_queue_empty && !issue_queue_all_stalled);
+        iq_instr_ready = !issue_queue_empty && !issue_queue_all_stalled;
+
+        dispatch_instr = new_instr_ready || iq_instr_ready;
 
         // might need to modify to acocount for stalling/flushing
         mini_scoreboard_wr_en = dispatch_instr;
-        
-        // if (!dispatch_instr) begin
-        //     free_list_rd_en = 0;
-
-        // end
-
     end
 
-    // checking for errors
+    // setting issue queue entry values
     always_comb begin
-        if ()
+        issue_queue_entry = issue_queue_pkg::instr_to_iq_entry_partial(instr_i);
+        // filling in remanining values
+        // if stalling, comeback to this valid signal
+        issue_queue_entry.valid = new_instr_ready && 
+            (issue_queue_empty || issue_queue_all_stalled);
+        issue_queue_entry.dest_ptr = free_list_free_ptr;
+        issue_queue_entry.src0_pending = rename_table_src0_pending;
+        issue_queue_entry.src0_ptr = rename_table_prf_src0;
+        issue_queue_entry.src1_pending = rename_table_src1_pending;
+        issue_queue_entry.src1_ptr = rename_table_prf_src1;
     end
 
-    /* decoding a new instruction as an input to issue queue */
+    // setting rest of rename table inputs
     always_comb begin
-        issue_queue_entry = '0;
-        if (!stall) begin
-            issue_queue_entry.valid = 1;
-            issue_queue_entry.op = grab_compr_instr(instr);
-            imm_valid = has_imm(instr[6:0]);
-            imm = imm_gen(instr);
-            speculative = is_speculative(instr[6:0]);
-            dest_valid = has_dest(instr[6:0]);
-            dest_ptr = free_list[]
+        rename_table_prf_dest_ptr = '0;
+        rename_table_arf_ptr = '0;
+        rename_table_decode_en = '0;
+        if (free_list_rd_en) begin
+            rename_table_prf_dest_ptr = free_list_free_ptr;
+            rename_table_arf_ptr = instr[11:7];
+            rename_table_decode_en = 1;
+        end
+        rename_table_arf_src0 = instr[19:15];
+        rename_table_arf_src1 = instr[24:20];
+        // for rob_logic reading from rename table
+        rename_table_rob_dest_arf = instr[11:7];
+    end
 
+    // setting decode stage output and scoreboard
+    always_comb begin
+        // if any sort of stalling need to probaly adjust this
+        // COME BACK TO THIS
+        if (iq_instr_ready) begin
+            decode_instr_o = issue_queue_instr_out;
+            decode_instr_valid_o = 1;
+        end else if (new_instr_ready) begin
+            decode_instr_o = issue_queue_pkg::entry_to_output(issue_queue_entry);
+            decode_instr_valid_o = 1;
+        end else begin // stalling
+            decode_instr_o = '0;
+            decode_instr_valid_o = 0;
+        end
+
+        mini_scoreboard_op = decode_instr_o.op;
+    end
+
+    // creating entry into rob table
+    always_comb begin
+        if (dispatch_instr) begin
+            rob_instance_pkt_o.wr_en = 1;
+            rob_instance_pkt_o.phys_reg_addr = decode_instr_o.dest_ptr;
+            rob_instance_pkt_o.arch_reg_addr = instr_i[11:7];
+            rob_instance_pkt_o.prev_phys_reg_addr =  rename_table_rob_dest_prf;
+        end else begin
+            rob_instance_pkt_o = '0;
         end
     end
-    // op = 
-    // access issue queue
-
-
-
-
-
-    // routing an instruction
-
-
-    /* 
-        interms of output of decoder (actually decoding things) we need to 
-        take a iq_output_t as a input
-
-    */
-
-
-    
 
 endmodule
 
 
 // automatically outputs the next available free prf pointer
-module free_list #(
-    parameter PRF_COUNT
-) (
+module free_list 
+import decode_utils::*;
+(
     input clk,
     input rst,
     // writing
@@ -307,8 +327,11 @@ module rename_table_async_read #(
     output logic [$clog2(PRF_COUNT)-1:0] prf_src0_o,
     output logic [$clog2(PRF_COUNT)-1:0] prf_src1_o,
     output logic src0_pending_o,
-    output logic src1_pending_o
-);0
+    output logic src1_pending_o,
+    // ports for rob_instance_creation logic to read from
+    input logic [4:0] rob_dest_arf_i,
+    output logic [$clog2(PRF_COUNT)-1:0] rob_dest_prf_o
+);
     typedef struct packed {
         logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
         // logic [DATA_WIDTH-1:0] imm;
