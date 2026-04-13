@@ -3,6 +3,8 @@
         rob logic
         stalling logic for all cases
             branch mispredciting
+            (free list being full should count as stalling)
+            iq being full should also count as sstalling
         arf restoring on the case of branch mispredict
         communicaiton between wb and decode
         what about intrusciton fetch stuff?
@@ -190,18 +192,34 @@ module decode_stage
         mini_scoreboard_wr_en = dispatch_instr;
     end
 
+    // IMPORTANT NOTE: NEED TO COMEBACK TO THIS
+    /*
+        Will always increment by 1 unless there is some sort of stalling
+    */
+    logic [$clog2(ROB_COUNT)-1:0] rob_counter;
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            rob_counter <= '0;
+        end else begin
+            // if () // IMPLEMENT LATER FOR STALLING, BUT FOR NOW, will always increment
+            rob_counter <= rob_counter + 1;
+        end
+    end
+
     // setting issue queue entry values
     always_comb begin
         issue_queue_entry = issue_queue_pkg::instr_to_iq_entry_partial(instr_i);
-        // filling in remanining values
+        // filling in remanining values (free list being full should count as stalling)
+        // iq being full should also count as sstalling
         // if stalling, comeback to this valid signal
-        issue_queue_entry.valid = new_instr_ready && 
-            (issue_queue_empty || issue_queue_all_stalled);
+        // issue_queue_entry.valid = !new_instr_ready || iq_instr_ready;
+        issue_queue_entry.valid = iq_instr_ready;
         issue_queue_entry.dest_ptr = free_list_free_ptr;
         issue_queue_entry.src0_pending = rename_table_src0_pending;
         issue_queue_entry.src0_ptr = rename_table_prf_src0;
         issue_queue_entry.src1_pending = rename_table_src1_pending;
         issue_queue_entry.src1_ptr = rename_table_prf_src1;
+        issue_queue_entry.rob_ptr = rob_counter;
     end
 
     // setting rest of rename table inputs
@@ -238,16 +256,22 @@ module decode_stage
         mini_scoreboard_op = decode_instr_o.op;
     end
 
+    // NEED TO COMEBACK TO WHEN WE ACCOUNT FOR STALLING
     // creating entry into rob table
     always_comb begin
-        if (dispatch_instr) begin
+        // if (dispatch_instr) begin
+        // always do, unless we stall
             rob_instance_pkt_o.wr_en = 1;
-            rob_instance_pkt_o.phys_reg_addr = decode_instr_o.dest_ptr;
+            rob_instance_pkt_o.speculative = issue_queue_entry.speculative;
+            rob_instance_pkt_o.store = issue_queue_entry.store;
+            rob_instance_pkt_o.dest_valid = issue_queue_entry.dest_valid;
+            rob_instance_pkt_o.phys_reg_addr = issue_queue_entry.dest_ptr;
             rob_instance_pkt_o.arch_reg_addr = instr_i[11:7];
             rob_instance_pkt_o.prev_phys_reg_addr =  rename_table_rob_dest_prf;
-        end else begin
-            rob_instance_pkt_o = '0;
-        end
+            // rob_instance_pkt_o.rob_count = rob_counter; // no need i believe
+        // end else begin
+            // rob_instance_pkt_o = '0;
+        // end
     end
 
 endmodule
@@ -435,9 +459,9 @@ module issue_queue
     always_ff @(posedge clk) begin
         for (int i = 0; i < IQ_SIZE; i++) begin
             if (iq[i].src0_valid && iq[i].src0_pending && iq[i].src0_ptr == prf_dst_i)
-                iq[i].src0_pending = 0;
+                iq[i].src0_pending <= 0;
             if (iq[i].src1_valid && iq[i].src1_pending && iq[i].src1_ptr == prf_dst_i)
-                iq[i].src1_pending = 0;
+                iq[i].src1_pending <= 0;
         end
     end
 
@@ -458,6 +482,7 @@ module issue_queue
             ready_array[i] = (
                 (!iq[i].src0_valid || !iq[i].src0_pending || iq[i].src0_ptr == prf_dst_i) &&
                 (!iq[i].src1_valid || !iq[i].src1_pending || iq[i].src1_ptr == prf_dst_i) &&
+                (iq[i].valid) &&
                 (future_exec_stage_slots_i[iq[i].exec_dur] == 0)
             );
         end
@@ -485,7 +510,7 @@ module issue_queue
         if (!empty && !all_stalled_o) begin
             for (int i = 0; i < IQ_SIZE; i++) begin
                 if (priority_ready_array[i]) begin
-                    iq[i].valid = 0;
+                    iq[i].valid <= 0;
                 end
             end
         end

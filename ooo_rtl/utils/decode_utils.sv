@@ -25,6 +25,7 @@ package issue_queue_pkg;
         logic src1_valid;
         logic src1_pending;
         logic [$clog2(PRF_COUNT)-1:0] src1_ptr;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
     } iq_entry_t;
     
     typedef struct packed {
@@ -40,6 +41,7 @@ package issue_queue_pkg;
         logic [$clog2(PRF_COUNT)-1:0] src0_ptr;
         logic src1_valid;
         logic [$clog2(PRF_COUNT)-1:0] src1_ptr;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
     } iq_output_t;
 
     // SUBJECT TO CHANGE
@@ -97,6 +99,7 @@ package issue_queue_pkg;
         out.src0_ptr    = in.src0_ptr;
         out.src1_valid  = in.src1_valid;
         out.src1_ptr    = in.src1_ptr;
+        out.rob_ptr     = in.rob_ptr;
         return out;
     endfunction
 
@@ -216,6 +219,7 @@ package issue_queue_pkg;
             extract_20b_imm = 20'b0;
         end
     endcase
+    return extract_20b_imm;
 endfunction
 
 

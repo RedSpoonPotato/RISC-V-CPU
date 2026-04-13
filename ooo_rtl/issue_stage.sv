@@ -62,7 +62,7 @@ import issue_queue_pkg::*;
 
     always_comb begin
         // fetch_o.instr_valid = instr_i.instr_valid;
-        fetch_valid_o   = instr_valid_i;
+        fetch_valid_o       = instr_valid_i;
         fetch_o.op          = instr_i.op;
         fetch_o.speculative = instr_i.speculative;
         fetch_o.store       = instr_i.store;
@@ -71,9 +71,10 @@ import issue_queue_pkg::*;
         fetch_o.src0_valid  = instr_i.src0_valid;
         fetch_o.src0_data   = instr_i.phys_reg_src0_data;
         fetch_o.src1_valid  = instr_i.src1_valid;
-        fetch_o.src1_data = instr_i.imm_valid ? 
+        fetch_o.src1_data   = instr_i.imm_valid ? 
             format_20b_to_datawidth(instr_i.imm_compr) : 
             phys_reg_src1_data;
+        fetch_o.rob_ptr     = instr_i.rob_ptr;
     end
 
 endmodule
