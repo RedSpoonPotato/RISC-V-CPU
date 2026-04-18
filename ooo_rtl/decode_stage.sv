@@ -35,24 +35,24 @@ module decode_stage
 
     // free list
     input free_list_wr_en_i,
-    input [PRF_COUNT-1:0] free_list_commited_ptr_i,
+    input [$clog2(PRF_COUNT)-1:0] free_list_commited_ptr_i,
     // output logic free_list_empty_o;
 
     // rename table
     // to signal its in PRF, can have the scoreboard tell the RT
     // actually i think it should come frommright before 
+    input logic rename_table_wb_en_i,
     input logic [$clog2(PRF_COUNT)-1:0] rename_table_prf_ptr_i,
     input logic [4:0] rename_table_arf_ptr_sb_i,
-    input logic rename_table_wb_en_i,
 
     // issue queue
     // signals for updating state
-    input logic [$clog2(PRF_COUNT)-1:0] issue_queue_prf_dst_i,
     input logic issue_queue_prf_wr_en_i,
+    input logic [$clog2(PRF_COUNT)-1:0] issue_queue_prf_dst_i,
     
     // output logic
-    output iq_output_t decode_instr_o,
     output logic decode_instr_valid_o
+    output iq_output_t decode_instr_o,
 
     // instantiating rob entry
     output rob_instance_pkt_t rob_instance_pkt_o
@@ -65,7 +65,7 @@ module decode_stage
 
     /* free list */
     logic free_list_rd_en;
-    logic [PRF_COUNT-1:0] free_list_free_ptr;
+    logic [$clog2(PRF_COUNT)-1:0] free_list_free_ptr;
     logic free_list_empty;
 
     free_list free_list_inst #(
@@ -216,9 +216,9 @@ module decode_stage
         issue_queue_entry.valid = iq_instr_ready;
         issue_queue_entry.dest_ptr = free_list_free_ptr;
         issue_queue_entry.src0_pending = rename_table_src0_pending;
-        issue_queue_entry.src0_ptr = rename_table_prf_src0;
+        issue_queue_entry.src0_ptr = issue_queue_entry.src0_valid ? rename_table_prf_src0 : '0;
         issue_queue_entry.src1_pending = rename_table_src1_pending;
-        issue_queue_entry.src1_ptr = rename_table_prf_src1;
+        issue_queue_entry.src1_ptr = issue_queue_entry.src1_valid ? rename_table_prf_src1 : '0;
         issue_queue_entry.rob_ptr = rob_counter;
     end
 
@@ -285,14 +285,14 @@ import decode_utils::*;
     input rst,
     // writing
     input logic wr_en_i,
-    input logic [PRF_COUNT-1:0] commited_ptr_i,
+    input logic [$clog2(PRF_COUNT)-1:0] commited_ptr_i,
     // reading
     input logic rd_en_i,
-    output logic [PRF_COUNT-1:0] free_ptr_o,
+    output logic [$clog2(PRF_COUNT)-1:0] free_ptr_o,
     // state
     output logic empty_o
 );
-    logic [0:PRF_COUNT-1] free_list; // 1'b1 means free
+    logic [PRF_COUNT-1:0] free_list; // 1'b1 means free
     // state
     assign empty_o = ~|free_list;
     // writing
@@ -553,7 +553,7 @@ import issue_queue_pkg::*;
         end
     end
 
-    assign exec_stage_slots_o = exec_stage_slots_int[MAX_EXEC_CYCLE+1:1];
+    assign future_exec_stage_slots_o = exec_stage_slots_int[MAX_EXEC_CYCLE+1:1];
 
 endmodule
 

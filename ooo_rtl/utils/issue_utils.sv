@@ -7,10 +7,17 @@ package issue_queue_pkg;
     localparam INSTR_COMPRESS_WIDTH = 17;
     localparam MAX_EXEC_CYCLE = 4;
     localparam IMM_COMPRESS = 20;
+    localparam FUNCT_COMB_WIDTH = 4; // representing funct3 + funct7
+
+    // for now, have combined JAL into ALU type
+    // assumes PC += imm is computed earlier
+    typedef enum {ALU, LOAD, STORE, BRANCH, JALR, AUIPC} EX_MEM_TYPE;
 
     typedef struct packed {
-        logic instr_valid;
-        logic [INSTR_COMPRESS_WIDTH-1:0] op;
+        // logic instr_valid;
+        logic EX_MEM_TYPE type;
+        logic [FUNCT_COMB_WIDTH-1:0] funct_comb;
+        // logic [INSTR_COMPRESS_WIDTH-1:0] op;
         // logic [$clog2(MAX_EXEC_CYCLE)-1:0] exec_dur; // unsure if we need to output this
         // logic imm_valid;
         // logic [IMM_COMPRESS-1:0] imm_compr;
@@ -44,6 +51,31 @@ function automatic logic [DATAWIDTH-1:0] format_20b_to_datawidth(
             return DATAWIDTH'($signed(imm_20b));
         end
     endcase
+endfunction
+
+function automatic EX_MEM_TYPE get_ex_mem_type(
+    input logic [6:0] opcode
+);
+    case (opcode)
+        7'b011_0011: return ALU; // R-Type
+        7'b001_0011: return ALU; // I-Type ALU
+        7'b000_0011: return LOAD; // Load
+        7'b010_0011: return STORE; // Store
+        7'b110_0011: return BRANCH; // Branch
+        7'b110_1111: return ALU; // JAL
+        7'b110_0111: return JALR; // JALR
+        7'b011_0111: return ALU; // LUI
+        7'b001_0111: return AUIPC; // AUIPC
+        default: return ALU; // Default to ALU for unsupported opcodes
+    endcase
+endfunction
+
+function automatic logic [FUNCT_COMB_WIDTH-1:0] get_funct_comb(
+    input logic [INSTR_COMPRESS_WIDTH-1:0] op
+);
+    logic [2:0] funct3 = op[9:7];
+    logic [6:0] funct7 = op[16:10];
+    return {funct7[5], funct3}; // Combine the most significant bit of funct7 with funct3
 endfunction
 
 endpackage
