@@ -132,51 +132,78 @@ module fifo #(
 
 endmodule
 
-module fifo #(
-    parameter DEPTH = 8,
+module register_file_sync_read #(
     parameter DATA_WIDTH = 32,
-    parameter type T = logic [DATA_WIDTH-1:0]
+    parameter REG_ADDR_WIDTH = 5
 ) (
     input clk,
     input rst,
-    input [DATA_WIDTH-1:0] data_i,
-    input rd_en_i,
-    input wr_en_i,
-
-    output logic [DATA_WIDTH-1:0] data_o,
-    output logic full_o,
-    output logic empty_o
-);
-    localparam PTR_WIDTH = $clog2(DEPTH) + 1;
-
-    logic [DATA_WIDTH-1:0] data_array [DEPTH-1:0];
-    logic [PTR_WIDTH-1:0] wr_ptr;
-    logic [PTR_WIDTH-1:0] rd_ptr;
-
-    // full and empty
-    assign empty_o = (wr_ptr == rd_ptr);
-    assign full_o = (wr_ptr[PTR_WIDTH-2:0] == rd_ptr[PTR_WIDTH-2:0]) && 
-        (wr_ptr[PTR_WIDTH-1] != rd_ptr[PTR_WIDTH-1]);
+    // reading
+    input [REG_ADDR_WIDTH-1:0] addr_r_1_i,
+    input [REG_ADDR_WIDTH-1:0] addr_r_2_i,
+    output logic [DATA_WIDTH-1:0] data_r_1_o,
+    output logic [DATA_WIDTH-1:0] data_r_2_o,
 
     // writing
-    always_ff @(posedge clk) begin
+    input write_en_i,
+    input [REG_ADDR_WIDTH-1:0] addr_w_i,
+    input [DATA_WIDTH-1:0] data_w_i,
+);
+    localparam ENTRIES = 2 ** REG_ADDR_WIDTH;
+
+    logic [DATA_WIDTH-1:0] reg_mem [ENTRIES-1:0];
+
+    always_ff @(posedge clk) begin : Writing
         if (rst) begin
-            data_array = '0;
-            wr_ptr = 0;
-        end else if (wr_en_i) begin
-            data_array[wr_ptr[PTR_WIDTH-2:0]] <= data_i;
-            wr_ptr <= wr_ptr + 1;
+            reg_mem <= '0;
+        end else begin
+            if (write_en_i) begin
+                reg_mem[addr_w_i] <= data_w_i;
+            end
         end
     end
 
+    always_ff @(posedge clk) begin : Reading
+        data_r_1_o <= reg_mem[addr_r_1_i];
+        data_r_2_o <= reg_mem[addr_r_2_i];
+    end
+
+endmodule
+
+module register_file_async_read #(
+    parameter DATA_WIDTH = 32,
+    parameter REG_ADDR_WIDTH = 5
+) (
+    input clk,
+    input rst,
     // reading
-    always_ff @(posedge clk) begin
+    input [REG_ADDR_WIDTH-1:0] addr_r_1_i,
+    input [REG_ADDR_WIDTH-1:0] addr_r_2_i,
+    output logic [DATA_WIDTH-1:0] data_r_1_o,
+    output logic [DATA_WIDTH-1:0] data_r_2_o,
+
+    // writing
+    input write_en_i,
+    input [REG_ADDR_WIDTH-1:0] addr_w_i,
+    input [DATA_WIDTH-1:0] data_w_i,
+);
+    localparam ENTRIES = 2 ** REG_ADDR_WIDTH;
+
+    logic [DATA_WIDTH-1:0] reg_mem [ENTRIES-1:0];
+
+    always_ff @(posedge clk) begin : Writing
         if (rst) begin
-            rd_ptr = 0;
-        end else if (rd_en_i && ~empty_o) begin
-            data_o <= data_array[rd_ptr[PTR_WIDTH-2:0]];
-            rd_ptr <= rd_ptr + 1;
+            reg_mem <= '0;
+        end else begin
+            if (write_en_i) begin
+                reg_mem[addr_w_i] <= data_w_i;
+            end
         end
+    end
+
+    always_comb begin : Reading
+        data_r_1_o = reg_mem[addr_r_1_i];
+        data_r_2_o = reg_mem[addr_r_2_i];
     end
 
 endmodule

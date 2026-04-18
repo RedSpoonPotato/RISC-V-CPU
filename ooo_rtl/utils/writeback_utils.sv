@@ -27,8 +27,10 @@ package writeback_pkg;
         logic instr_valid;
         // logic [$clog2(MAX_EXEC_CYCLE)-1:0] exec_dur; // unsure if we need to output this
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic dest_valid;
         logic [DATA_WIDTH-1:0] dest_data;
-    } ex_mem_stage_pkt_t;   
+        logic [4:0] arch_reg_addr;
+    } ex_mem_stage_pkt_t;
 
     typedef enum {FREE, PENDING, FINISHED} rob_state_t;
 
@@ -42,7 +44,7 @@ package writeback_pkg;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
     } rob_entry_t;
 
-    // might not need allll of these 
+    // might not need all of these 
     typedef struct packed {
         logic wr_en;
         logic speculative;

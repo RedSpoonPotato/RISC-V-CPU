@@ -241,7 +241,7 @@ module btb_mem #(
 
             always_comb begin : ReadingFromMem
                 if (tag_array[index] == curr_tag && valid_array[index]) begin
-                    block_data_o = mem_array[index]
+                    block_data_o = mem_array[index];
                     hit_o = 1'b1;
                 end else begin
                     hit_o = 1'b0;

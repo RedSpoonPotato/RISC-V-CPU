@@ -56,9 +56,10 @@ import writeback_pkg::*;
     output logic prf_wr_en_o,
     output logic [$clog2(PRF_COUNT)-1:0] prf_ptr_o,
     output logic [DATA_WIDTH-1:0] prf_data_o,
-    // updating pending state in issue queue
+    // updating pending state in issue queue and rename table
     output logic iq_pending_wr_en_o,
     output logic [$clog2(PRF_COUNT)-1:0] iq_pending_prf_ptr_o,
+    output logic [4:0] rt_arf_ptr_o,
     
 );
 
@@ -105,7 +106,7 @@ import writeback_pkg::*;
     // writing to physical register file
     always_comb begin
         if (ex_mem_stage_pkt_i.instr_valid) begin
-            prf_wr_en_o = 1;
+            prf_wr_en_o = ex_mem_stage_pkt_i.dest_valid;
             prf_ptr_o = reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].phys_reg_addr;
             prf_data_o = ex_mem_stage_pkt_i.dest_data;
         end else begin
@@ -117,12 +118,14 @@ import writeback_pkg::*;
 
     // updating pending state in issue queue
     always_comb begin
-        if (ex_mem_stage_pkt_i.instr_valid) begin
+        if (ex_mem_stage_pkt_i.instr_valid && ex) begin
             iq_pending_wr_en_o = 1; 
             iq_pending_prf_ptr_o = reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].phys_reg_addr;
+            rt_arf_ptr_o = reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].arch_reg_addr;
         end else begin
             iq_pending_wr_en_o = 0;
             iq_pending_prf_ptr_o = '0;
+            rt_arf_ptr_o = '0;
         end
     end
     

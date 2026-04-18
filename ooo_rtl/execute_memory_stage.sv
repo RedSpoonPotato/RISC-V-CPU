@@ -1,5 +1,7 @@
 /*
-    what moves through each stage
+    for now, will implement a single cycle load and store (will change later)
+
+    // disclaimer: ai generated the ALU module b/c its boiler plate
 
 */
 
@@ -11,8 +13,7 @@ import issue_queue_pkg::*;
     input clk,
     input rst,
 
-
-    input fetch_packet_t fetch_i,
+    input fetch_packet_t fetch_pkt_i,
     input logic fetch_valid_i,
 
     // cntrls
@@ -21,15 +22,14 @@ import issue_queue_pkg::*;
 
 );
     // integer path (1 cycle)
+    
 
     // load path (atleast 2 cycles: add, then load)
 
-    // store path
+    // store path (atleast 2 cycles: add, then load)
 
-    // could add multiply later
-
+    
 endmodule
-
 
 module alu #(
     parameter DATA_WIDTH = 32,
