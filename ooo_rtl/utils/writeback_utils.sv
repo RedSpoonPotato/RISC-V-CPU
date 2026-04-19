@@ -32,7 +32,7 @@ package writeback_pkg;
         logic [4:0] arch_reg_addr;
     } ex_mem_stage_pkt_t;
 
-    typedef enum {FREE, PENDING, FINISHED} rob_state_t;
+    typedef enum logic [$clog2(3)-1:0] {FREE, PENDING, FINISHED} rob_state_t;
 
     typedef struct packed {
         rob_state_t state;

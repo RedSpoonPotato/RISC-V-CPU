@@ -11,12 +11,14 @@ package issue_queue_pkg;
 
     // for now, have combined JAL into ALU type
     // assumes PC += imm is computed earlier
-    typedef enum {ALU, LOAD, STORE, BRANCH, JALR, AUIPC} EX_MEM_TYPE;
+    localparam EX_MEM_TYPE_SIZE = 5;
+    typedef enum logic [$clog2(EX_MEM_TYPE_SIZE)-1:0] {ALU, MEM, BRANCH, JALR, AUIPC} EX_MEM_TYPE;
 
     typedef struct packed {
         // logic instr_valid;
-        logic EX_MEM_TYPE type;
-        logic [FUNCT_COMB_WIDTH-1:0] funct_comb;
+        // logic EX_MEM_TYPE funct_unit;
+        logic [EX_MEM_TYPE_SIZE-1:0] funct_unit_one_hot;
+        logic [FUNCT_COMB_WIDTH-1:0] funct_code;
         // logic [INSTR_COMPRESS_WIDTH-1:0] op;
         // logic [$clog2(MAX_EXEC_CYCLE)-1:0] exec_dur; // unsure if we need to output this
         // logic imm_valid;
@@ -59,8 +61,8 @@ function automatic EX_MEM_TYPE get_ex_mem_type(
     case (opcode)
         7'b011_0011: return ALU; // R-Type
         7'b001_0011: return ALU; // I-Type ALU
-        7'b000_0011: return LOAD; // Load
-        7'b010_0011: return STORE; // Store
+        7'b000_0011: return MEM; // Load
+        7'b010_0011: return MEM; // Store
         7'b110_0011: return BRANCH; // Branch
         7'b110_1111: return ALU; // JAL
         7'b110_0111: return JALR; // JALR
@@ -68,6 +70,13 @@ function automatic EX_MEM_TYPE get_ex_mem_type(
         7'b001_0111: return AUIPC; // AUIPC
         default: return ALU; // Default to ALU for unsupported opcodes
     endcase
+endfunction
+
+function automatic logic [EX_MEM_TYPE_SIZE-1:0] get_ex_mem_type_one_hot(
+    input logic [6:0] opcode
+);
+    EX_MEM_TYPE type = get_ex_mem_type(opcode);
+    return 1 << type; // Convert enum to one-hot encoding
 endfunction
 
 function automatic logic [FUNCT_COMB_WIDTH-1:0] get_funct_comb(
