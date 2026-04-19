@@ -5,7 +5,7 @@ package decode_pkg;
     localparam PRF_COUNT = 32;
     localparam DATA_WIDTH = 32;
 
-    typedef enum { R_TYPE, I_TYPE, S_TYPE, B_TYPE, U_TYPE, J_TYPE} instruction_t;
+    typedef enum logic [$clog2(6)-1:0] {R_TYPE, I_TYPE, S_TYPE, B_TYPE, U_TYPE, J_TYPE} instruction_t;
 
     function automatic instruction_t classify_instr (
         input [6:0] opcode
@@ -204,6 +204,30 @@ module register_file_async_read #(
     always_comb begin : Reading
         data_r_1_o = reg_mem[addr_r_1_i];
         data_r_2_o = reg_mem[addr_r_2_i];
+    end
+
+endmodule
+
+
+// ai-generated
+module sram #(
+    parameter ADDR_WIDTH = 10,  // depth = 2^ADDR_WIDTH
+    parameter DATA_WIDTH = 32
+)(
+    input  logic                     clk,
+    input  logic                     we,        // write enable
+    input  logic [ADDR_WIDTH-1:0]    addr,
+    input  logic [DATA_WIDTH-1:0]    din,
+    output logic [DATA_WIDTH-1:0]    dout
+);
+    // Memory array
+    logic [DATA_WIDTH-1:0] mem [0:(1<<ADDR_WIDTH)-1];
+
+    always_ff @(posedge clk) begin
+        if (we) begin
+            mem[addr] <= din;
+        end
+        dout <= mem[addr]; // synchronous read
     end
 
 endmodule

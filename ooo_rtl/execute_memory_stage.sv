@@ -21,8 +21,11 @@ import issue_queue_pkg::*;
 
 
 );
+
+    // routing instruction to EX_MEM_TYPE
+
+
     // integer path (1 cycle)
-    
 
     // load path (atleast 2 cycles: add, then load)
 
@@ -31,26 +34,76 @@ import issue_queue_pkg::*;
     
 endmodule
 
+// for now doing a simple memory, 2 cycles
+module mem_stage 
+import issue_queue_pkg::*;
+import decode_pkg::*;
+(
+    input clk,
+    input rst,
+    input logic en_i,
+    input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
+    input logic [DATA_WIDTH-1:0] base_addr_i,
+    input logic [DATA_WIDTH-1:0] offset_i,
+    input logic [DATA_WIDTH-1:0] store_data_i,
+    output logic [DATA_WIDTH-1:0] load_data_o
+);
+
+    logic [DATA_WIDTH-1:0] base_addr_ff, offset_ff, store_data_ff, addr;
+    logic en_2nd_stage;
+
+    assign addr = base_addr_ff + offset_ff;
+
+    always_ff @(posedge clk) begin
+        if (rst || !en_i) begin
+            base_addr_ff <= 0;
+            offset_ff <= 0;
+            store_data_ff <= 0;
+        end else begin
+            base_addr_ff <= base_addr_i;
+            offset_ff <= offset_i;
+            store_data_ff <= store_data_i;
+        end
+        if (rst) begin
+            en_2nd_stage <= 0;
+        end else begin
+            en_2nd_stage <= en_i;
+        end
+    end
+
+    sram #(
+        .DATA_WIDTH(DATA_WIDTH),
+        .ADDR_WIDTH(10) // for now, hardcoding to 10 bits (1024 entries)
+    ) data_memory (
+        .clk(clk),
+        .rst(rst),
+        .en_i(en_2nd_stage),
+        .addr_i(addr),
+        .data_i(store_data_ff),
+        .data_o(load_data_o)
+    );
+endmodule
+
 module alu #(
     parameter DATA_WIDTH = 32,
 ) (
     input  [DATA_WIDTH-1:0] a_i,
     input  [DATA_WIDTH-1:0] b_i
-    input  [4:0]  alu_cntrl_i,
+    input  [3:0]  alu_cntrl_i,
     output logic [DATA_WIDTH-1:0] result_o,
     output logic zero_o
 );
     // RV32I opcodes
-    localparam ADD  = 5'b00000;
-    localparam SLL  = 5'b00001;
-    localparam SLT  = 5'b00010;
-    localparam SLTU = 5'b00011;
-    localparam XOR  = 5'b00100;
-    localparam SRL  = 5'b00101;
-    localparam OR   = 5'b00110;
-    localparam AND  = 5'b00111;
-    localparam SUB  = 5'b01000;
-    localparam SRA  = 5'b01101;
+    localparam ADD  = 4'b0000;
+    localparam SUB  = 4'b1000;
+    localparam XOR  = 4'b0100;
+    localparam OR   = 4'b0110;
+    localparam AND  = 4'b0111;
+    localparam SLL  = 4'b0001;
+    localparam SRL  = 4'b0101;
+    localparam SRA  = 4'b1101;
+    localparam SLT  = 4'b0010;
+    localparam SLTU = 4'b0011;
 
     always_comb begin
         case (alu_cntrl_i)
@@ -70,7 +123,6 @@ module alu #(
             default:  result_o = DATA_WIDTH'b010;
         endcase
     end
-
     // The Zero flag is asserted if the result_o is all zeros.
     assign zero_o = (result_o == DATA_WIDTH'b0);
 
@@ -81,9 +133,10 @@ module alu_stage #(
 ) (
     input  clk,
     input  rst,
+    input  en_i,
     input  [DATA_WIDTH-1:0] a_i,
     input  [DATA_WIDTH-1:0] b_i,
-    input  [4:0]  alu_cntrl_i,
+    input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
     output logic [DATA_WIDTH-1:0] result_o,
     output logic zero_o
 );
@@ -101,84 +154,19 @@ module alu_stage #(
         .zero_o(zero_o)
     );
 
-    always_ff @(clk) begin
-        if (rst) begin
-            a = 0;
-            b = 0;
-            alu_cntrl = 0;
-            result_o = 0;
-            zero_o = 0;
+    always_ff @(posedge clk) begin
+        if (rst || !en_i) begin
+            a <= 0;
+            b <= 0;
+            alu_cntrl <= 0;
+            result_o <= 0;
+            zero_o <= 0;
         end else begin
             a <= a_i;
             b <= b_i;
-            alu_cntrl <= alu_cntrl_i;
+            alu_cntrl <= funct_code_i;
         end
     end
 endmodule
 
-module multiplier #(
-    parameter DATA_WIDTH = 32,
-) (
-    input  [DATA_WIDTH-1:0] a_i,
-    input  [DATA_WIDTH-1:0] b_i
-    input  [4:0]  alu_cntrl_i,
-    output logic [DATA_WIDTH-1:0] result_o,
-    output logic zero_o
-);
-    // RV32M opcodes
-    localparam MUL    = 5'b10000; // lower 32 bits
-    localparam MULH   = 5'b10001; // upper 32 bits
-    localparam MULHSU = 5'b10010; // upper 32 bits of A * unsign(B)
-    localparam MULHU  = 5'b10011; // upper 32 bits of unsign(A) * unsign(B)
 
-    always_comb begin
-        case (alu_cntrl_i)
-            // RV32M
-            MUL:     result_o =         ($signed(a_i) * $signed(b_i))[DATA_WIDTH-1:0];
-            MULH:    result_o =         ($signed(a_i) * $signed(b_i))[DATA_WIDTH*2-1:DATA_WIDTH];
-            MULHSU:  result_o = ($signed(a_i) * $signed({1'b0, b_i}))[DATA_WIDTH*2-1:DATA_WIDTH];
-            MULHU:   result_o =                           (a_i * b_i)[DATA_WIDTH*2-1:DATA_WIDTH];
-            default: result_o = DATA_WIDTH'b010;
-        endcase
-    end
-endmodule
-
-module multiplier_stage #(
-    parameter DATA_WIDTH = 32,
-) (
-    input  clk,
-    input  rst,
-    input  [DATA_WIDTH-1:0] a_i,
-    input  [DATA_WIDTH-1:0] b_i
-    input  [4:0]  alu_cntrl_i,
-    output logic [DATA_WIDTH-1:0] result_o,
-    output logic zero_o
-);
-
-    logic [DATA_WIDTH-1:0] a, b;
-    logic [4:0] alu_cntrl;
-
-    multiplier #(
-        .DATA_WIDTH(DATA_WIDTH)
-    ) multiplier_inst (
-        .a_i(a),
-        .b_i(b),
-        .alu_cntrl_i(alu_cntrl),
-        .result_o(result_o),
-        .zero_o(zero_o)
-    );
-
-    always_ff @(clk) begin
-        if (rst) begin
-            a = 0;
-            b = 0;
-            alu_cntrl = 0;
-            result_o = 0;
-            zero_o = 0;
-        end else begin
-            a <= a_i;
-            b <= b_i;
-            alu_cntrl <= alu_cntrl_i;
-        end
-    end
-endmodule

@@ -57,8 +57,8 @@ import issue_queue_pkg::*;
     always_comb begin
         // fetch_pkt_o.instr_valid = instr_i.instr_valid;
         fetch_valid_o           = instr_valid_i;
-        fetch_pkt_o.type        = get_ex_mem_type(instr_i.op[6:0]);
-        fetch_pkt_o.funct_comb  = get_funct_comb(instr_i.op);
+        fetch_pkt_o.func_unit_one_hot = get_ex_mem_type_one_hot(instr_i.op[6:0]);
+        fetch_pkt_o.funct_code  = get_funct_comb(instr_i.op);
         // fetch_pkt_o.op          = instr_i.op;
         fetch_pkt_o.speculative = instr_i.speculative;
         fetch_pkt_o.store       = instr_i.store;
