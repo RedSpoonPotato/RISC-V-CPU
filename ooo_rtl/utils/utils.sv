@@ -156,6 +156,8 @@ module register_file_sync_read #(
     always_ff @(posedge clk) begin : Writing
         if (rst) begin
             reg_mem <= '0;
+            data_r_1_o <= '0;
+            data_r_2_o <= '0;
         end else begin
             if (write_en_i) begin
                 reg_mem[addr_w_i] <= data_w_i;
@@ -209,8 +211,7 @@ module register_file_async_read #(
 endmodule
 
 
-// ai-generated
-module sram #(
+module sram_sync_read #(
     parameter ADDR_WIDTH = 10,  // depth = 2^ADDR_WIDTH
     parameter DATA_WIDTH = 32
 )(
@@ -224,10 +225,10 @@ module sram #(
     logic [DATA_WIDTH-1:0] mem [0:(1<<ADDR_WIDTH)-1];
 
     always_ff @(posedge clk) begin
-        if (we) begin
-            mem[addr] <= din;
+            if (we) begin
+                mem[addr] <= din;
+            end
+            dout <= mem[addr]; // synchronous read
         end
-        dout <= mem[addr]; // synchronous read
-    end
 
 endmodule

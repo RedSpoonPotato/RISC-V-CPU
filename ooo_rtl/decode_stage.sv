@@ -8,6 +8,11 @@
         arf restoring on the case of branch mispredict
         communicaiton between wb and decode
         what about intrusciton fetch stuff?
+        make sure for the case of load, and seperately for the case of store,
+            we are sending setting the outputs properly
+        Need to add logic that checks new incoming instruciton into iq to make sure no strucutral
+            hazards
+        
 */
 
 module decode_stage 
@@ -51,7 +56,7 @@ module decode_stage
     input logic [$clog2(PRF_COUNT)-1:0] issue_queue_prf_dst_i,
     
     // output logic
-    output logic decode_instr_valid_o
+    output logic decode_instr_valid_o,
     output iq_output_t decode_instr_o,
 
     // instantiating rob entry
