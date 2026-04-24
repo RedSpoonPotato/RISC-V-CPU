@@ -68,7 +68,6 @@ import issue_queue_pkg::*;
 
         // fetch_pkt_o.instr_valid = instr_i.instr_valid;
         fetch_valid_o           <= instr_valid_i;
-        // fetch_pkt_o.func_unit_one_hot <= get_ex_mem_type_one_hot(instr_op_ff);
         fetch_pkt_o.funct_code  <= get_funct_comb(instr_i.op);
         // fetch_pkt_o.op          = instr_i.op;
         fetch_pkt_o.speculative <= instr_i.speculative;
@@ -84,8 +83,9 @@ import issue_queue_pkg::*;
     end
 
     always_comb begin
-        fetch_pkt_o.func_unit_one_hot = get_ex_mem_type_one_hot(instr_op_ff);
-        fetch_pkt_o.src0_data   = phys_reg_src0_data;
+        fetch_pkt_o.funct_unit = get_ex_mem_type(instr_op_ff, fetch_valid_o);
+        fetch_pkt_o.func_unit_one_hot = get_ex_mem_type_one_hot(instr_op_ff, fetch_valid_o);
+        fetch_pkt_o.src0_data = phys_reg_src0_data;
         assert ((instr_i.imm_valid == 1 && instr_i.store == 1) || instr_i.store == 0);
         // fetch_pkt_o.src1_data   = phys_reg_src1_data;
         if (fetch_pkt_o.store || !is_imm_ff) begin
