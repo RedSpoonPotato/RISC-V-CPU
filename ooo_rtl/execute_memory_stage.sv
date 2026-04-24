@@ -36,9 +36,16 @@ import writeback_pkg::*;
     
 );
 
-    NEED TO FIND A WAY TO MULTIPLEX THE OUTPUT
-
-    // routing instruction to EX_MEM_TYPE
+    // routing instruction
+    logic scoreboard_funct_unit;
+    funct_unit_scoreboard scoreboard_inst (
+        .clk(clk),
+        .rst(rst),
+        .funct_unit_i(fetch_pkt_i.funct_unit),
+        .current_funct_unit_output_o(),
+        .clear_i() // will connect this later
+    );
+        
 
     // alu path (1 cycle)
     logic [DATA_WIDTH-1:0] alu_result;
@@ -74,6 +81,43 @@ import writeback_pkg::*;
     // auipc path: rd = PC + (imm << 12)
             
 endmodule
+
+module funct_unit_scoreboard
+import issue_queue_pkg::*;
+(
+    input clk,
+    input rst,
+    // new entry
+    input EX_MEM_TYPE funct_unit_i,
+    // outputting to iq
+    // 1 extra: 1 for reg fetch stage
+    output EX_MEM_TYPE current_funct_unit_output_o,
+    // stalling or clearing
+    input clear_i, // same functionality as rst
+);
+    logic [MAX_EXEC_CYCLE_V2-1:0] exec_stage_slots_int;
+
+    always_ff @(posedge clk) begin
+        if (rst || clear_i) begin
+            exec_stage_slots_int <= '{default: NOOP};
+        end else begin
+            for (int i = MAX_EXEC_CYCLE_V2-1; i >= 0; i--) begin
+                if (i == MAX_EXEC_CYCLE_V2-1) begin
+                    exec_stage_slots_int[i] <= NOOP;
+                end else begin
+                    exec_stage_slots_int[i] <= exec_stage_slots_int[i+1];
+                end
+            end
+            if (funct_unit_i != NOOP) begin
+                exec_stage_slots_int[get_exec_stage_delays_v2(funct_unit_i)] <= funct_unit_i;
+            end
+        end
+    end
+
+    assign current_funct_unit_o = exec_stage_slots_int[0];
+
+endmodule
+
 
 module auipc_stage
 import issue_queue_pkg::*;
