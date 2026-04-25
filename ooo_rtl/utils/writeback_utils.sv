@@ -29,7 +29,7 @@ package writeback_pkg;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         logic dest_valid;
         logic [DATA_WIDTH-1:0] dest_data;
-        logic [4:0] arch_reg_addr;
+        // logic [4:0] arch_reg_addr; // why do i have this?
     } ex_mem_stage_pkt_t;
 
     typedef enum logic [$clog2(3)-1:0] {FREE, PENDING, FINISHED} rob_state_t;

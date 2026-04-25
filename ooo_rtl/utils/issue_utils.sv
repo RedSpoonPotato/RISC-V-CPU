@@ -40,10 +40,10 @@ package issue_queue_pkg;
         logic [DATA_WIDTH-1:0] src0_data;
         // logic src1_valid; // DONT NEED
         logic [DATA_WIDTH-1:0] src1_data;
-        logic [DATA_WIDTH-1:0] store_offset;
+        logic [DATA_WIDTH-1:0] mem_offset;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         // additional fields
-        logic [DATA_WIDTH-1:0] pc_plus_4; // for branch target calculation, and for JALR
+        logic [DATA_WIDTH-1:0] pc; // for branch target calculation, and for JALR and AUIPC
 
     } fetch_packet_t;
 

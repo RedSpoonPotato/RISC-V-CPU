@@ -5,6 +5,8 @@
     jalr: need to somewhere grab the pc value
 
     note: for format_20b_to_datawidth, might need to add more delay to not have hold time
+
+    need to set pc value in fetch_pkt
     
 */
 module issue_stage 
@@ -93,7 +95,7 @@ import issue_queue_pkg::*;
         end else begin
             fetch_pkt_o.src1_data = format_20b_to_datawidth(imm_compr_ff, instr_op_ff);
         end
-        fetch_pkt_o.store_offset =  (fetch_pkt_o.store) ? format_20b_to_datawidth(imm_compr_ff, instr_op_ff) : 0;
+        fetch_pkt_o.mem_offset =  (fetch_pkt_o.funct_unit == MEM) ? format_20b_to_datawidth(imm_compr_ff, instr_op_ff) : 0;
     end
 
 endmodule

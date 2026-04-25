@@ -8,6 +8,7 @@
 
     note: need ot got back to issue_utils and account for pc_plus_4 in fetch_packet_t
 
+    Need to edit mem stage to account for differetn sizes
 */
 
 module execute_memory_stage 
@@ -19,33 +20,41 @@ import writeback_pkg::*;
     input clk,
     input rst,
 
-    input fetch_packet_t fetch_pkt_i,
-    input logic fetch_valid_i,
+    input fetch_packet_t fetch_pkt_i, 
+    input logic fetch_valid_i, // might not need
 
     // cntrls
     // input alu_cntrl_i, // how many bits?
 
     // output to writeback stage
-        
+    // output logic [DATA_WIDTH-1:0] destination_data_o,
+    // output logic dest_valid_o,
+    // output logic instr_valid_o,
+
+    output ex_mem_stage_pkt_t ex_mem_stage_pkt_o,
 
     // output to (i guess if stage)
-    output logic jalr_en,
-    output logic [DATA_WIDTH-1:0] jalr_pc_plus_4,
-    output logic branch_en,
-    output logic branch_taken,
-    
+    output logic jalr_en_o,
+    output logic [DATA_WIDTH-1:0] jalr_pc_o,
+    output logic branch_en_o,
+    output logic branch_taken_o,
 );
 
+    assert (fetch_valid_i || fetch_pkt_i.funct_unit == NOOP) else $fatal("Invalid instruction issued to execute stage");
+
     // routing instruction
-    logic scoreboard_funct_unit;
+    logic scoreboard_curr_funct_unit_output;
+    logic scoreboard_clear; // NEED TO SET
     funct_unit_scoreboard scoreboard_inst (
         .clk(clk),
         .rst(rst),
         .funct_unit_i(fetch_pkt_i.funct_unit),
-        .current_funct_unit_output_o(),
-        .clear_i() // will connect this later
+        .current_funct_unit_output_o(scoreboard_curr_funct_unit_output),
+        .clear_i(scoreboard_clear) // will connect this later
     );
-        
+
+    // alu, mem, jalr, auipc
+    logic [DATA_WIDTH-1:0] result_arry [3:0];
 
     // alu path (1 cycle)
     logic [DATA_WIDTH-1:0] alu_result;
@@ -53,32 +62,92 @@ import writeback_pkg::*;
     alu_stage alu_stage_inst (
         .clk(clk),
         .rst(rst),
-        .en_i(fetch_valid_i && fetch_pkt_i.funct_unit_one_hot[ALU]),
+        .en_i(fetch_pkt_i.funct_unit_one_hot[ALU]),
         .a_i(fetch_pkt_i.src0_data),
         .b_i(fetch_pkt_i.src1_data),
         .funct_code_i(fetch_pkt_i.funct_code),
-        .result_o(alu_result),
+        .result_o(result_arry[0]),
         .zero_o(alu_zero)
     );
     
     // mem path (atleast 2 cycles: add, then memory access)
+    // logic [DATA_WIDTH-1:0] mem_load_data;
     mem_stage mem_stage_inst (
         .clk(clk),
         .rst(rst),
-        .en_i(fetch_valid_i && fetch_pkt_i.funct_unit_one_hot[MEM]),
+        .en_i(fetch_pkt_i.funct_unit_one_hot[MEM]),
         .store_i(fetch_pkt_i.store),
         .funct_code_i(fetch_pkt_i.funct_code),
         .base_addr_i(fetch_pkt_i.src0_data),
-        .offset_i(fetch_pkt_i.store_offset), // for now, just using imm_compr as offset, will change later
+        .offset_i(fetch_pkt_i.mem_offset), // for now, just using imm_compr as offset, will change later
         .store_data_i(fetch_pkt_i.src1_data), // for store instructions
-        .load_data_o() // will connect this to writeback stage later
+        .load_data_o(result_arry[1]) // will connect this to writeback stage later
     );
 
     // branch path (1 cycle for now): if(rs1 == rs2) PC += imm
+    branch_stage branch_stage_inst (
+        .clk(clk),
+        .rst(rst),
+        .en_i(fetch_pkt_i.funct_unit_one_hot[BRANCH]),
+        .funct_code_i(fetch_pkt_i.funct_code),
+        .src0_data_i(fetch_pkt_i.src0_data),
+        .src1_data_i(fetch_pkt_i.src1_data),
+        .branch_taken_o(branch_taken_o)
+    );
 
     // jalr path: rd = PC+4; PC = rs1 + imm
+    logic [DATA_WIDTH-1:0] jalr_result;
+    jalr_stage jalr_stage_inst (
+        .clk(clk),
+        .rst(rst),
+        .en_i(fetch_pkt_i.funct_unit_one_hot[JALR]),
+        .pc_i(fetch_pkt_i.pc),
+        .rs1_data_i(fetch_pkt_i.src0_data),
+        .imm_i(fetch_pkt_i.src1_data),
+        .pc_o(jalr_pc_o), // will connect this to writeback stage later
+        .pc_plus_4_o(result_arry[2])
+    );
 
     // auipc path: rd = PC + (imm << 12)
+    // logic [DATA_WIDTH-1:0] auipc_result;
+    auipc_stage auipc_stage_inst (
+        .clk(clk),
+        .rst(rst),
+        .en_i(fetch_pkt_i.funct_unit_one_hot[AUIPC]),
+        .pc_i(fetch_pkt_i.pc),
+        .imm_i(fetch_pkt_i.src1_data), // for now, just using imm_compr as imm, will change later
+        .result_o(result_arry[3]) // will connect this to writeback stage later
+    );
+
+    always_ff @(posedge clk) begin
+        ex_mem_stage_pkt_o.instr_valid <= fetch_valid_i;
+        ex_mem_stage_pkt_o.rob_ptr <= fetch_pkt_i.rob_ptr;
+        ex_mem_stage_pkt_o.dest_valid <= fetch_valid_i && (
+            fetch_pkt_i.funct_unit_one_hot[ALU] || 
+            (fetch_pkt_i.funct_unit_one_hot[MEM] && !fetch_pkt_i.store) || // load
+            fetch_pkt_i.funct_unit_one_hot[JALR] || 
+            fetch_pkt_i.funct_unit_one_hot[AUIPC]);
+        
+    end
+
+    always_comb begin
+        // logic [DATA_WIDTH-1:0] result_arry [EX_MEM_TYPE_SIZE-1:0];
+        if (fetch_pkt_i.funct_unit_one_hot[ALU]) begin
+            ex_mem_stage_pkt_o.dest_data = result_arry[0];
+        end else if (fetch_pkt_i.funct_unit_one_hot[MEM] && !fetch_pkt_i.store) begin
+            ex_mem_stage_pkt_o.dest_data = result_arry[1];
+        end else if (fetch_pkt_i.funct_unit_one_hot[JALR]) begin
+            ex_mem_stage_pkt_o.dest_data = result_arry[2];
+        end else if (fetch_pkt_i.funct_unit_one_hot[AUIPC]) begin
+            ex_mem_stage_pkt_o.dest_data = result_arry[3];
+        end else begin
+            ex_mem_stage_pkt_o.dest_data = '0;
+        end
+        
+        jalr_en_o = fetch_pkt_i.funct_unit_one_hot[JALR];
+        branch_en_o = fetch_pkt_i.funct_unit_one_hot[BRANCH];
+    end
+
             
 endmodule
 
@@ -125,7 +194,7 @@ import issue_queue_pkg::*;
     input clk,
     input rst,
     input logic en_i,
-    input logic [DATA_WIDTH-1:0] pc_plus_4_i,
+    input logic [DATA_WIDTH-1:0] pc_i,
     input logic [DATA_WIDTH-1:0] imm_i,
     output logic [DATA_WIDTH-1:0] result_o
 );
@@ -133,7 +202,7 @@ import issue_queue_pkg::*;
         if (rst || !en_i) begin
             result_o <= 0;
         end else begin
-            result_o <= pc_plus_4_i + (imm_i << 12);
+            result_o <= pc_i + (imm_i << 12);
         end
     end
 endmodule
@@ -144,23 +213,23 @@ import issue_queue_pkg::*;
     input clk,
     input rst,
     input logic en_i,
-    input logic [DATA_WIDTH-1:0] pc_plus_4_i,
+    input logic [DATA_WIDTH-1:0] pc_i,
     input logic [DATA_WIDTH-1:0] rs1_data_i,
     input logic [DATA_WIDTH-1:0] imm_i,
-    output logic [DATA_WIDTH-1:0] result_o,
+    output logic [DATA_WIDTH-1:0] pc_o,
     output logic [DATA_WIDTH-1:0] pc_plus_4_o
 );
     always_ff @(posedge clk) begin
         if (rst || !en_i) begin
-            result_o <= 0;
+            pc_o <= 0;
         end else begin
-            result_o <= rs1_data_i + imm_i;
-            pc_plus_4_o <= pc_plus_4_i;
+            pc_o <= rs1_data_i + imm_i;
+            pc_plus_4_o <= pc_i + 4;
         end
     end
 endmodule
 
-module branch_unit 
+module branch_unit
 import issue_queue_pkg::*;
 (
     input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
