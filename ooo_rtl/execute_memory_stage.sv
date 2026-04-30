@@ -27,10 +27,6 @@ import writeback_pkg::*;
     // input alu_cntrl_i, // how many bits?
 
     // output to writeback stage
-    // output logic [DATA_WIDTH-1:0] destination_data_o,
-    // output logic dest_valid_o,
-    // output logic instr_valid_o,
-
     output ex_mem_stage_pkt_t ex_mem_stage_pkt_o,
 
     // output to (i guess if stage)
