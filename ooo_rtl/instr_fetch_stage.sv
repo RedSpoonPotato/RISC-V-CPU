@@ -10,6 +10,9 @@
 
     assume will send base pc values down pipeline stage, and will route back
 
+    Q: since tgrt buff and branch rpedictor behave differently when it comes to instatiating new entyries, will these
+    work ok together?
+
 */
 
 
@@ -74,18 +77,15 @@ import brnch_predict_pkg::*;
 (
     input clk,
     input rst,
+    // reading
+    input logic rd_en_i,
     input logic [DATA_WIDTH-1:0] curr_addr_i,
-    // updating state
-    // input logic brnch_taken_i,
-    input logic write_en_i,
-    // input logic [TAG_WIDTH-1:0] old_tag_i, // need b/c need to check entry has not been ejected :(
-    // input logic [INDEX_WIDTH-1:0] old_index_i, // need b/c need to check entry has not been ejected :(
-    // input logic mispredict_o,
-    input logic correct_result_i
-    input logic [INSTR_WIDTH-1:0] old_pc_i,
-    // outputting prediction
     output logic hit_o,
     output logic pred_o
+    // updating state
+    input logic write_en_i,
+    input logic correct_result_i
+    input logic [INSTR_WIDTH-1:0] old_pc_i,
 );
     // 32-bit instr: [TAG][INDEX][BLOCK_OFFSET]
 
@@ -93,55 +93,24 @@ import brnch_predict_pkg::*;
     logic [INDEX_WIDTH-1:0] curr_index;
     assign curr_tag = curr_addr_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
     assign curr_index = curr_addr_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
-
-    // for storing addresses to later be written into memory
-    // bp_prediction_pkt_t prev_predict_pkts [OUTCOME_DELAY-1:0];
-
-    // always_ff @(posedge clk) begin : ShiftRegister
-    //     if (rst) begin
-    //         prev_predict_pkts <= '0;
-    //     end else begin
-    //         prev_predict_pkts.tag[0] <= curr_tag;
-    //         prev_predict_pkts.index[0] <= curr_index;
-    //         prev_predict_pkts.prediciton <= pred_o;
-    //         for (int i = 1; i < OUTCOME_DELAY; i++) begin
-    //             prev_predict_pkts[i] <= prev_predict_pkts[i-1];
-    //         end
-    //     end
-    // end
-
-    // used for checking old predictions
-    // logic [TAG_WIDTH-1:0] oldest_tag;
-    // logic [INDEX_WIDTH-1:0] oldest_index;
-    // logic oldest_prediction;
-    // assign oldest_tag = prev_predict_pkts[OUTCOME_DELAY-1].tag;
-    // assign oldest_index = prev_predict_pkts[OUTCOME_DELAY-1].index;
-    // assign oldest_prediction = prev_predict_pkts[OUTCOME_DELAY-1].prediciton;
     
     generate
         if (SET_ASSOCIATIVITY == 1) begin : DirectMapped
             // internal memory
             bp_cache_line_t bp_cache [CACHE_LINES-1:0];
 
-            // valid
-
-            logic miss_condition = !(bp_cache[curr_index].valid && bp_cache[curr_index].tag == curr_tag);
+            logic miss_condition;
+            assign miss_condition = !(bp_cache[curr_index].valid && bp_cache[curr_index].tag == curr_tag && rd_en_i);
 
             always_ff @(posedge clk) begin : MakingAPredictionWrite
                 if (rst) begin
                     bp_cache <= '0;
-                    // hit_o <= 1'b0;
-                    // pred_o <= 1'b0;
                 end else if (miss_condition) begin: No_hit
                     // instantiation
                     bp_cache[curr_index].valid <= 1'b1;
                     bp_cache[curr_index].tag <= curr_tag;
                     bp_cache[curr_index].brnch_hist <= 2'b00;
                 end 
-                // else begin: Hit
-                    // updating state (actually do this later)
-                    // bp_cache[curr_index].brnch_hist <= update_state(bp_cache[curr_index].brnch_hist, brnch_taken_i);
-                // end
             end
             
             always_comb begin : MakingAPredictionRead
@@ -158,18 +127,66 @@ import brnch_predict_pkg::*;
             // makign assumption write_en_i "1" iff entry in prev_predict_pkts is valid
             always_ff @(posedge clk) begin : CheckingAPrediction
                 if (write_en_i && !rst) begin
-                    // if (bp_cache[oldest_index].tag == old_index_i)
                     logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
                     logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
-                    if (bp_cache[old_index].tag == old_tag && bp_cache[old_index].valid) begin: Miss
+                    if (bp_cache[old_index].tag == old_tag && bp_cache[old_index].valid) begin: Hit
                         bp_cache[old_index].brnch_hist <= update_state(bp_cache[old_index].brnch_hist, correct_result_i);
                     end
                 end
             end
 
-        // define later
-        // end else begin : SetAssociative
+        end else begin : SetAssociative
+            bp_cache_line_t bp_cache [CACHE_LINES-1:0][SET_ASSOCIATIVITY-1:0];
+            logic [$clog2(SET_ASSOCIATIVITY)-1:0] set_ptr [CACHE_LINES-1:0]; // points to next spot to be replaced for each cache line
 
+            logic curr_miss_condition;
+            logic [SET_ASSOCIATIVITY-1:0] curr_hit_array_w;
+            always_comb begin
+                for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin : Hit
+                    curr_hit_array_w[i] = bp_cache[curr_index][i] == curr_tag && bp_cache[curr_index][i].valid;
+                end
+                curr_miss_condition = !(|curr_hit_array_w) || !rd_en_i;
+            end
+
+            always_ff @(posedge clk) begin : MakingAPredictionWrite
+                if (rst) begin
+                    bp_cache <= '0;
+                    set_ptr <= '0;
+                end else if (curr_miss_condition) begin: No_hit
+                    // instantiation
+                    bp_cache[curr_index][set_ptr[curr_index]].valid <= 1'b1;
+                    bp_cache[curr_index][set_ptr[curr_index]].tag <= curr_tag;
+                    bp_cache[curr_index][set_ptr[curr_index]].brnch_hist <= 2'b00;
+                    set_ptr[curr_index] <= set_ptr[curr_index] + 1;
+                end 
+            end
+            
+            always_comb begin : MakingAPredictionRead
+                if (curr_miss_condition) begin
+                    // output
+                    hit_o = 1'b0;
+                    pred_o = 1'b0; // default to pc + 4
+                end else begin
+                    hit_o = 1'b1;
+                    pred_o = branch_prediction(bp_cache[curr_index][set_ptr[curr_index]].brnch_hist);
+                end
+            end
+
+            // making assumption write_en_i "1" iff entry in prev_predict_pkts is valid
+            always_ff @(posedge clk) begin : CheckingAPrediction
+                if (write_en_i && !rst) begin
+                    logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
+                    logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
+                    logic [SET_ASSOCIATIVITY-1:0] old_hit_array_w;
+                    for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin : Hit
+                        old_hit_array_w[i]  = bp_cache[old_index][i] == old_tag && bp_cache[old_index][i].valid;
+                        if (old_hit_array_w[i]) begin
+                            bp_cache[old_index][i].brnch_hist <= update_state(bp_cache[old_index].brnch_hist, correct_result_i);
+                            break;
+                        end
+                    end
+                end
+            end
 
         end
     endgenerate
@@ -181,18 +198,15 @@ import trgt_buffer_pkg::*;
 (
     input clk,
     input rst,
+    // reading
+    input logic rd_en_i,
     input logic [DATA_WIDTH-1:0] curr_addr_i,
-    // updating state
-    // input logic brnch_taken_i,
-    input logic write_en_i,
-    // input logic [TAG_WIDTH-1:0] old_tag_i, // need b/c need to check entry has not been ejected :(
-    // input logic [INDEX_WIDTH-1:0] old_index_i, // need b/c need to check entry has not been ejected :(
-    // input logic mispredict_o,
-    input logic [INSTR_WIDTH-1:0] correct_trgt_i
-    input logic [INSTR_WIDTH-1:0] old_pc_i,
-    // outputting prediction
     output logic hit_o,
     output logic [INSTR_WIDTH-1:0] predict_trgt_o
+    // updating state
+    input logic write_en_i,
+    input logic [INSTR_WIDTH-1:0] correct_trgt_i
+    input logic [INSTR_WIDTH-1:0] old_pc_i,
 );
     // 32-bit instr: [TAG][INDEX][BLOCK_OFFSET]
 
@@ -200,30 +214,6 @@ import trgt_buffer_pkg::*;
     logic [INDEX_WIDTH-1:0] curr_index;
     assign curr_tag = curr_addr_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
     assign curr_index = curr_addr_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
-
-    // for storing addresses to later be written into memory
-    // bp_prediction_pkt_t prev_predict_pkts [OUTCOME_DELAY-1:0];
-
-    // always_ff @(posedge clk) begin : ShiftRegister
-    //     if (rst) begin
-    //         prev_predict_pkts <= '0;
-    //     end else begin
-    //         prev_predict_pkts.tag[0] <= curr_tag;
-    //         prev_predict_pkts.index[0] <= curr_index;
-    //         prev_predict_pkts.prediciton <= pred_o;
-    //         for (int i = 1; i < OUTCOME_DELAY; i++) begin
-    //             prev_predict_pkts[i] <= prev_predict_pkts[i-1];
-    //         end
-    //     end
-    // end
-
-    // used for checking old predictions
-    // logic [TAG_WIDTH-1:0] oldest_tag;
-    // logic [INDEX_WIDTH-1:0] oldest_index;
-    // logic oldest_prediction;
-    // assign oldest_tag = prev_predict_pkts[OUTCOME_DELAY-1].tag;
-    // assign oldest_index = prev_predict_pkts[OUTCOME_DELAY-1].index;
-    // assign oldest_prediction = prev_predict_pkts[OUTCOME_DELAY-1].prediciton;
     
     generate
         if (SET_ASSOCIATIVITY == 1) begin : DirectMapped
@@ -231,22 +221,11 @@ import trgt_buffer_pkg::*;
             trgt_buff_cache_line_t tb_cache [CACHE_LINES-1:0];
 
             // valid
-            logic miss_condition = !(tb_cache[curr_index].valid && tb_cache[curr_index].tag == curr_tag);
+            logic miss_condition = !(tb_cache[curr_index].valid && tb_cache[curr_index].tag == curr_tag && rd_en_i);
 
             always_ff @(posedge clk) begin : MakingAPredictionWrite
                 if (rst) begin
                     tb_cache <= '0;
-                    // hit_o <= 1'b0;
-                    // predict_trgt_o <= 1'b0;
-                // end else if (miss_condition) begin: No_hit
-                //     // instantiation
-                //     bp_cache[curr_index].valid <= 1'b1;
-                //     bp_cache[curr_index].tag <= curr_tag;
-                //     bp_cache[curr_index].brnch_hist <= ;
-                // end 
-                // else begin: Hit
-                    // updating state (actually do this later)
-                    // bp_cache[curr_index].brnch_hist <= update_state(bp_cache[curr_index].brnch_hist, brnch_taken_i);
                 end
             end
             
@@ -257,27 +236,76 @@ import trgt_buffer_pkg::*;
                     predict_trgt_o = '0; // default to pc + 4
                 end else begin
                     hit_o = 1'b1;
-                    // predict_trgt_o = branch_prediction(bp_cache[curr_index].brnch_hist);
                     predict_trgt_o = tb_cache[curr_index].trgt;
                 end
             end
 
-            // makign assumption write_en_i "1" iff entry in prev_predict_pkts is valid
+            // making assumption write_en_i "1" iff entry in prev_predict_pkts is valid
             always_ff @(posedge clk) begin : CheckingAPrediction
                 if (write_en_i && !rst) begin
-                    // if (bp_cache[oldest_index].tag == old_index_i)
                     logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
                     logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
-                    // bp_cache[old_index].brnch_hist <= update_state(bp_cache[old_index].brnch_hist, correct_result_i);
-                    if (tb_cache[old_index].tag == old_tag && tb_cache[old_index].valid) begin: Miss
+                    // if (tb_cache[old_index].tag == old_tag && tb_cache[old_index].valid) begin:
+                        tb_cache[old_index].valid <= 1'b1;
+                        tb_cache[old_index].tag <= old_tag;
                         tb_cache[old_index].trgt <= correct_trgt_i;
-                    end
+                    // end
                 end
             end
 
-        // define later
-        // end else begin : SetAssociative
+        end else begin : SetAssociative
+            trgt_buff_cache_line_t tb_cache [CACHE_LINES-1:0][SET_ASSOCIATIVITY-1:0];
+            logic [$clog2(SET_ASSOCIATIVITY)-1:0] set_ptr [CACHE_LINES-1:0]; // points to next spot to be replaced for each cache line
 
+            logic curr_miss_condition;
+            logic [SET_ASSOCIATIVITY-1:0] curr_hit_array_w;
+            logic [$clog2(SET_ASSOCIATIVITY)-1:0] curr_hit_ptr;
+            always_comb begin
+                curr_hit_ptr = '0;
+                for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin : Hit
+                    curr_hit_array_w[i] = tb_cache[curr_index][i] == curr_tag && tb_cache[curr_index][i].valid;
+                    if (curr_hit_array_w[i]) begin
+                        curr_hit_ptr = i;
+                    end
+                end
+                curr_miss_condition = !(|curr_hit_array_w) || !rd_en_i;
+            end
+
+            always_ff @(posedge clk) begin : MakingAPredictionWrite
+                if (rst) begin
+                    tb_cache <= '0;
+                    set_ptr <= '0;
+                end
+            end
+            
+            always_comb begin : MakingAPredictionRead
+                if (curr_miss_condition) begin
+                    // output
+                    hit_o = 1'b0;
+                    pred_trgt_o = '0; // default to pc + 4
+                end else begin
+                    hit_o = 1'b1;
+                    pred_trgt_o = tb_cache[curr_index][curr_hit_ptr].trgt;
+                end
+            end
+
+            // making assumption write_en_i "1" iff entry in prev_predict_pkts is valid
+            always_ff @(posedge clk) begin : CheckingAPrediction
+                if (write_en_i && !rst) begin
+                    logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
+                    logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
+                    logic [SET_ASSOCIATIVITY-1:0] old_hit_array_w;
+                    // for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin : Hit
+                        // old_hit_array_w[i] = tb_cache[old_index][i] == old_tag && tb_cache[old_index][i].valid;
+                        // if (old_hit_array_w[i]) begin
+                            tb_cache[old_index][set_ptr[old_index]].valid <= 1'b1;
+                            tb_cache[old_index][set_ptr[old_index]].tag <= old_tag;
+                            tb_cache[old_index][set_ptr[old_index]].trgt <= correct_trgt_i;
+                            set_ptr[curr_index] <= set_ptr[curr_index] + 1;
+                        // end
+                    // end
+                end
+            end
         end
     endgenerate
 
