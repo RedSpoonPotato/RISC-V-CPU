@@ -1,42 +1,4 @@
 
-module writeback_stage 
-import writeback_pkg::*;
-(
-    input clk,
-    input rst,
-    input flush_i,
-
-    // inputting a state from decode stage
-    input rob_instance_pkt_t rob_instance_pkt_i,
-    // updating state (coming from exec_mem stage)
-    input ex_mem_stage_pkt_t ex_mem_stage_pkt_i,
-    // commiting to arch file
-    output commit_stage_pkt_t commit_stage_pkt_o
-
-    // cntrls
-    // input alu_cntrl_i, // how many bits?
-
-    /*
-        external comms
-            master
-                write to SB
-                write to issue queue
-            slave
-                decode stage r/w for rob 
-                commit stage r/w for rob
-                commit stage r/w for fsb
-    */
-);
-  
-    // internal comms
-    // write to ROB
-    // write to FSB
-
-
-
-
-endmodule
-
 module writeback_stage
 import writeback_pkg::*;
 (
