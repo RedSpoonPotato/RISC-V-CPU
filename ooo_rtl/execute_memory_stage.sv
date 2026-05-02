@@ -30,8 +30,10 @@ import writeback_pkg::*;
     output ex_mem_stage_pkt_t ex_mem_stage_pkt_o,
 
     // output to (i guess if stage)
-    output logic jalr_en_o,
-    output logic [DATA_WIDTH-1:0] jalr_pc_o,
+    // output logic jalr_en_o,
+    output logic trgt_en_o,
+    output logic [DATA_WIDTH-1:0] calc_pc_o,
+    // output logic [DATA_WIDTH-1:0] jalr_pc_o,
     output logic branch_en_o,
     output logic branch_taken_o,
 );
@@ -75,12 +77,14 @@ import writeback_pkg::*;
         .store_i(fetch_pkt_i.store),
         .funct_code_i(fetch_pkt_i.funct_code),
         .base_addr_i(fetch_pkt_i.src0_data),
-        .offset_i(fetch_pkt_i.mem_offset), // for now, just using imm_compr as offset, will change later
+        .offset_i(fetch_pkt_i.mem_offset_or_brnch_imm), // for now, just using imm_compr as offset, will change later
         .store_data_i(fetch_pkt_i.src1_data), // for store instructions
         .load_data_o(result_arry[1]) // will connect this to writeback stage later
     );
 
+
     // branch path (1 cycle for now): if(rs1 == rs2) PC += imm
+    logic [DATA_WIDTH-1:0] brnch_trgt;
     branch_stage branch_stage_inst (
         .clk(clk),
         .rst(rst),
@@ -88,19 +92,23 @@ import writeback_pkg::*;
         .funct_code_i(fetch_pkt_i.funct_code),
         .src0_data_i(fetch_pkt_i.src0_data),
         .src1_data_i(fetch_pkt_i.src1_data),
-        .branch_taken_o(branch_taken_o)
+        .pc_i(fetch_pkt_i.pc),
+        .imm_i(fetch_pkt_i.mem_offset_or_brnch_imm),
+        .branch_taken_o(branch_taken_o),
+        .trgt_o(brnch_trgt)
     );
 
     // jalr path: rd = PC+4; PC = rs1 + imm
-    logic [DATA_WIDTH-1:0] jalr_result;
+    logic [DATA_WIDTH-1:0] jump_trgt;
     jalr_stage jalr_stage_inst (
         .clk(clk),
         .rst(rst),
         .en_i(fetch_pkt_i.funct_unit_one_hot[JALR]),
+        .funct_code_i(fetch_pkt_i.funct_code),
         .pc_i(fetch_pkt_i.pc),
         .rs1_data_i(fetch_pkt_i.src0_data),
         .imm_i(fetch_pkt_i.src1_data),
-        .pc_o(jalr_pc_o), // will connect this to writeback stage later
+        .pc_o(jump_trgt), // will connect this to writeback stage later
         .pc_plus_4_o(result_arry[2])
     );
 
@@ -115,6 +123,7 @@ import writeback_pkg::*;
         .result_o(result_arry[3]) // will connect this to writeback stage later
     );
 
+
     always_ff @(posedge clk) begin
         ex_mem_stage_pkt_o.instr_valid <= fetch_valid_i;
         ex_mem_stage_pkt_o.rob_ptr <= fetch_pkt_i.rob_ptr;
@@ -122,26 +131,41 @@ import writeback_pkg::*;
             fetch_pkt_i.funct_unit_one_hot[ALU] || 
             (fetch_pkt_i.funct_unit_one_hot[MEM] && !fetch_pkt_i.store) || // load
             fetch_pkt_i.funct_unit_one_hot[JALR] || 
-            fetch_pkt_i.funct_unit_one_hot[AUIPC]);
-        
+            fetch_pkt_i.funct_unit_one_hot[AUIPC]);        
+    end
+
+    logic [EX_MEM_TYPE_SIZE-1:0] funct_unit_one_hot_ff;
+    logic store_ff;
+
+    always_ff @(posedge clk) begin
+        funct_unit_one_hot_ff <= fetch_pkt_i.func_unit_one_hot;
+        store_ff <= fetch_pkt_i.store;
     end
 
     always_comb begin
         // logic [DATA_WIDTH-1:0] result_arry [EX_MEM_TYPE_SIZE-1:0];
-        if (fetch_pkt_i.funct_unit_one_hot[ALU]) begin
+        if (funct_unit_one_hot_ff[ALU]) begin
             ex_mem_stage_pkt_o.dest_data = result_arry[0];
-        end else if (fetch_pkt_i.funct_unit_one_hot[MEM] && !fetch_pkt_i.store) begin
+        end else if (funct_unit_one_hot_ff[MEM] && !store_ff) begin
             ex_mem_stage_pkt_o.dest_data = result_arry[1];
-        end else if (fetch_pkt_i.funct_unit_one_hot[JALR]) begin
+        end else if (funct_unit_one_hot_ff[JALR]) begin
             ex_mem_stage_pkt_o.dest_data = result_arry[2];
-        end else if (fetch_pkt_i.funct_unit_one_hot[AUIPC]) begin
+        end else if (funct_unit_one_hot_ff[AUIPC]) begin
             ex_mem_stage_pkt_o.dest_data = result_arry[3];
         end else begin
             ex_mem_stage_pkt_o.dest_data = '0;
         end
         
-        jalr_en_o = fetch_pkt_i.funct_unit_one_hot[JALR];
-        branch_en_o = fetch_pkt_i.funct_unit_one_hot[BRANCH];
+        trgt_en_o = funct_unit_one_hot_ff[JALR] || funct_unit_one_hot_ff[BRANCH];
+        branch_en_o = funct_unit_one_hot_ff[BRANCH];
+
+        if (funct_unit_one_hot_ff[BRANCH]) begin
+            calc_pc_o = brnch_trgt;
+        end else if (func_unit_one_hot_ff[JALR]) begin
+            calc_pc_o = jump_trgt;
+        end else begin
+            calc_pc_o = '0;
+        end
     end
 
             
@@ -194,13 +218,20 @@ import issue_queue_pkg::*;
     input logic [DATA_WIDTH-1:0] imm_i,
     output logic [DATA_WIDTH-1:0] result_o
 );
+    logic [DATA_WIDTH-1:0] pc_ff;
+    logic [DATA_WIDTH-1:0] imm_ff;
+
     always_ff @(posedge clk) begin
         if (rst || !en_i) begin
-            result_o <= 0;
+            pc_ff <= 0;
+            imm_ff <= 0;
         end else begin
-            result_o <= pc_i + (imm_i << 12);
+            pc_ff <= pc_i;
+            imm_ff <= imm_i;
         end
     end
+
+    assign result_o = pc_ff + (imm_ff << 12);
 endmodule
 
 module jalr_stage
@@ -210,18 +241,39 @@ import issue_queue_pkg::*;
     input rst,
     input logic en_i,
     input logic [DATA_WIDTH-1:0] pc_i,
+    input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
     input logic [DATA_WIDTH-1:0] rs1_data_i,
     input logic [DATA_WIDTH-1:0] imm_i,
     output logic [DATA_WIDTH-1:0] pc_o,
     output logic [DATA_WIDTH-1:0] pc_plus_4_o
 );
+
+    logic [DATA_WIDTH-1:0] pc_ff;
+    logic [DATA_WIDTH-1:0] rs1_data_ff;
+    logic [DATA_WIDTH-1:0] imm_ff;
+    kogic [FUNCT_COMB_WIDTH-1:0] funct_code_ff;
+
     always_ff @(posedge clk) begin
         if (rst || !en_i) begin
-            pc_o <= 0;
+            pc_ff <= 0;
+            rs1_data_ff <= 0;
+            imm_ff <= 0;
+            funct_code_ff <= 0;
         end else begin
-            pc_o <= rs1_data_i + imm_i;
-            pc_plus_4_o <= pc_i + 4;
+            pc_ff <= pc_i;
+            rs1_data_ff <= rs1_data_i;
+            imm_ff <= imm_i;
+            funct_code_ff <= funct_code_i;
         end
+    end
+
+    always_comb begin
+        if (funct_code_ff[3] == 1'b1) begin: Jal
+            pc_o = rs1_data_ff + imm_ff;
+        end else begin: Jalr
+            pc_o = pc_ff + imm_ff;
+        end
+        pc_plus_4_o = pc_ff + 4;
     end
 endmodule
 
@@ -263,10 +315,13 @@ import issue_queue_pkg::*;
     input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
     input logic [DATA_WIDTH-1:0] src0_data_i,
     input logic [DATA_WIDTH-1:0] src1_data_i,
-    output logic branch_taken_o
+    input logic [DATA_WIDTH-1:0] pc_i,
+    input logic [DATA_WIDTH-1:0] imm_i,
+    output logic branch_taken_o,
+    output logic [DATA_WIDTH-1:0] trgt_o
 );
 
-    logic [DATA_WIDTH-1:0] src0_data_ff, src1_data_ff;
+    logic [DATA_WIDTH-1:0] src0_data_ff, src1_data_ff, imm_ff, pc_ff;
     logic [FUNCT_COMB_WIDTH-1:0] funct_code_ff;
 
     branch_unit branch_unit_inst (
@@ -276,15 +331,21 @@ import issue_queue_pkg::*;
         .branch_taken_o(branch_taken_o)
     );
 
+    assign trgt_o = pc_ff + imm_ff;
+
     always_ff @(posedge clk) begin
         if (rst || !en_i) begin
             src0_data_ff <= 0;
             src1_data_ff <= 0;
             funct_code_ff <= 0;
+            imm_ff <= 0;
+            pc_ff <= 0;
         end else begin
             src0_data_ff <= src0_data_i;
             src1_data_ff <= src1_data_i;
             funct_code_ff <= funct_code_i;
+            imm_ff <= imm_i;
+            pc_ff <= pc_i;
         end
     end
 
@@ -418,8 +479,6 @@ module alu_stage #(
             a <= 0;
             b <= 0;
             alu_cntrl <= 0;
-            result_o <= 0;
-            zero_o <= 0;
         end else begin
             a <= a_i;
             b <= b_i;

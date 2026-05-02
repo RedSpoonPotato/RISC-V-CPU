@@ -40,7 +40,7 @@ package issue_queue_pkg;
         logic [DATA_WIDTH-1:0] src0_data;
         // logic src1_valid; // DONT NEED
         logic [DATA_WIDTH-1:0] src1_data;
-        logic [DATA_WIDTH-1:0] mem_offset;
+        logic [DATA_WIDTH-1:0] mem_offset_or_brnch_imm;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         // additional fields
         logic [DATA_WIDTH-1:0] pc; // for branch target calculation, and for JALR and AUIPC
@@ -94,7 +94,8 @@ function automatic EX_MEM_TYPE get_ex_mem_type(
             7'b000_0011: return MEM; // Load
             7'b010_0011: return MEM; // Store
             7'b110_0011: return BRANCH; // Branch
-            7'b110_1111: return ALU; // JAL
+            // 7'b110_1111: return ALU; // JAL
+            7'b110_1111: return JALR; // JAL
             7'b110_0111: return JALR; // JALR
             7'b011_0111: return ALU; // LUI
             7'b001_0111: return AUIPC; // AUIPC
@@ -116,9 +117,16 @@ endfunction
 function automatic logic [FUNCT_COMB_WIDTH-1:0] get_funct_comb(
     input logic [INSTR_COMPRESS_WIDTH-1:0] op
 );
-    logic [2:0] funct3 = op[9:7];
-    logic [6:0] funct7 = op[16:10];
-    return {funct7[5], funct3}; // Combine the most significant bit of funct7 with funct3
+    assert (FUNCT_COMB_WIDTH == 4);
+    logic [6:0] opcode = op[6:0];
+    EX_MEM_TYPE type = get_ex_mem_type(opcode, 1'b1);
+    if (type == JALR) begin
+        return op[3:0]; // 3rd bit distinguishes between JALR and JAL
+    end else begin
+        logic [2:0] funct3 = op[9:7];
+        logic [6:0] funct7 = op[16:10];
+        return {funct7[5], funct3}; // Combine the most significant bit of funct7 with funct3
+    end
 endfunction
 
 endpackage

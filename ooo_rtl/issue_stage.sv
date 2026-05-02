@@ -95,7 +95,7 @@ import issue_queue_pkg::*;
         end else begin
             fetch_pkt_o.src1_data = format_20b_to_datawidth(imm_compr_ff, instr_op_ff);
         end
-        fetch_pkt_o.mem_offset =  (fetch_pkt_o.funct_unit == MEM) ? format_20b_to_datawidth(imm_compr_ff, instr_op_ff) : 0;
+        fetch_pkt_o.mem_offset_or_brnch_imm =  (fetch_pkt_o.funct_unit == MEM || fetch_pkt_o.funct_unit == BRANCH) ? format_20b_to_datawidth(imm_compr_ff, instr_op_ff) : '0;
     end
 
 endmodule
