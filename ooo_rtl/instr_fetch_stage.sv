@@ -37,8 +37,9 @@ module instr_fetch_stage
 
     output logic [31:0] instr_o,
     output logic instr_valid_o,
-    output logic [DATA_WIDTH-1:0] pc_o
-
+    output logic [DATA_WIDTH-1:0] pc_o,
+    // output logic brnch_pred_o,
+    output logic bp_pred_o;
 
     // correct branch result (coming from ex_mem stage)
     input logic ex_write_en_i,
@@ -58,7 +59,7 @@ module instr_fetch_stage
 
     // logic bp_rd_en;
     logic bp_hit_o;
-    logic bp_pred_;
+    // logic bp_pred_o;
 
     branch_predictor_inst branch_predictor
     (

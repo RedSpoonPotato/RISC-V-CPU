@@ -12,7 +12,8 @@
             we are sending setting the outputs properly
         Need to add logic that checks new incoming instruciton into iq to make sure no strucutral
             hazards
-        
+    
+    Check every signal to make sure they are driven or beign driven
 */
 
 module decode_stage 
@@ -23,20 +24,16 @@ module decode_stage
 ) (
     input clk,
     input rst,
+
+    // if stage
     input flush_i,
     input [31:0] instr_i,
+    input instr_valid_i,
+    input [DATA_WIDTH-1:0] pc_i,
+    input logic bp_pred_i,
+
     output error_o,
     // cntrls
-
-    /*
-        external comms
-            master
-                arf read
-                rob r/w
-            slave
-                writeback stage for w for issuequeue
-                commit_stage w for RT
-    */
 
     // free list
     input free_list_wr_en_i,
@@ -172,11 +169,48 @@ module decode_stage
         .clear_i(mini_scoreboard_clear), // same functionality as rst
     );
 
+
+    // IMPORTANT NOTE: NEED TO COMEBACK TO THIS
+    /*
+        Will always increment by 1 unless there is some sort of stalling
+    */
+    logic [$clog2(ROB_COUNT)-1:0] rob_counter;
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            rob_counter <= '0;
+        end else begin
+            // if () // IMPLEMENT LATER FOR STALLING, BUT FOR NOW, will always increment
+            rob_counter <= rob_counter + 1;
+        end
+    end
+
+    // setting rest of rename table inputs
+    always_comb begin
+        rename_table_prf_dest_ptr = '0;
+        rename_table_arf_ptr = '0;
+        rename_table_decode_en = '0;
+        if (free_list_rd_en) begin
+            rename_table_prf_dest_ptr = free_list_free_ptr;
+            rename_table_arf_ptr = instr[11:7];
+            rename_table_decode_en = 1;
+        end
+        rename_table_arf_src0 = instr[19:15];
+        rename_table_arf_src1 = instr[24:20];
+        // for rob_logic reading from rename table
+        rename_table_rob_dest_arf = instr[11:7];
+    end
+
+
     logic new_instr_ready; // all operands are avail
     logic iq_instr_ready;
     logic dispatch_instr;
+    logic cntrl_instr; // branch or jump
     // setting cntrl instructions
     always_comb begin
+
+        cntrl_instr = (instr[6:0] == 7'b1100011) || // branch
+                      (instr[6:0] == 7'b1101111) || // JAL
+                      (instr[6:0] == 7'b1100111);   // JALR
         
         free_list_rd_en = 1;
         if ((free_list_empty && issue_queue_entry.dest_valid) || issue_queue_full)
@@ -197,20 +231,6 @@ module decode_stage
         mini_scoreboard_wr_en = dispatch_instr;
     end
 
-    // IMPORTANT NOTE: NEED TO COMEBACK TO THIS
-    /*
-        Will always increment by 1 unless there is some sort of stalling
-    */
-    logic [$clog2(ROB_COUNT)-1:0] rob_counter;
-    always_ff @(posedge clk) begin
-        if (rst) begin
-            rob_counter <= '0;
-        end else begin
-            // if () // IMPLEMENT LATER FOR STALLING, BUT FOR NOW, will always increment
-            rob_counter <= rob_counter + 1;
-        end
-    end
-
     // setting issue queue entry values
     always_comb begin
         issue_queue_entry = issue_queue_pkg::instr_to_iq_entry_partial(instr_i);
@@ -225,22 +245,6 @@ module decode_stage
         issue_queue_entry.src1_pending = rename_table_src1_pending;
         issue_queue_entry.src1_ptr = issue_queue_entry.src1_valid ? rename_table_prf_src1 : '0;
         issue_queue_entry.rob_ptr = rob_counter;
-    end
-
-    // setting rest of rename table inputs
-    always_comb begin
-        rename_table_prf_dest_ptr = '0;
-        rename_table_arf_ptr = '0;
-        rename_table_decode_en = '0;
-        if (free_list_rd_en) begin
-            rename_table_prf_dest_ptr = free_list_free_ptr;
-            rename_table_arf_ptr = instr[11:7];
-            rename_table_decode_en = 1;
-        end
-        rename_table_arf_src0 = instr[19:15];
-        rename_table_arf_src1 = instr[24:20];
-        // for rob_logic reading from rename table
-        rename_table_rob_dest_arf = instr[11:7];
     end
 
     // setting decode stage output and scoreboard
@@ -272,7 +276,7 @@ module decode_stage
             rob_instance_pkt_o.dest_valid = issue_queue_entry.dest_valid;
             rob_instance_pkt_o.phys_reg_addr = issue_queue_entry.dest_ptr;
             rob_instance_pkt_o.arch_reg_addr = instr_i[11:7];
-            rob_instance_pkt_o.prev_phys_reg_addr =  rename_table_rob_dest_prf;
+            rob_instance_pkt_o.prev_phys_reg_addr =  rename_table_rob_dest_prf; /// what about J and U types
             // rob_instance_pkt_o.rob_count = rob_counter; // no need i believe
         // end else begin
             // rob_instance_pkt_o = '0;
@@ -395,6 +399,7 @@ module rename_table_async_read #(
     assign prf_src1_o = rename_table[arf_src1_i].rob_ptr;
     assign src1_pending_o = rename_table[arf_src1_i].pending;
 
+    assign rob_dest_prf_o = rename_table[rob_dest_arf_i].prf_ptr;
 endmodule
 
 // should be the module that determines which is the next instruction to be issued
