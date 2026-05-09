@@ -31,11 +31,11 @@ package issue_queue_pkg;
     //     logic [$clog2(PRF_COUNT)-1:0] prf_dst_ptr;
     // } issue_queue_update_pkt_t;
 
-    typedef struct packed {
-        logic wr_en;
-        logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
+    // typedef struct packed {
+        // logic wr_en;
+        // logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
         // logic [4:0] arf_ptr; // DONT SET NOW, SET IN WB STAGE
-    } rename_table_and_issue_queue_update_pkt_t;
+    // } rename_table_and_issue_queue_update_pkt_t;
 
 
 

@@ -52,7 +52,7 @@ module decode_stage
 );
 
     /* input flip flops */
-    // logic if_input_t if_input_ff;
+    logic if_input_t if_input_ff;
 
     free_list_update_pkt_t free_list_update_pkt_ff;
     // rename_table_update_pkt_t rename_table_update_pkt_ff;

@@ -44,6 +44,12 @@ package writeback_pkg;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
     } rob_entry_t;
 
+    typedef struct packed {
+        logic wr_en;
+        logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
+        logic [4:0] arf_ptr;
+    } rename_table_and_issue_queue_update_pkt_t;
+
     // might not need all of these 
     typedef struct packed {
         logic wr_en;

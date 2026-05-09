@@ -40,10 +40,10 @@ import issue_queue_pkg::*;
 );
 
     iq_output_t instr_ff;
-    wb_phys_reg_pkt_t wb_phys_reg_pkt_ff;
+    // wb_phys_reg_pkt_t wb_phys_reg_pkt_ff; not gonna use b/c can save on flipflops while still functional
     always_ff @(posedge clk) begin
         instr_ff <= instr_i;
-        wb_phys_reg_pkt_ff <= wb_phys_reg_pkt_i;
+        // wb_phys_reg_pkt_ff <= wb_phys_reg_pkt_i;
     end
 
 
@@ -62,9 +62,9 @@ import issue_queue_pkg::*;
         .data_r_1_o(phys_reg_src0_data),
         .data_r_2_o(phys_reg_src1_data),
         // writing
-        .write_en_i(wb_phys_reg_pkt_ff.wr_en),
-        .addr_w_i(wb_phys_reg_pkt_ff.dest_ptr),
-        .data_w_i(wb_phys_reg_pkt_ff.dest_data),
+        .write_en_i(wb_phys_reg_pkt_i.wr_en),
+        .addr_w_i(wb_phys_reg_pkt_i.dest_ptr),
+        .data_w_i(wb_phys_reg_pkt_i.dest_data),
     );
 
     // logic [DATA_WIDTH-1:0] imm;

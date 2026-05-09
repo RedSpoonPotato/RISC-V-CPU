@@ -32,7 +32,7 @@ import instr_fetch_pkg::*;
     output spec_exec_answr_pkt_t spec_exec_answr_o;
 
     // for updating pending bits in decode stage
-    output rename_table_and_issue_queue_update_pkt_t rt_iq_update_pkt_o
+    // output rename_table_and_issue_queue_update_pkt_t rt_iq_update_pkt_o
 );
 
     fetch_packet_t fetch_pkt_ff;
@@ -168,10 +168,10 @@ import instr_fetch_pkg::*;
         end
     end
 
-    always_comb begin: setting_rt_iq_update_pkt_o
-        rt_iq_update_pkt_o.wr_en = ex_mem_scoreboard_data_o.dest_valid;
-        rt_iq_update_pkt_o.prf_ptr = ex_mem_scoreboard_data_o.prf_ptr;
-    end
+    // always_comb begin: setting_rt_iq_update_pkt_o
+    //     rt_iq_update_pkt_o.wr_en = ex_mem_scoreboard_data_o.dest_valid;
+    //     rt_iq_update_pkt_o.prf_ptr = ex_mem_scoreboard_data_o.prf_ptr;
+    // end
             
 endmodule
 

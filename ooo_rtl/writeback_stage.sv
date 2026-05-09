@@ -17,11 +17,14 @@ import writeback_pkg::*;
     // writing to physical register file
     output wb_phys_reg_pkt_t wb_phys_reg_pkt_o,
     // updating pending state in issue queue and rename table
-    output logic iq_pending_wr_en_o,
-    output logic [$clog2(PRF_COUNT)-1:0] iq_pending_prf_ptr_o,
-    output logic [4:0] rt_arf_ptr_o,
-    
+    output rename_table_and_issue_queue_update_pkt_t rt_iq_update_pkt_o
 );
+
+    // rob_instance_pkt_t rob_instance_pkt_ff; not gonna use b/c can save on flipflops while still functional
+    ex_mem_stage_pkt_t ex_mem_stage_pkt_ff;
+    always_ff @(posedge clk) begin
+        ex_mem_stage_pkt_ff <= ex_mem_stage_pkt_i;
+    end
 
     rob_entry_t reorder_buffer [0:ROB_COUNT-1];
     logic [$clog2(ROB_COUNT):0] head_ptr;
@@ -49,8 +52,8 @@ import writeback_pkg::*;
                 head_ptr <= head_ptr + 1;
             end
             // updating state
-            if (ex_mem_stage_pkt_i.instr_valid) begin
-                reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].state <= FINISHED;
+            if (ex_mem_stage_pkt_ff.instr_valid) begin
+                reorder_buffer[ex_mem_stage_pkt_ff.rob_ptr].state <= FINISHED;
             end
             // committing
             if (reorder_buffer[tail_ptr].state == FINISHED) begin
@@ -63,12 +66,12 @@ import writeback_pkg::*;
         end 
     end
 
-    // writing to physical register file (really should not even be here)
+    // writing to physical register file
     always_comb begin
-        if (ex_mem_stage_pkt_i.instr_valid) begin
-            wb_phys_reg_pkt_o.wr_en = ex_mem_stage_pkt_i.dest_valid;
-            wb_phys_reg_pkt_o.dest_ptr = reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].phys_reg_addr;
-            wb_phys_reg_pkt_o.dest_data = ex_mem_stage_pkt_i.dest_data;
+        if (ex_mem_stage_pkt_ff.instr_valid) begin
+            wb_phys_reg_pkt_o.wr_en = ex_mem_stage_pkt_ff.dest_valid;
+            wb_phys_reg_pkt_o.dest_ptr = reorder_buffer[ex_mem_stage_pkt_ff.rob_ptr].phys_reg_addr;
+            wb_phys_reg_pkt_o.dest_data = ex_mem_stage_pkt_ff.dest_data;
         end else begin
             wb_phys_reg_pkt_o.wr_en = 0;
             wb_phys_reg_pkt_o.dest_ptr = '0;
@@ -76,16 +79,17 @@ import writeback_pkg::*;
         end
     end
 
-    // updating pending state in issue queue
+    // updating pending state in issue queue and rename table
     always_comb begin
-        if (ex_mem_stage_pkt_i.instr_valid && ex) begin
-            iq_pending_wr_en_o = 1; 
-            iq_pending_prf_ptr_o = reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].phys_reg_addr;
-            rt_arf_ptr_o = reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].arch_reg_addr;
+        if (ex_mem_stage_pkt_ff.instr_valid) begin
+            assert(ex_mem_stage_pkt_ff.instr_valid);
+            rt_iq_update_pkt_o.wr_en = ex_mem_stage_pkt_ff.dest_valid; 
+            rt_iq_update_pkt_o.prf_ptr = reorder_buffer[ex_mem_stage_pkt_ff.rob_ptr].phys_reg_addr;
+            rt_iq_update_pkt_o.arf_ptr = reorder_buffer[ex_mem_stage_pkt_ff.rob_ptr].arch_reg_addr;
         end else begin
-            iq_pending_wr_en_o = 0;
-            iq_pending_prf_ptr_o = '0;
-            rt_arf_ptr_o = '0;
+            rt_iq_update_pkt_o.wr_en = 0;
+            rt_iq_update_pkt_o.prf_ptr = '0;
+            rt_iq_update_pkt_o.arf_ptr = '0;
         end
     end
     

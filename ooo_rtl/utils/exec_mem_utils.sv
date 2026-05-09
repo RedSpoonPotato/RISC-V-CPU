@@ -12,9 +12,9 @@ package exec_mem_utils_pkg;
         logic instr_valid;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         logic dest_valid; 
-        // KUSE THIS AT END OF THE STAGE
+        // USE THIS AT END OF THE STAGE
         // for rename table and issue queue update
-        logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
+        // logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
         // logic [4:0] arf_ptr;
         // for multiplexing output of stage
         logic [EX_MEM_TYPE_SIZE-1:0] funct_unit_one_hot;
@@ -33,7 +33,7 @@ package exec_mem_utils_pkg;
             (fetch_pkt_i.funct_unit_one_hot[MEM] && !fetch_pkt_i.store) || // load
             fetch_pkt_i.funct_unit_one_hot[JALR] || 
             fetch_pkt_i.funct_unit_one_hot[AUIPC]);
-        ex_mem_scoreboard_data.prf_ptr = fetch_pkt_i.dest_ptr;
+        // ex_mem_scoreboard_data.prf_ptr = fetch_pkt_i.dest_ptr;
         ex_mem_scoreboard_data.funct_unit_one_hot = fetch_pkt_i.funct_unit_one_hot;
         ex_mem_scoreboard_data.store = fetch_pkt_i.store;
 
