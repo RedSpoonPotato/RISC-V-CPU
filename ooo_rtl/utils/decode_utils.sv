@@ -8,6 +8,36 @@ package issue_queue_pkg;
     localparam MAX_EXEC_CYCLE = 4;
     localparam IMM_COMPRESS = 20;
 
+    typedef struct packed {
+        logic [31:0] instr;
+        logic instr_valid;
+        logic [DATA_WIDTH-1:0] pc;
+        logic bp_pred;
+    } if_input_t;
+
+    typedef struct packed {
+        logic wr_en;
+        logic [$clog2(PRF_COUNT)-1:0] commited_ptr;
+    } free_list_update_pkt_t;
+
+    // typedef struct packed {
+    //     logic wb_en;
+    //     logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
+    //     logic [4:0] arf_ptr;
+    // } rename_table_update_pkt_t;
+
+    // typedef struct packed {
+    //     logic prf_wr_en;
+    //     logic [$clog2(PRF_COUNT)-1:0] prf_dst_ptr;
+    // } issue_queue_update_pkt_t;
+
+    typedef struct packed {
+        logic wr_en;
+        logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
+        // logic [4:0] arf_ptr; // DONT SET NOW, SET IN WB STAGE
+    } rename_table_and_issue_queue_update_pkt_t;
+
+
 
     typedef struct packed {
         logic valid;
@@ -29,6 +59,7 @@ package issue_queue_pkg;
     } iq_entry_t;
     
     typedef struct packed {
+        logic valid;
         logic [INSTR_COMPRESS_WIDTH-1:0] op;
         logic [$clog2(MAX_EXEC_CYCLE)-1:0] exec_dur; // unsure if we need to output this
         logic imm_valid;

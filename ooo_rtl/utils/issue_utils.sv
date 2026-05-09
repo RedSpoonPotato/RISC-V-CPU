@@ -24,7 +24,7 @@ package issue_queue_pkg;
     localparam MAX_EXEC_CYCLE_V2 = 2;
 
     typedef struct packed {
-        // logic instr_valid;
+        logic valid;
         logic EX_MEM_TYPE funct_unit;
         logic [EX_MEM_TYPE_SIZE-1:0] funct_unit_one_hot;
         logic [FUNCT_COMB_WIDTH-1:0] funct_code;
@@ -46,6 +46,13 @@ package issue_queue_pkg;
         logic [DATA_WIDTH-1:0] pc; // for branch target calculation, and for JALR and AUIPC
 
     } fetch_packet_t;
+
+
+    typedef struct packed {
+        logic wr_en;
+        logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
+        logic [DATA_WIDTH-1:0] dest_data;
+    } wb_phys_reg_pkt_t;
 
 
 function automatic logic [$clog2(MAX_EXEC_CYCLE_V2)-1:0] get_exec_stage_delays_v2(

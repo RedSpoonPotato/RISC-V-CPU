@@ -14,6 +14,10 @@
             hazards
     
     Check every signal to make sure they are driven or beign driven
+
+    check that logic accoutning for adde flipflops for inputs is correct 
+    with internal logic of modules
+    - especially with bypassing in certain modules given the timing of when the siginals reach
 */
 
 module decode_stage 
@@ -27,43 +31,41 @@ module decode_stage
 
     // if stage
     input flush_i,
-    input [31:0] instr_i,
-    input instr_valid_i,
-    input [DATA_WIDTH-1:0] pc_i,
-    input logic bp_pred_i,
+    
+    input if_input_t if_input_i,
 
     output error_o,
     // cntrls
 
     // free list
-    input free_list_wr_en_i,
-    input [$clog2(PRF_COUNT)-1:0] free_list_commited_ptr_i,
+    input free_list_update_pkt_t free_list_update_pkt_i,
     // output logic free_list_empty_o;
 
-    // rename table
-    // to signal its in PRF, can have the scoreboard tell the RT
-    // actually i think it should come frommright before 
-    input logic rename_table_wb_en_i,
-    input logic [$clog2(PRF_COUNT)-1:0] rename_table_prf_ptr_i,
-    input logic [4:0] rename_table_arf_ptr_sb_i,
-
-    // issue queue
-    // signals for updating state
-    input logic issue_queue_prf_wr_en_i,
-    input logic [$clog2(PRF_COUNT)-1:0] issue_queue_prf_dst_i,
+    input rename_table_and_issue_queue_update_pkt_t rt_iq_update_pkt_i,
     
     // output logic
-    output logic decode_instr_valid_o,
+    // output logic decode_instr_valid_o,
     output iq_output_t decode_instr_o,
 
     // instantiating rob entry
     output rob_instance_pkt_t rob_instance_pkt_o
 );
-    // addr for branch targets
 
-    // internal comms
-    // rename table r/w
-    // issue queue w
+    /* input flip flops */
+    // logic if_input_t if_input_ff;
+
+    free_list_update_pkt_t free_list_update_pkt_ff;
+    // rename_table_update_pkt_t rename_table_update_pkt_ff;
+    // issue_queue_update_pkt_t issue_queue_update_pkt_ff;
+    rename_table_and_issue_queue_update_pkt_t rt_iq_update_pkt_ff;
+
+    always_ff @(posedge clk) begin
+        if_input_ff <= if_input_i;
+        free_list_update_pkt_ff <= free_list_update_pkt_i;
+        // rename_table_update_pkt_ff <= rename_table_update_pkt_i;
+        // issue_queue_update_pkt_ff <= issue_queue_update_pkt_i;
+        rt_iq_update_pkt_ff <= rt_iq_update_pkt_i;
+    end
 
     /* free list */
     logic free_list_rd_en;
@@ -76,8 +78,8 @@ module decode_stage
         .clk(clk),
         .rst(rst),
         // writing
-        .wr_en_i(free_list_wr_en_i),
-        .commited_ptr_i(free_list_commited_ptr_i),
+        .wr_en_i(free_list_update_pkt_ff.wr_en),
+        .commited_ptr_i(free_list_update_pkt_ff.committed_ptr),
         // reading
         .rd_en_i(free_list_rd_en),
         .free_ptr_o(free_list_free_ptr),
@@ -110,10 +112,10 @@ module decode_stage
         .prf_ptr_i(rename_table_prf_dest_ptr),
         .arf_ptr_i(rename_table_arf_ptr),
         .decode_en_i(rename_table_decode_en),
-        // to signal its in PRF, can have the WB stage tell the RT
-        .prf_ptr_sb_i(rename_table_prf_ptr_i),
-        .arf_ptr_sb_i(rename_table_arf_ptr_sb_i),
-        .writeback_en_i(rename_table_wb_en_i),
+        // to signal its in PRF
+        .prf_ptr_sb_i(rt_iq_update_pkt_ff.prf_ptr),
+        .arf_ptr_sb_i(rt_iq_update_pkt_ff.arf_ptr),
+        .writeback_en_i(rt_iq_update_pkt_ff.wb_en),
         // ports for issue queue to read from 
         .arf_src0_i(rename_table_arf_src0),
         .arf_src1_i(rename_table_arf_src1),
@@ -140,8 +142,8 @@ module decode_stage
         .iq_entry_i(issue_queue_entry),
         // updating state of pending bit
         // for writing from right before writeback stage into decode stage
-        .prf_dst_i(issue_queue_prf_dst_i),
-        .prf_wr_en_i(issue_queue_prf_wr_en_i),
+        .prf_dst_i(rt_iq_update_pkt_ff.prf_dst_ptr),
+        .prf_wr_en_i(rt_iq_update_pkt_ff.prf_wr_en),
         // for checking for structural hazards
         .future_exec_stage_slots_i(issue_queue_future_exec_stage_slots),      
         .instr_o(issue_queue_instr_out),
@@ -184,6 +186,8 @@ module decode_stage
         end
     end
 
+    logic instr_ff = if_input_ff.instr;
+
     // setting rest of rename table inputs
     always_comb begin
         rename_table_prf_dest_ptr = '0;
@@ -191,13 +195,13 @@ module decode_stage
         rename_table_decode_en = '0;
         if (free_list_rd_en) begin
             rename_table_prf_dest_ptr = free_list_free_ptr;
-            rename_table_arf_ptr = instr[11:7];
+            rename_table_arf_ptr = instr_ff[11:7];
             rename_table_decode_en = 1;
         end
-        rename_table_arf_src0 = instr[19:15];
-        rename_table_arf_src1 = instr[24:20];
+        rename_table_arf_src0 = instr_ff[19:15];
+        rename_table_arf_src1 = instr_ff[24:20];
         // for rob_logic reading from rename table
-        rename_table_rob_dest_arf = instr[11:7];
+        rename_table_rob_dest_arf = instr_ff[11:7];
     end
 
 
@@ -208,9 +212,9 @@ module decode_stage
     // setting cntrl instructions
     always_comb begin
 
-        cntrl_instr = (instr[6:0] == 7'b1100011) || // branch
-                      (instr[6:0] == 7'b1101111) || // JAL
-                      (instr[6:0] == 7'b1100111);   // JALR
+        cntrl_instr = (instr_ff[6:0] == 7'b1100011) || // branch
+                      (instr_ff[6:0] == 7'b1101111) || // JAL
+                      (instr_ff[6:0] == 7'b1100111);   // JALR
         
         free_list_rd_en = 1;
         if ((free_list_empty && issue_queue_entry.dest_valid) || issue_queue_full)
@@ -219,9 +223,9 @@ module decode_stage
         // determined by operands being ready
         // free list not being empty, assuming it needs it
         new_instr_ready = 
-            !(has_dest(instr_i[6:0]) && free_list_empty) ||
-            !(has_src0(instr_i[6:0]) && rename_table_src0_pending) ||
-            !(has_src1(instr_i[6:0]) && rename_table_src1_pending);
+            !(has_dest(instr_ff[6:0]) && free_list_empty) ||
+            !(has_src0(instr_ff[6:0]) && rename_table_src0_pending) ||
+            !(has_src1(instr_ff[6:0]) && rename_table_src1_pending);
         
         iq_instr_ready = !issue_queue_empty && !issue_queue_all_stalled;
 
@@ -233,7 +237,7 @@ module decode_stage
 
     // setting issue queue entry values
     always_comb begin
-        issue_queue_entry = issue_queue_pkg::instr_to_iq_entry_partial(instr_i);
+        issue_queue_entry = issue_queue_pkg::instr_to_iq_entry_partial(instr_ff);
         // filling in remanining values (free list being full should count as stalling)
         // iq being full should also count as sstalling
         // if stalling, comeback to this valid signal
@@ -253,13 +257,13 @@ module decode_stage
         // COME BACK TO THIS
         if (iq_instr_ready) begin
             decode_instr_o = issue_queue_instr_out;
-            decode_instr_valid_o = 1;
+            decode_instr_o.valid = 1;
         end else if (new_instr_ready) begin
             decode_instr_o = issue_queue_pkg::entry_to_output(issue_queue_entry);
-            decode_instr_valid_o = 1;
+            decode_instr_o.valid = 1;
         end else begin // stalling
             decode_instr_o = '0;
-            decode_instr_valid_o = 0;
+            decode_instr_o.valid = 0;
         end
 
         mini_scoreboard_op = decode_instr_o.op;
@@ -275,7 +279,7 @@ module decode_stage
             rob_instance_pkt_o.store = issue_queue_entry.store;
             rob_instance_pkt_o.dest_valid = issue_queue_entry.dest_valid;
             rob_instance_pkt_o.phys_reg_addr = issue_queue_entry.dest_ptr;
-            rob_instance_pkt_o.arch_reg_addr = instr_i[11:7];
+            rob_instance_pkt_o.arch_reg_addr = instr_ff[11:7];
             rob_instance_pkt_o.prev_phys_reg_addr =  rename_table_rob_dest_prf; /// what about J and U types
             // rob_instance_pkt_o.rob_count = rob_counter; // no need i believe
         // end else begin
@@ -467,11 +471,13 @@ module issue_queue
 
     // updating pending state
     always_ff @(posedge clk) begin
-        for (int i = 0; i < IQ_SIZE; i++) begin
-            if (iq[i].src0_valid && iq[i].src0_pending && iq[i].src0_ptr == prf_dst_i)
-                iq[i].src0_pending <= 0;
-            if (iq[i].src1_valid && iq[i].src1_pending && iq[i].src1_ptr == prf_dst_i)
-                iq[i].src1_pending <= 0;
+        if (prf_wr_en_i) begin
+            for (int i = 0; i < IQ_SIZE; i++) begin
+                if (iq[i].src0_valid && iq[i].src0_pending && iq[i].src0_ptr == prf_dst_i)
+                    iq[i].src0_pending <= 0;
+                if (iq[i].src1_valid && iq[i].src1_pending && iq[i].src1_ptr == prf_dst_i)
+                    iq[i].src1_pending <= 0;
+            end
         end
     end
 

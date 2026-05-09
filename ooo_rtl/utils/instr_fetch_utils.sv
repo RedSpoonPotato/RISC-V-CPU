@@ -1,4 +1,23 @@
 
+package instr_fetch_pkg;
+
+    localparam DATA_WIDTH = 32;
+    localparam IQ_SIZE = 16;
+    // localparam ROB_COUNT = 32;
+    localparam PRF_COUNT = 32;
+    localparam INSTR_COMPRESS_WIDTH = 17;
+    localparam MAX_EXEC_CYCLE = 4;
+    localparam IMM_COMPRESS = 20;
+    localparam FUNCT_COMB_WIDTH = 4; // representing funct3 + funct7
+
+    typedef struct packed {
+        logic trgt_en;
+        logic [DATA_WIDTH-1:0] calc_pc;
+        logic branch_en;
+        logic branch_taken;
+    } spec_exec_answr_pkt_t;
+endpackage
+
 package brnch_predict_pkg;
 
     localparam DATA_WIDTH = 32;
@@ -106,6 +125,5 @@ package trgt_buffer_pkg;
         // logic [INDEX_WIDTH-1:0] index;
         logic                   prediction;
     } bp_prediction_pkt_t;
-
 
 endpackage

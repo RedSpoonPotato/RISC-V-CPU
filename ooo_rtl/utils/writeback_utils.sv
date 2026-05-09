@@ -55,6 +55,10 @@ package writeback_pkg;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
     } commit_stage_pkt_t;
 
+    typedef struct packed {
+        
+    };
+
     function automatic rob_entry_t rob_instantiation (
         input rob_instance_pkt_t rob_instance_pkt_i;
     );

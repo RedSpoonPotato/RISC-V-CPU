@@ -1,0 +1,44 @@
+
+package exec_mem_utils_pkg;
+
+    import issue_queue_pkg::*;
+    import decode_pkg::*;
+    import writeback_pkg::*;
+
+
+
+    typedef struct packed {
+        // ex_mem_stage_pkt_t ex_mem_stage_pkt;
+        logic instr_valid;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic dest_valid; 
+        // KUSE THIS AT END OF THE STAGE
+        // for rename table and issue queue update
+        logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
+        // logic [4:0] arf_ptr;
+        // for multiplexing output of stage
+        logic [EX_MEM_TYPE_SIZE-1:0] funct_unit_one_hot;
+        logic store;
+    } ex_mem_scoreboard_data_t;
+
+
+    function automatic ex_mem_scoreboard_data_t set_ex_mem_scoreboard_data (
+        input fetch_packet_t fetch_pkt_i;
+    );
+        ex_mem_scoreboard_data_t ex_mem_scoreboard_data;
+        ex_mem_scoreboard_data.instr_valid = fetch_pkt_i.valid;
+        ex_mem_scoreboard_data.rob_ptr = fetch_pkt_i.rob_ptr;
+        ex_mem_scoreboard_data.dest_valid = fetch_pkt_i.valid && (
+            fetch_pkt_i.funct_unit_one_hot[ALU] || 
+            (fetch_pkt_i.funct_unit_one_hot[MEM] && !fetch_pkt_i.store) || // load
+            fetch_pkt_i.funct_unit_one_hot[JALR] || 
+            fetch_pkt_i.funct_unit_one_hot[AUIPC]);
+        ex_mem_scoreboard_data.prf_ptr = fetch_pkt_i.dest_ptr;
+        ex_mem_scoreboard_data.funct_unit_one_hot = fetch_pkt_i.funct_unit_one_hot;
+        ex_mem_scoreboard_data.store = fetch_pkt_i.store;
+
+        return ex_mem_scoreboard_data;
+    endfunction
+
+
+endpackage
