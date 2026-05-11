@@ -1,5 +1,10 @@
 /*
     For now: keeping register file asynchrous for safety, but can chagne depending on design
+
+
+    Actually: Don't need arf, instead just have rename table keep additional field of commited mappings, and in case of exception or misporedict,
+    get flush instrs in rob behind it, restore rename table, free specualtive phys regs
+
 */
 module commit_stage
 import writeback_pkg::*;
@@ -9,44 +14,21 @@ import writeback_pkg::*;
     input flush_i,
     // committing (signals below are subject to change)
     input commit_stage_pkt_t commit_stage_pkt_i,
-    // architectural register file interface
-    input logic arf_wr_en_i,
-    input logic [4:0] arf_ptr_i,
-    input logic [DATA_WIDTH-1:0] arf_data_i,
-    // updating state of freelist
-    output logic freelist_wr_en_o,
-    output logic [$clog2(PRF_COUNT)-1:0] freelist_prev_phys_reg_addr_o;
+    // updating commit state of freelist and rename table
+    output decode_commit_pkt_t decode_commit_pkt_o
 );
 
-    // reading (used for restoring architectural state on mispredicted branch)
-    // FILL IN LATER
-
-    // writing to architectural register file
-    logic arch_dest_en;
-    logic [4:0] arch_dest_ptr;
-    logic [DATA_WIDTH-1:0] arch_dest_data;
-
-    register_file_async_read architectural_register #(
-        .DATA_WIDTH(DATA_WIDTH),
-        .REG_ADDR_WIDTH(5)
-    ) (
-        .clk(clk),
-        .rst(rst),
-        // reading
-        .addr_r_1_i(arch_reg_src0_addr),
-        .addr_r_2_i(arch_reg_src1_addr),
-        .data_r_1_o(arch_reg_src0_data),
-        .data_r_2_o(arch_reg_src1_data),
-        // writing
-        .write_en_i(arch_dest_en),
-        .addr_w_i(arch_dest_ptr),
-        .data_w_i(arch_dest_data),
-    );
-
-    always_comb begin
-        arch_dest_en = commit_stage_pkt_i.wr_en && commit_stage_pkt_i.dest_valid;
-        arch_dest_ptr = commit_stage_pkt_i.arch_reg_addr;
-        arch_dest_data = '0; // FILL IN LATER
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            decode_commit_pkt_o <= '0;
+        // end else if (flush_i) begin
+        //     decode_commit_pkt_o <= '0;
+        end else begin
+            decode_commit_pkt_o.wr_en <= commit_stage_pkt_i.dest_valid;
+            decode_commit_pkt_o.prf_ptr <= commit_stage_pkt_i.phys_reg_addr;
+            decode_commit_pkt_o.arf_ptr <= commit_stage_pkt_i.arch_reg_addr;
+            decode_commit_pkt_o.prev_prf_ptr <= commit_stage_pkt_i.prev_phys_reg_addr;
+        end
     end
 
 endmodule

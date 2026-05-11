@@ -15,10 +15,18 @@ package issue_queue_pkg;
         logic bp_pred;
     } if_input_t;
 
+
     typedef struct packed {
         logic wr_en;
-        logic [$clog2(PRF_COUNT)-1:0] commited_ptr;
-    } free_list_update_pkt_t;
+        logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
+        logic [4:0] arf_ptr;
+        logic [$clog2(PRF_COUNT)-1:0] prev_prf_ptr;
+    } decode_commit_pkt_t;
+
+    // typedef struct packed {
+    //     logic wr_en;
+    //     logic [$clog2(PRF_COUNT)-1:0] commited_ptr;
+    // } free_list_update_pkt_t;
 
     // typedef struct packed {
     //     logic wb_en;

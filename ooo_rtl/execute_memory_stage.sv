@@ -39,7 +39,7 @@ import instr_fetch_pkg::*;
     always_ff @(posedge clk) begin
         fetch_pkt_ff <= fetch_pkt_i;
     end
-    
+
     assert (fetch_pkt_ff.valid || fetch_pkt_ff.funct_unit == NOOP) else $fatal("Invalid instruction issued to execute stage");
 
     // routing instruction

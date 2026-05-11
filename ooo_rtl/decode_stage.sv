@@ -38,10 +38,11 @@ module decode_stage
     // cntrls
 
     // free list
-    input free_list_update_pkt_t free_list_update_pkt_i,
+    // input free_list_update_pkt_t free_list_update_pkt_i,
+    input decode_commit_pkt_t decode_commit_pkt_i, // For now, will not use flipflops
     // output logic free_list_empty_o;
 
-    input rename_table_and_issue_queue_update_pkt_t rt_iq_update_pkt_i,
+    input rt_and_iq_pending_update_pkt_t rt_iq_update_pkt_i,
     
     // output logic
     // output logic decode_instr_valid_o,
@@ -57,11 +58,11 @@ module decode_stage
     free_list_update_pkt_t free_list_update_pkt_ff;
     // rename_table_update_pkt_t rename_table_update_pkt_ff;
     // issue_queue_update_pkt_t issue_queue_update_pkt_ff;
-    rename_table_and_issue_queue_update_pkt_t rt_iq_update_pkt_ff;
+    rt_and_iq_pending_update_pkt_t rt_iq_update_pkt_ff;
 
     always_ff @(posedge clk) begin
         if_input_ff <= if_input_i;
-        free_list_update_pkt_ff <= free_list_update_pkt_i;
+        // free_list_update_pkt_ff <= free_list_update_pkt_i;
         // rename_table_update_pkt_ff <= rename_table_update_pkt_i;
         // issue_queue_update_pkt_ff <= issue_queue_update_pkt_i;
         rt_iq_update_pkt_ff <= rt_iq_update_pkt_i;
@@ -78,8 +79,8 @@ module decode_stage
         .clk(clk),
         .rst(rst),
         // writing
-        .wr_en_i(free_list_update_pkt_ff.wr_en),
-        .commited_ptr_i(free_list_update_pkt_ff.committed_ptr),
+        .wr_en_i(decode_commit_pkt_i.wr_en),
+        .commited_ptr_i(decode_commit_pkt_i.prev_prf_ptr),
         // reading
         .rd_en_i(free_list_rd_en),
         .free_ptr_o(free_list_free_ptr),
@@ -125,7 +126,13 @@ module decode_stage
         .src1_pending_o(rename_table_src1_pending),
         // ports for rob_instance_creation logic to read from
         .rob_dest_arf_i(rename_table_rob_dest_arf),
-        .rob_dest_prf_o(rename_table_rob_dest_prf)
+        .rob_dest_prf_o(rename_table_rob_dest_prf),
+        // ports for committing
+        .commit_en_i(decode_commit_pkt_i.wr_en),
+        .commit_arf_i(decode_commit_pkt_i.arf_ptr),
+        .commit_prf_i(decode_commit_pkt_i.prf_ptr),
+        // ports for exception handling
+        .exception_i()
     );
 
     /* issue queue */
@@ -368,6 +375,12 @@ module rename_table_async_read #(
     // ports for rob_instance_creation logic to read from
     input logic [4:0] rob_dest_arf_i,
     output logic [$clog2(PRF_COUNT)-1:0] rob_dest_prf_o
+    // ports for committing
+    input logic commit_en_i,
+    input logic [4:0] commit_arf_i,
+    input logic [$clog2(PRF_COUNT)-1:0] commit_prf_i,
+    // ports for exception handling
+    input logic exception_i
 );
     typedef struct packed {
         logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
@@ -377,22 +390,40 @@ module rename_table_async_read #(
         // logic valid;
     } rt_entry_t;
 
+    typedef struct packed {
+        logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
+        // logic valid;
+    } commit_map_entry_t;
+
     // will synthesize to flip flops
     rt_entry_t rename_table [0:31];
+    commit_map_entry_t commit_map [0:31];
 
     // write logic
     always_ff @(posedge clk) begin
         if (rst) begin
             rename_table = '0;
+            commit_map = '0;
         end 
         else begin
-            if (decode_en_i) begin
-                rename_table[arf_ptr_i].prf_ptr <= prf_ptr_i;
-                rename_table[arf_ptr_i].pending <= 1'b1;
-            end
-            if (writeback_en_i) begin
-                if (rename_table[arf_ptr_sb_i].prf_ptr == prf_ptr_sb_i)
-                    rename_table[i].pending <= 1'b0;
+            if (exception_i) begin
+                // restore rename table to committed state
+                for (int i = 0; i < 32; i++) begin
+                    rename_table[i].prf_ptr <= commit_map[i].prf_ptr;
+                    rename_table[i].pending <= 0;
+                end
+            end else begin
+                if (decode_en_i) begin
+                    rename_table[arf_ptr_i].prf_ptr <= prf_ptr_i;
+                    rename_table[arf_ptr_i].pending <= 1'b1;
+                end
+                if (writeback_en_i) begin
+                    if (rename_table[arf_ptr_sb_i].prf_ptr == prf_ptr_sb_i)
+                        rename_table[i].pending <= 1'b0;
+                end
+                if (commit_en_i) begin
+                    commit_map[commit_arf_i] <= commit_prf_i;
+                end
             end
         end
     end
@@ -402,8 +433,8 @@ module rename_table_async_read #(
     assign src0_pending_o = rename_table[arf_src0_i].pending;
     assign prf_src1_o = rename_table[arf_src1_i].rob_ptr;
     assign src1_pending_o = rename_table[arf_src1_i].pending;
-
     assign rob_dest_prf_o = rename_table[rob_dest_arf_i].prf_ptr;
+
 endmodule
 
 // should be the module that determines which is the next instruction to be issued

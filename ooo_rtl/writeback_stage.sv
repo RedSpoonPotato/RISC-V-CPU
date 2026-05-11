@@ -17,7 +17,7 @@ import writeback_pkg::*;
     // writing to physical register file
     output wb_phys_reg_pkt_t wb_phys_reg_pkt_o,
     // updating pending state in issue queue and rename table
-    output rename_table_and_issue_queue_update_pkt_t rt_iq_update_pkt_o
+    output rt_and_iq_pending_update_pkt_t rt_iq_update_pkt_o
 );
 
     // rob_instance_pkt_t rob_instance_pkt_ff; not gonna use b/c can save on flipflops while still functional

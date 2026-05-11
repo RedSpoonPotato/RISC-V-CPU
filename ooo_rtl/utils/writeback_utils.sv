@@ -48,7 +48,7 @@ package writeback_pkg;
         logic wr_en;
         logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
         logic [4:0] arf_ptr;
-    } rename_table_and_issue_queue_update_pkt_t;
+    } rt_and_iq_pending_update_pkt_t;
 
     // might not need all of these 
     typedef struct packed {
@@ -56,7 +56,7 @@ package writeback_pkg;
         logic speculative;
         logic store;
         logic dest_valid;
-        // logic [$clog2(PRF_COUNT)-1:0] phys_reg_addr;
+        logic [$clog2(PRF_COUNT)-1:0] phys_reg_addr;
         logic [4:0] arch_reg_addr;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
     } commit_stage_pkt_t;
@@ -86,6 +86,7 @@ package writeback_pkg;
         commit_pkt.speculative = rob_entry_i.speculative;
         commit_pkt.store = rob_entry_i.store;
         commit_pkt.dest_valid = rob_entry_i.dest_valid;
+        commit_pkt.phys_reg_addr = rob_entry_i.phys_reg_addr;
         commit_pkt.arch_reg_addr = rob_entry_i.arch_reg_addr;
         commit_pkt.prev_phys_reg_addr = rob_entry_i.prev_phys_reg_addr;
         return commit_pkt;
