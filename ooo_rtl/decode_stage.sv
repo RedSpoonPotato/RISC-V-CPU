@@ -18,7 +18,16 @@
     check that logic accoutning for adde flipflops for inputs is correct 
     with internal logic of modules
     - especially with bypassing in certain modules given the timing of when the siginals reach
+
+    do soemthing with instr_en signal
+
+    for free_list, when allocating new locations, might not want to give out phys_reg_0, unsure will haev ot come back to
+
+    do we flipflop exception_i
 */
+
+
+// Need to handle stalling, flushing, and branch/jalr, priority (maybe one solution is restore usig rename table like exceptions
 
 module decode_stage 
     import decode_pkg::*;
@@ -32,6 +41,7 @@ module decode_stage
     // if stage
     input flush_i,
     
+    // bad name
     input if_input_t if_input_i,
 
     output error_o,
@@ -43,6 +53,8 @@ module decode_stage
     // output logic free_list_empty_o;
 
     input rt_and_iq_pending_update_pkt_t rt_iq_update_pkt_i,
+
+    input logic exception_i, // not sure if we need to flipflop this
     
     // output logic
     // output logic decode_instr_valid_o,
@@ -50,6 +62,15 @@ module decode_stage
 
     // instantiating rob entry
     output rob_instance_pkt_t rob_instance_pkt_o
+
+    // to if stage
+    output logic is_spec_instr_o
+
+    output spec_exec_buffer_instance_pkt_t spec_exec_buffer_instance_pkt_o,
+
+    // to issue stage
+    // output logic pc_instr
+    output pc_buff_instance_pkt_t pc_buff_inst_o
 );
 
     /* input flip flops */
@@ -80,7 +101,9 @@ module decode_stage
         .rst(rst),
         // writing
         .wr_en_i(decode_commit_pkt_i.wr_en),
-        .commited_ptr_i(decode_commit_pkt_i.prev_prf_ptr),
+        .prev_phys_ptr_i(decode_commit_pkt_i.prev_prf_ptr),
+        .exception_i(exception_i),
+        .commited_ptr_i(decode_commit_pkt_i.prf_ptr),
         // reading
         .rd_en_i(free_list_rd_en),
         .free_ptr_o(free_list_free_ptr),
@@ -132,7 +155,7 @@ module decode_stage
         .commit_arf_i(decode_commit_pkt_i.arf_ptr),
         .commit_prf_i(decode_commit_pkt_i.prf_ptr),
         // ports for exception handling
-        .exception_i()
+        .exception_i(exception_i)
     );
 
     /* issue queue */
@@ -179,20 +202,6 @@ module decode_stage
     );
 
 
-    // IMPORTANT NOTE: NEED TO COMEBACK TO THIS
-    /*
-        Will always increment by 1 unless there is some sort of stalling
-    */
-    logic [$clog2(ROB_COUNT)-1:0] rob_counter;
-    always_ff @(posedge clk) begin
-        if (rst) begin
-            rob_counter <= '0;
-        end else begin
-            // if () // IMPLEMENT LATER FOR STALLING, BUT FOR NOW, will always increment
-            rob_counter <= rob_counter + 1;
-        end
-    end
-
     logic instr_ff = if_input_ff.instr;
 
     // setting rest of rename table inputs
@@ -216,12 +225,15 @@ module decode_stage
     logic iq_instr_ready;
     logic dispatch_instr;
     logic cntrl_instr; // branch or jump
+    logic pc_instr;
     // setting cntrl instructions
     always_comb begin
 
         cntrl_instr = (instr_ff[6:0] == 7'b1100011) || // branch
                       (instr_ff[6:0] == 7'b1101111) || // JAL
                       (instr_ff[6:0] == 7'b1100111);   // JALR
+        
+        pc_instr = cntrl_instr || instr_ff[6:0] == 7'b0010111;
         
         free_list_rd_en = 1;
         if ((free_list_empty && issue_queue_entry.dest_valid) || issue_queue_full)
@@ -249,13 +261,15 @@ module decode_stage
         // iq being full should also count as sstalling
         // if stalling, comeback to this valid signal
         // issue_queue_entry.valid = !new_instr_ready || iq_instr_ready;
-        issue_queue_entry.valid = iq_instr_ready;
+        issue_queue_entry.valid = iq_instr_ready && instr_ff.valid; // valid in this case means wr_en to iq
         issue_queue_entry.dest_ptr = free_list_free_ptr;
         issue_queue_entry.src0_pending = rename_table_src0_pending;
         issue_queue_entry.src0_ptr = issue_queue_entry.src0_valid ? rename_table_prf_src0 : '0;
         issue_queue_entry.src1_pending = rename_table_src1_pending;
         issue_queue_entry.src1_ptr = issue_queue_entry.src1_valid ? rename_table_prf_src1 : '0;
         issue_queue_entry.rob_ptr = rob_counter;
+        issue_queue_entry.spec_exec_ptr = cntrl_instr ? spec_exec_counter : '0;
+        issue_queue_entry.pc_buff_ptr = pc_instr ? pc_instr_counter : '0;
     end
 
     // setting decode stage output and scoreboard
@@ -276,8 +290,34 @@ module decode_stage
         mini_scoreboard_op = decode_instr_o.op;
     end
 
+
+    // IMPORTANT NOTE: NEED TO COMEBACK TO THIS
+    /*
+        Will always increment by 1 unless there is some sort of stalling
+    */
+    logic [$clog2(ROB_COUNT)-1:0] rob_counter;
+    logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_counter;
+    logic [$clog2(MAX_PC_INSTRS)-1:0] pc_instr_counter;
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            rob_counter <= '0;
+            spec_exec_counter <= '0;
+            pc_instr_counter <= '0;
+        end else begin
+            // if () // IMPLEMENT LATER FOR STALLING, BUT FOR NOW, will always increment
+            rob_counter <= rob_counter + 1;
+            if (cntrl_instr) begin
+                spec_exec_counter <= spec_exec_counter + 1;
+            end
+            if (pc_instr) begin
+                pc_instr_counter <= pc_instr_counter + 1;
+            end 
+
+        end
+    end
+
     // NEED TO COMEBACK TO WHEN WE ACCOUNT FOR STALLING
-    // creating entry into rob table
+    // creating entry into rob table and spec_exec_buffer
     always_comb begin
         // if (dispatch_instr) begin
         // always do, unless we stall
@@ -292,6 +332,18 @@ module decode_stage
         // end else begin
             // rob_instance_pkt_o = '0;
         // end
+
+        spec_exec_buffer_instance_pkt_o.wr_en = cntrl_instr;
+        // spec_exec_buffer_instance_pkt_o.buff_ptr = spec_exec_counter;
+
+        pc_buff_inst_o.wr_en = pc_instr;
+        pc_buff_inst_o.wr_ptr = pc_instr_counter;
+        pc_buff_inst_o.pc_in = if_instr_i.pc;
+
+    end
+
+    always_comb begin
+        is_spec_instr_o = cntrl_instr;
     end
 
 endmodule
@@ -305,23 +357,34 @@ import decode_utils::*;
     input rst,
     // writing
     input logic wr_en_i,
+    input logic [$clog2(PRF_COUNT)-1:0] prev_phys_ptr_i,
+    // for exception handling
+    input logic exception_i,
     input logic [$clog2(PRF_COUNT)-1:0] commited_ptr_i,
     // reading
     input logic rd_en_i,
     output logic [$clog2(PRF_COUNT)-1:0] free_ptr_o,
     // state
-    output logic empty_o
+    output logic no_free_o
 );
     logic [PRF_COUNT-1:0] free_list; // 1'b1 means free
+    logic [PRF_COUNT-1:0] commit_list; // 1'b1 means committed
     // state
-    assign empty_o = ~|free_list;
+    assign no_free_o = ~|free_list;
     // writing
     always_ff @(posedge clk) begin
         if (rst) begin
             free_list <= '1;
+            commit_list <= '0;
         end else begin
-            if (wr_en_i)
-                free_list[commited_ptr_i] <= 1;
+            if (wr_en_i) begin
+                if (exception_i) begin
+                    free_list <= !commit_list;
+                end
+                free_list[prev_phys_ptr_i] <= 1;
+                commit_list[prev_phys_ptr_i] <= 0;
+                commit_list[commited_ptr_i] <= 1;
+            end
         end
     end
     // reading
@@ -337,7 +400,7 @@ import decode_utils::*;
         end
     end
     always_ff @(posedge clk) begin
-        if (!empty_o && rd_en_i) begin
+        if (!no_free_o && rd_en_i) begin
             free_list[free_ptr_o] <= 0;
         end
     end
@@ -379,7 +442,7 @@ module rename_table_async_read #(
     input logic commit_en_i,
     input logic [4:0] commit_arf_i,
     input logic [$clog2(PRF_COUNT)-1:0] commit_prf_i,
-    // ports for exception handling
+    // ports for exception handling (and also brnch/trgt mispredicts)
     input logic exception_i
 );
     typedef struct packed {
@@ -421,9 +484,9 @@ module rename_table_async_read #(
                     if (rename_table[arf_ptr_sb_i].prf_ptr == prf_ptr_sb_i)
                         rename_table[i].pending <= 1'b0;
                 end
-                if (commit_en_i) begin
-                    commit_map[commit_arf_i] <= commit_prf_i;
-                end
+            end
+            if (commit_en_i) begin
+                commit_map[commit_arf_i] <= commit_prf_i;
             end
         end
     end

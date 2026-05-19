@@ -43,8 +43,9 @@ package issue_queue_pkg;
         logic [DATA_WIDTH-1:0] mem_offset_or_brnch_imm;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         // additional fields
+        logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_ptr;
+        // logic [$clog2(MAX_PC_INSTRS-1):0] pc_buff_ptr;
         logic [DATA_WIDTH-1:0] pc; // for branch target calculation, and for JALR and AUIPC
-
     } fetch_packet_t;
 
 
@@ -53,6 +54,12 @@ package issue_queue_pkg;
         logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
         logic [DATA_WIDTH-1:0] dest_data;
     } wb_phys_reg_pkt_t;
+
+    typedef struct packed {
+    logic wr_en;
+    logic [$clog2(MAX_PC_INSTR_BUFF)-1:0] wr_ptr;
+    logic [DATA_WIDTH-1:0] pc_in;
+    } pc_buff_instance_pkt_t;
 
 
 function automatic logic [$clog2(MAX_EXEC_CYCLE_V2)-1:0] get_exec_stage_delays_v2(

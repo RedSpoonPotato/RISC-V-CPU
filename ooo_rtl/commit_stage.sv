@@ -5,6 +5,8 @@
     Actually: Don't need arf, instead just have rename table keep additional field of commited mappings, and in case of exception or misporedict,
     get flush instrs in rob behind it, restore rename table, free specualtive phys regs
 
+    currently doing nothinf wiht reest of commit_stage_pkt other members
+
 */
 module commit_stage
 import writeback_pkg::*;

@@ -15,7 +15,14 @@
     A: I tihnk yes, but make set associativity for trgt buffer to be larger if you choose to not go direct mapped
 
     need to set rd_en signals for bp and tb
-    
+
+
+    dont forget stalling from certain modules being full (liek in the deocde stage)
+
+    if we detect too many branches/jumps happening at same time, stall if stage. idk what stage this construct wil be,
+    im thinking decode stage
+
+    will import correct results form wb stage, and dont send predicted result to wb stage, do comparison here
 */
 
 
@@ -25,122 +32,209 @@ module instr_fetch_stage
     input rst,
 
     // for instantiation, unsure if needed in final design
-    input logic [31:0] instr_in_i
-    input logic [DATA_WIDTH-1:0] instr_addr_i,
-    input logic instr_in_valid_i,
+    input instr_fetch_ctrl_pkt_t instr_fetch_ctrl_pkt_i,
     
     // from ex_mem for branch misprediction recovery
-    input logic jalr_en_i,
-    input logic [DATA_WIDTH-1:0] jalr_pc_i,
-    input logic branch_en_i,
-    input logic branch_taken_i,
+    input spec_exec_answr_pkt_t spec_exec_answr_pkt_i,
 
-    output logic [31:0] instr_o,
-    output logic instr_valid_o,
-    output logic [DATA_WIDTH-1:0] pc_o,
-    // output logic brnch_pred_o,
-    output logic bp_pred_o;
+    input logic is_spec_instr_i, // from decode stage
+    
+    // input logic spec_exec_commit_rd_en_i, // from wb stage
+    // output shift_reg_pkt_t shift_reg_pkt_o, // to wb stage
 
-    // correct branch result (coming from ex_mem stage)
-    input logic ex_write_en_i,
-    input logic ex_correct_result_i,
-    input logic [INSTR_WIDTH-1:0] ex_old_pc_i,
-
-    // trgt result (non-pc+4 brnch trgt, aswell as jump targets)
-    input logic decode_write_en_i,
-    input logic [INSTR_WIDTH-1:0] decode_correct_trgt_i,
-    input logic [INSTR_WIDTH-1:0] decode_old_pc_i
+    output if_output_pkt_t if_output_pkt_o,
 );
 
-    assert(jalr_en_i && branch_en_i);
+    spec_exec_answr_pkt_t spec_exec_answr_pkt_ff;
+    always_ff @(posedge clk) begin
+        spec_exec_answr_pkt_ff <= spec_exec_answr_pkt_i;
+    end
 
-    // NEED TO DRIVE THIS
-    logic grab_new_pc;
+    assert(spec_exec_answr_pkt_ff.jalr_en && spec_exec_answr_pkt_ff.branch_en);
+
+    logic crrct_trgt_en;
+    assign crrct_trgt_en = spec_exec_answr_pkt_ff.jalr_en || spec_exec_answr_pkt_ff.branch_en;
+
+
+    // logic grab_new_pc;
 
     // logic bp_rd_en;
-    logic bp_hit_o;
+    logic bp_hit;
     // logic bp_pred_o;
 
-    branch_predictor_inst branch_predictor
+    branch_predictor branch_predictor_inst
     (
         .clk(clk),
         .rst(rst),
         // reading
-        .rd_en_i(grab_new_pc),
-        .curr_addr_i(pc_o),
-        .hit_o(bp_hit_o),
-        .pred_o(bp_pred_o),
+        // .rd_en_i(grab_new_pc),
+        .curr_addr_i(if_output_pkt_o.pc),
+        .hit_o(bp_hit),
+        .pred_o(if_output_pkt_o.bp_pred),
         // updating state
-        .write_en_i(ex_write_en_i),
-        .correct_result_i(ex_correct_result_i),
-        .old_pc_i(ex_old_pc_i)
+        .write_en_i(spec_exec_answr_pkt_ff.branch_en),
+        .correct_result_i(spec_exec_answr_pkt_ff.branch_taken),
+        .old_pc_i(spec_exec_answr_pkt_ff.old_pc)
     );
 
     // reading
     // logic rd_en_i,
     logic tb_hit;
     logic [INSTR_WIDTH-1:0] tb_predict_trgt;
-    // updating state
-    logic write_en_i;
-    logic [INSTR_WIDTH-1:0] correct_trgt_i;
-    logic [INSTR_WIDTH-1:0] old_pc_i;
-
-    trgt_buffer_inst trgt_buffer
+    trgt_buffer trgt_buffer_inst
     (
         .clk(clk),
         .rst(rst),
         // reading
-        .rd_en_i(grab_new_pc),
-        .curr_addr_i(pc_o),
+        // .rd_en_i(grab_new_pc),
+        .curr_addr_i(if_output_pkt_o.pc),
         .hit_o(tb_hit),
         .predict_trgt_o(tb_predict_trgt),
         // updating state
-        .write_en_i(decode_write_en_i),
-        .correct_trgt_i(decode_correct_trgt_i),
-        .old_pc_i(decode_old_pc_i)
+        .write_en_i(crrct_trgt_en),
+        .correct_trgt_i(spec_exec_answr_pkt_ff.calc_pc),
+        .old_pc_i(spec_exec_answr_pkt_ff.old_pc)
     );
 
-    assign instr_mem_addr = instr_in_valid_i ? instr_addr_i : pc_o;
+    assign instr_mem_addr = instr_fetch_ctrl_pkt_i.valid ? instr_fetch_ctrl_pkt_i.instr_addr : if_output_pkt_o.pc;
 
     sram_sync_read #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(10) // for now, hardcoding to 10 bits (1024 entries)
     ) instr_memory (
         .clk(clk),
-        .we(instr_in_valid_i),
+        .we(instr_fetch_ctrl_pkt_i.valid),
         .addr(instr_mem_addr),
-        .din(instr_in_i),
-        .dout(instr_o)
+        .din(instr_fetch_ctrl_pkt_i.instr_in),
+        .dout(if_output_pkt_o.instr)
+    );
+
+    // logic shft_reg_brnch_mispredict;
+    // logic shft_reg_trgt_mispredict;
+    trgt_shift_register trgt_shift_register_inst
+    (
+        .clk(clk),
+        .rst(rst),
+        // making predictions
+        .predict_trgt_i(tb_predict_trgt),
+        .brnch_pred_i(if_output_pkt_o.bp_pred),
+        // outputs
+        .is_spec_instr_i(is_spec_instr_i),
+        .rd_en_i(spec_exec_commit_rd_en_i),
+        // .old_pc_o(shift_reg_old_pc)
+        .shift_reg_pkt_o(shift_reg_pkt_o)
     );
        
+
+
 
     // branch prediction
     // cases: branch, jalr, and jal
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            pc_o <= '0;
-            grab_new_pc <= 0;
+            if_output_pkt_o.pc <= '0;
+            // grab_new_pc <= 0;
         end else begin
+            // grab_new_pc <= 1;
             if (stall) begin // NEED TO DRIVE THIS
-                pc_o <= ...;
-                grab_new_pc <= 0;
-            end else if (hit )
-            end else if (jalr_en_i) begin
-                pc_o <= jalr_pc_i;
-                grab_new_pc <= 1;
-            end else if (branch_en_i && branch_taken_i) begin
-                pc_o <= jalr_pc_i; // for now, just reuse jalr_pc_i for branch target addr, but will likely need to change later
-                grab_new_pc <= 1;
-            end else begin
-                pc_o <= pc_o + 4; // assuming 4 byte instructions, will need to change for compressed instrs
-                grab_new_pc <= 1;
+                if_output_pkt_o.pc <= if_output_pkt_o.pc;
+                // grab_new_pc <= 0;
+            end else if (shft_reg_brnch_mispredict || shft_reg_trgt_mispredict) begin: Mispredict
+                if_output_pkt_o.pc <= spec_exec_answr_pkt_ff.calc_pc;
+            end else if (tb_hit && bp_hit && if_output_pkt_o.bp_pred) begin: SpecBranch
+                if_output_pkt_o.pc <= tb_predict_trgt;
+            end else if (tb_hit && !bp_hit) begin: SpecJump
+                if_output_pkt_o.pc <= tb_predict_trgt;
+            end else begin: NoSpec
+                if_output_pkt_o.pc <= if_output_pkt_o.pc + 4; // assuming 4 byte instructions, will need to change for compressed instrs
             end
         end
     end
 
 endmodule
 
+module trgt_shift_register
+import instr_fetch_pkg::*;
+(
+    input logic clk,
+    input logic rst,
+    // making predictions
+    input logic [DATA_WIDTH-1:0] predict_trgt_i,
+    input logic brnch_pred_i,
+    // input spec_exec_answr_pkt_t spec_exec_answr_pkt_i,
+    // outputs
+    // output logic brnch_mispredict_o,
+    // output logic trgt_mispredict_o,
+    input logic is_spec_instr_i, // comes 1 cycle later from decode stage
+    input logic rd_en_i,
+    output shift_reg_pkt_t shift_reg_pkt_o
+);
+    shift_reg_pkt_t predicted_trgt_and_pred_pkt, predicted_trgt_and_pred_pkt_ff;
+    always_comb begin
+        predicted_trgt_and_pred_pkt.trgt = predict_trgt_i;
+        predicted_trgt_and_pred_pkt.branch_pred = brnch_pred_i;
+    end
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            predicted_trgt_and_pred_pkt_ff <= '0;
+        end else begin
+            predicted_trgt_and_pred_pkt_ff <= predicted_trgt_and_pred_pkt;
+        end
+    end
+
+    fifo_modded #(
+        .DEPTH(MAX_SPEC_EXEC_INSTRS),
+        .DATA_WIDTH($bits(shift_reg_pkt_t)),
+        .T(shift_reg_pkt_t)
+    ) shift_reg_fifo (
+        .clk(clk),
+        .rst(rst),
+        .rd_en_i(rd_en_i),
+        .wr_en_i(is_spec_instr_i),
+        .data_i(predicted_trgt_and_pred_pkt_ff),
+        .data_o(shift_reg_pkt_o)
+    );
+
+    // shift_reg_pkt_t shift_reg [OUTCOME_DELAY-1:0];
+    // always @(posedge clk) begin
+    //     if (rst) begin
+    //         shift_reg <= '0;
+    //     end else begin
+    //         shift_reg[0].trgt <= predict_trgt_i;
+    //         shift_reg[0].branch_pred <= brnch_pred_i;
+    //         for (int i = 1; i < OUTCOME_DELAY; i++) begin
+    //             shift_reg[i] <= shift_reg[i-1];
+    //         end
+    //     end
+    // end
+
+    // always_comb begin
+    //     if (spec_exec_answr_pkt_i.branch_en) begin
+    //         brnch_mispredict_o = shift_reg[OUTCOME_DELAY-1].branch_pred != spec_exec_answr_pkt_i.branch_taken;
+    //     end else begin
+    //         brnch_mispredict_o = 1'b0;
+    //     end
+    //     if (spec_exec_answr_pkt_i.trgt_en) begin
+    //         trgt_mispredict_o = spec_exec_answr_pkt_i.calc_pc != shift_reg[OUTCOME_DELAY-1].trgt;
+    //     end else begin
+    //         trgt_mispredict_o = 1'b0;
+    //     end
+    // end
+
+    // assign shift_reg_pkt_o = shift_reg[OUTCOME_DELAY-1];
+
+    /* 
+        take in predicted trgt, or a miss (set to null), and then after N cycles, check input from ex stage and if miss, 
+        replace pc value with calculated trgt, and also update trgt predictor
+
+        for brnch_predictor:
+        take in prediciton, after N cycles, and after N cycles, check input from ex stage and if miss, 
+        replace pc value with calculated trgt, and also update trgt predictor
+    */
+
+endmodule
 
 module branch_predictor
 import brnch_predict_pkg::*;
@@ -258,10 +352,9 @@ import brnch_predict_pkg::*;
                     logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
                     logic [SET_ASSOCIATIVITY-1:0] old_hit_array_w;
                     for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin : Hit
-                        old_hit_array_w[i]  = bp_cache[old_index][i] == old_tag && bp_cache[old_index][i].valid;
+                        old_hit_array_w[i] = bp_cache[old_index][i].tag == old_tag && bp_cache[old_index][i].valid;
                         if (old_hit_array_w[i]) begin
                             bp_cache[old_index][i].brnch_hist <= update_state(bp_cache[old_index].brnch_hist, correct_result_i);
-                            break;
                         end
                     end
                     if (!(|old_hit_array_w)) begin: NoHit
@@ -381,15 +474,15 @@ import trgt_buffer_pkg::*;
                     logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
                     logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
                     logic [SET_ASSOCIATIVITY-1:0] old_hit_array_w;
-                    // for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin : Hit
-                        // old_hit_array_w[i] = tb_cache[old_index][i] == old_tag && tb_cache[old_index][i].valid;
-                        // if (old_hit_array_w[i]) begin
+                    for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin : Hit
+                        old_hit_array_w[i] = tb_cache[old_index][i] == old_tag && tb_cache[old_index][i].valid;
+                        if (old_hit_array_w[i]) begin
                             tb_cache[old_index][set_ptr[old_index]].valid <= 1'b1;
                             tb_cache[old_index][set_ptr[old_index]].tag <= old_tag;
                             tb_cache[old_index][set_ptr[old_index]].trgt <= correct_trgt_i;
                             set_ptr[old_index] <= set_ptr[old_index] + 1;
-                        // end
-                    // end
+                        end
+                    end
                 end
             end
         end

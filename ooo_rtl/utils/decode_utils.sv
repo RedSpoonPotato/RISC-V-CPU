@@ -8,6 +8,9 @@ package issue_queue_pkg;
     localparam MAX_EXEC_CYCLE = 4;
     localparam IMM_COMPRESS = 20;
 
+    import instr_fetch_pkg::MAX_SPEC_EXEC_INSTRS;
+
+
     typedef struct packed {
         logic [31:0] instr;
         logic instr_valid;
@@ -64,6 +67,8 @@ package issue_queue_pkg;
         logic src1_pending;
         logic [$clog2(PRF_COUNT)-1:0] src1_ptr;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_ptr;
+        logic [$clog2(MAX_PC_INSTRS-1):0] pc_buff_ptr;
     } iq_entry_t;
     
     typedef struct packed {
@@ -81,6 +86,8 @@ package issue_queue_pkg;
         logic src1_valid;
         logic [$clog2(PRF_COUNT)-1:0] src1_ptr;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_ptr;
+        logic [$clog2(MAX_PC_INSTRS-1):0] pc_buff_ptr;
     } iq_output_t;
 
     // SUBJECT TO CHANGE
@@ -139,6 +146,8 @@ package issue_queue_pkg;
         out.src1_valid  = in.src1_valid;
         out.src1_ptr    = in.src1_ptr;
         out.rob_ptr     = in.rob_ptr;
+        out.spec_exec_ptr = in.spec_exec_ptr;
+        out.pc_buff_ptr = in.pc_buff_ptr;
         return out;
     endfunction
 

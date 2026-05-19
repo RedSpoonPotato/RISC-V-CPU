@@ -107,6 +107,7 @@ import instr_fetch_pkg::*;
     );
 
     // jalr path: rd = PC+4; PC = rs1 + imm
+    // also for jal: rd = PC+4; PC = PC + imm
     logic [DATA_WIDTH-1:0] jump_trgt;
     jalr_stage jalr_stage_inst (
         .clk(clk),
@@ -157,6 +158,7 @@ import instr_fetch_pkg::*;
     end
         
     always_comb begin: setting_spec_exec_answr_o
+        spec_exec_answr_o.pc = fetch_pkt_ff.pc;
         spec_exec_answr_o.trgt_en = funct_unit_one_hot_o[JALR] || funct_unit_one_hot_o[BRANCH];
         spec_exec_answr_o.branch_en = funct_unit_one_hot_o[BRANCH];
         if (funct_unit_one_hot_o[BRANCH]) begin
@@ -273,7 +275,7 @@ import issue_queue_pkg::*;
     logic [DATA_WIDTH-1:0] pc;
     logic [DATA_WIDTH-1:0] rs1_data;
     logic [DATA_WIDTH-1:0] imm;
-    kogic [FUNCT_COMB_WIDTH-1:0] funct_code;
+    logic [FUNCT_COMB_WIDTH-1:0] funct_code;
 
     always_comb begin
         if (en_i) begin

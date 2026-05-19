@@ -9,31 +9,61 @@ package instr_fetch_pkg;
     localparam MAX_EXEC_CYCLE = 4;
     localparam IMM_COMPRESS = 20;
     localparam FUNCT_COMB_WIDTH = 4; // representing funct3 + funct7
+    parameter OUTCOME_DELAY = 3; // # of cycles until the "brnch_taken_i" result comes in  
+
+    parameter MAX_SPEC_EXEC_INSTRS = 4; // max number of in-flight speculative (jumps and branches) instrs
+    parameter MAX_AUIPC_INSTRS = 4;
+    parameter MAX_PC_INSTRS = MAX_SPEC_EXEC_INSTRS + MAX_AUIPC_INSTRS; // max number of instrs that can be waiting on a pc calculation (branches, jumps, auipc)
 
     typedef struct packed {
+        logic wr_en;
+        // logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] buff_ptr;
+    } spec_exec_buffer_instance_pkt_t;
+
+    typedef struct packed {
+        logic [DATA_WIDTH-1:0] pc;
         logic trgt_en;
         logic [DATA_WIDTH-1:0] calc_pc;
         logic branch_en;
         logic branch_taken;
     } spec_exec_answr_pkt_t;
+
+    typedef struct packed {
+        // logic valid;
+        logic [DATA_WIDTH-1:0] trgt;
+        // logic branch_pred_en; // prob dont need
+        logic branch_pred;
+        // logic [DATA_WIDTH-1:0] pc;
+    } shift_reg_pkt_t;
+
+    // typedef struct packed {
+
+    // } corrct;
+
+
+    typedef struct packed {
+        logic instr_valid;
+        logic [31:0] instr;
+        logic [DATA_WIDTH-1:0] pc;
+        logic bp_pred; // dont think we need
+    } if_output_pkt_t;
+
+    typedef struct packed {
+        logic valid;
+        logic [31:0] instr_in;
+        logic [DATA_WIDTH-1:0] instr_addr;
+    } instr_fetch_ctrl_pkt_t;
+
 endpackage
 
 package brnch_predict_pkg;
 
-    localparam DATA_WIDTH = 32;
-    localparam IQ_SIZE = 16;
-    // localparam ROB_COUNT = 32;
-    localparam PRF_COUNT = 32;
-    localparam INSTR_COMPRESS_WIDTH = 17;
-    localparam MAX_EXEC_CYCLE = 4;
-    localparam IMM_COMPRESS = 20;
-    localparam FUNCT_COMB_WIDTH = 4; // representing funct3 + funct7
-    // localparam 
+    import instr_fetch_pkg::*;
 
     // branch predictor parameters
     parameter CACHE_LINES = 2 ** 6;
     parameter SET_ASSOCIATIVITY = 1;
-    parameter OUTCOME_DELAY = 2; // # of cycles until the "brnch_taken_i" result comes in    
+    // parameter OUTCOME_DELAY = 2; // # of cycles until the "brnch_taken_i" result comes in    
 
     // 32-bit instr: [TAG][INDEX][BLOCK_OFFSET]
     localparam INDEX_WIDTH = $clog2(CACHE_LINES);
@@ -76,20 +106,14 @@ endpackage
 
 package trgt_buffer_pkg;
 
-    localparam DATA_WIDTH = 32;
-    localparam IQ_SIZE = 16;
-    // localparam ROB_COUNT = 32;
-    localparam PRF_COUNT = 32;
-    localparam INSTR_COMPRESS_WIDTH = 17;
-    localparam MAX_EXEC_CYCLE = 4;
-    localparam IMM_COMPRESS = 20;
-    localparam FUNCT_COMB_WIDTH = 4; // representing funct3 + funct7
-    // localparam 
+
+    import instr_fetch_pkg::*;
+
 
     // branch predictor parameters
     parameter CACHE_LINES = 2 ** 6;
     parameter SET_ASSOCIATIVITY = 1;
-    parameter OUTCOME_DELAY = 2; // # of cycles until the "brnch_taken_i" result comes in    
+    // parameter OUTCOME_DELAY = 2; // # of cycles until the "brnch_taken_i" result comes in    
 
     // 32-bit instr: [TAG][INDEX][BLOCK_OFFSET]
     localparam INDEX_WIDTH = $clog2(CACHE_LINES);

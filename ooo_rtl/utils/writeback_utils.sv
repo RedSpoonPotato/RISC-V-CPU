@@ -23,6 +23,7 @@ package writeback_pkg;
         // logic [$clog2(ROB_COUNT)-1:0] rob_count;
     } rob_instance_pkt_t;
 
+
     typedef struct packed {
         logic instr_valid;
         // logic [$clog2(MAX_EXEC_CYCLE)-1:0] exec_dur; // unsure if we need to output this

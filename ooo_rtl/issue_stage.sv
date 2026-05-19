@@ -37,12 +37,21 @@ import issue_queue_pkg::*;
     // input logic [$clog2(PRF_COUNT)-1:0] wb_dest_ptr_i,
     // input logic [DATA_WIDTH-1:0] wb_dest_data_i
     input wb_phys_reg_pkt_t wb_phys_reg_pkt_i,
+
+    // from decode stage
+    input pc_buff_instance_pkt_t buff_inst_i,
+    // 
+    input logic [$clog2(MAX_PC_INSTRS)-1:0] rd_ptr_i,
+
+    // input logic pc_instr_i
 );
 
     iq_output_t instr_ff;
     // wb_phys_reg_pkt_t wb_phys_reg_pkt_ff; not gonna use b/c can save on flipflops while still functional
+    pc_buff_instance_pkt_t buff_inst_ff;
     always_ff @(posedge clk) begin
         instr_ff <= instr_i;
+        buff_inst_ff <= buff_inst_i;
         // wb_phys_reg_pkt_ff <= wb_phys_reg_pkt_i;
     end
 
@@ -50,7 +59,7 @@ import issue_queue_pkg::*;
     logic [DATA_WIDTH-1:0] phys_reg_src0_data;
     logic [DATA_WIDTH-1:0] phys_reg_src1_data;
 
-    register_file_sync_read physical_register #(
+    register_file_async_read physical_register #(
         .DATA_WIDTH(DATA_WIDTH),
         .REG_ADDR_WIDTH($clog2(PRF_COUNT))
     ) (
@@ -65,6 +74,17 @@ import issue_queue_pkg::*;
         .write_en_i(wb_phys_reg_pkt_i.wr_en),
         .addr_w_i(wb_phys_reg_pkt_i.dest_ptr),
         .data_w_i(wb_phys_reg_pkt_i.dest_data),
+    );
+
+    pc_buffer pc_buff_inst
+    (
+        .clk(clk),
+        .rst(rst),
+        // write
+        .buff_inst_i(buff_inst_ff),
+        // read
+        .rd_ptr_i(instr_ff.pc_buff_ptr),
+        .pc_out_o(pc_out)
     );
 
     // logic [DATA_WIDTH-1:0] imm;
@@ -93,6 +113,9 @@ import issue_queue_pkg::*;
         // fetch_pkt_o.src1_valid  <= instr_ff.src1_valid;
         // imm <= format_20b_to_datawidth(instr_ff.imm_compr, instr_ff.op[6:0]);
         fetch_pkt_o.rob_ptr     = instr_ff.rob_ptr;
+        fetch_pkt_o.spec_exec_ptr = instr_ff.spec_exec_ptr;
+        fetch_pkt_o.pc = pc_out;
+        
     // end
 
     // always_comb begin
@@ -107,6 +130,40 @@ import issue_queue_pkg::*;
             fetch_pkt_o.src1_data = format_20b_to_datawidth(imm_compr_ff, instr_op_ff);
         end
         fetch_pkt_o.mem_offset_or_brnch_imm =  (fetch_pkt_o.funct_unit == MEM || fetch_pkt_o.funct_unit == BRANCH) ? format_20b_to_datawidth(imm_compr_ff, instr_op_ff) : '0;
+    end
+
+endmodule
+
+module pc_buffer 
+import decode_pkg::*;
+import instr_fetch_pkg::*;
+(
+    input clk,
+    input rst,
+    // write
+    input pc_buff_instance_pkt_t buff_inst_i,
+    // read
+    input logic [$clog2(MAX_PC_INSTRS)-1:0] rd_ptr_i,
+    output logic [DATA_WIDTH-1:0] pc_out_o
+);
+    logic [DATA_WIDTH-1:0] pc_buffer [MAX_PC_INSTRS-1:0];
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            pc_buffer <= '0;
+        end else begin
+            if (buff_inst_i.wr_en) begin
+                pc_buffer[buff_inst_i.wr_ptr] <= buff_inst_i.pc_in;
+            end
+        end
+    end
+    
+    always_comb begin
+        if (rd_ptr_i == buff_inst_ff.wr_ptr) begin: Forwarding
+            pc_out_o = buff_inst_i.pc_in;
+        end else begin
+            pc_out_o = pc_buffer[rd_ptr_i];
+        end
     end
 
 endmodule

@@ -83,7 +83,7 @@ package decode_pkg;
 endpackage
 
 
-module fifo #(
+module fifo_modded #(
     parameter DEPTH = 8,
     parameter DATA_WIDTH = 32,
     parameter type T = logic [DATA_WIDTH-1:0]
@@ -125,10 +125,11 @@ module fifo #(
         if (rst) begin
             rd_ptr = 0;
         end else if (rd_en_i && ~empty_o) begin
-            data_o <= data_array[rd_ptr[PTR_WIDTH-2:0]];
+            // data_o <= data_array[rd_ptr[PTR_WIDTH-2:0]];
             rd_ptr <= rd_ptr + 1;
         end
     end
+    assign data_o = data_array[rd_ptr[PTR_WIDTH-2:0]];
 
 endmodule
 
