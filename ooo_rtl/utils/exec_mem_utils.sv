@@ -19,7 +19,18 @@ package exec_mem_utils_pkg;
         // for multiplexing output of stage
         logic [EX_MEM_TYPE_SIZE-1:0] funct_unit_one_hot;
         logic store;
+        logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_ptr;
     } ex_mem_scoreboard_data_t;
+
+    typedef struct packed {
+        // logic valid;
+        // logic [DATA_WIDTH-1:0] pc;
+        logic trgt_en;
+        logic [DATA_WIDTH-1:0] calc_pc;
+        logic branch_en;
+        logic branch_taken;
+        logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_ptr;
+    } spec_exec_answr_pkt_t;
 
 
     function automatic ex_mem_scoreboard_data_t set_ex_mem_scoreboard_data (
@@ -36,6 +47,7 @@ package exec_mem_utils_pkg;
         // ex_mem_scoreboard_data.prf_ptr = fetch_pkt_i.dest_ptr;
         ex_mem_scoreboard_data.funct_unit_one_hot = fetch_pkt_i.funct_unit_one_hot;
         ex_mem_scoreboard_data.store = fetch_pkt_i.store;
+        ex_mem_scoreboard_data.spec_exec_ptr = fetch_pkt_i.spec_exec_ptr;
 
         return ex_mem_scoreboard_data;
     endfunction

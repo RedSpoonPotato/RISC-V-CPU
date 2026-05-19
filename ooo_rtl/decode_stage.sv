@@ -328,6 +328,7 @@ module decode_stage
             rob_instance_pkt_o.phys_reg_addr = issue_queue_entry.dest_ptr;
             rob_instance_pkt_o.arch_reg_addr = instr_ff[11:7];
             rob_instance_pkt_o.prev_phys_reg_addr =  rename_table_rob_dest_prf; /// what about J and U types
+            // rob_instance_pkt_o.rob_ptr = rob_counter;
             // rob_instance_pkt_o.rob_count = rob_counter; // no need i believe
         // end else begin
             // rob_instance_pkt_o = '0;

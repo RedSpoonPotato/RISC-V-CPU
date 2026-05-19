@@ -25,6 +25,7 @@
     will import correct results form wb stage, and dont send predicted result to wb stage, do comparison here
 */
 
+NEED TO WORK ON importnig info from wb stage and updating buffers and changign pc
 
 module instr_fetch_stage 
 (
@@ -43,6 +44,8 @@ module instr_fetch_stage
     // output shift_reg_pkt_t shift_reg_pkt_o, // to wb stage
 
     output if_output_pkt_t if_output_pkt_o,
+
+    input shift_reg_pkt_t spec_exec_answr_pkt_o
 );
 
     spec_exec_answr_pkt_t spec_exec_answr_pkt_ff;

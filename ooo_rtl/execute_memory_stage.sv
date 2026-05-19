@@ -28,7 +28,7 @@ import instr_fetch_pkg::*;
     // output to writeback stage
     output ex_mem_stage_pkt_t ex_mem_stage_pkt_o,
 
-    // output to IF stage
+    // output to wb stage
     output spec_exec_answr_pkt_t spec_exec_answr_o;
 
     // for updating pending bits in decode stage
@@ -158,8 +158,11 @@ import instr_fetch_pkg::*;
     end
         
     always_comb begin: setting_spec_exec_answr_o
-        spec_exec_answr_o.pc = fetch_pkt_ff.pc;
-        spec_exec_answr_o.trgt_en = funct_unit_one_hot_o[JALR] || funct_unit_one_hot_o[BRANCH];
+        // spec_exec_answr_o.pc = fetch_pkt_ff.pc;
+        spec_exec_answr_o.trgt_en = ex_mem_scoreboard_data_o.instr_valid &&
+            (funct_unit_one_hot_o[JALR] || 
+            funct_unit_one_hot_o[BRANCH]);
+        // spec_exec_answr_o.trgt_en = funct_unit_one_hot_o[JALR] || funct_unit_one_hot_o[BRANCH];
         spec_exec_answr_o.branch_en = funct_unit_one_hot_o[BRANCH];
         if (funct_unit_one_hot_o[BRANCH]) begin
             spec_exec_answr_o.calc_pc = brnch_trgt;
@@ -168,6 +171,7 @@ import instr_fetch_pkg::*;
         end else begin
             spec_exec_answr_o.calc_pc = '0;
         end
+        spec_exec_answr_o.spec_exec_ptr = ex_mem_scoreboard_data_o.spec_exec_ptr;
     end
 
     // always_comb begin: setting_rt_iq_update_pkt_o
@@ -222,7 +226,7 @@ import exec_mem_utils_pkg::*;
     end
 
     always_comb begin
-        if (new_op_delay == 0 && funct_unit_i != NOOP) begin
+        if (new_op_delay == 0 && funct_unit_i != NOOP) begin: Forwarding
             current_funct_unit_output_o = funct_unit_i;
             sb_data_pkt_o = sb_data_pkt_i;
             assert(exec_stage_slots_int[0] == NOOP) else $fatal("Scoreboard error: new instruction issued to occupied exec stage slot");

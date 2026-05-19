@@ -20,19 +20,22 @@ package instr_fetch_pkg;
         // logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] buff_ptr;
     } spec_exec_buffer_instance_pkt_t;
 
-    typedef struct packed {
-        logic [DATA_WIDTH-1:0] pc;
-        logic trgt_en;
-        logic [DATA_WIDTH-1:0] calc_pc;
-        logic branch_en;
-        logic branch_taken;
-    } spec_exec_answr_pkt_t;
+    // typedef struct packed {
+    //     // logic [DATA_WIDTH-1:0] pc;
+    //     logic trgt_en;
+    //     logic [DATA_WIDTH-1:0] calc_pc;
+    //     logic branch_en;
+    //     logic branch_taken;
+    //     logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_ptr;
+    // } spec_exec_answr_pkt_t;
 
     typedef struct packed {
         // logic valid;
+        logic trgt_en;
         logic [DATA_WIDTH-1:0] trgt;
         // logic branch_pred_en; // prob dont need
         logic branch_pred;
+        logic branch_en;
         // logic [DATA_WIDTH-1:0] pc;
     } shift_reg_pkt_t;
 

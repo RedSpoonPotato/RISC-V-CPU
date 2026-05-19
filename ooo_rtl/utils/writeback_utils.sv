@@ -43,6 +43,7 @@ package writeback_pkg;
         logic [$clog2(PRF_COUNT)-1:0] phys_reg_addr;
         logic [4:0] arch_reg_addr;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
+        // logic [$clog2(ROB_COUNT)-1:0] rob_count;
     } rob_entry_t;
 
     typedef struct packed {
