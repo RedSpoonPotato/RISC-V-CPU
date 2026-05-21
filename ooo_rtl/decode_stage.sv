@@ -32,9 +32,7 @@
 module decode_stage 
     import decode_pkg::*;
     import writeback_pkg::*;
-#(
-    parameter DATA_WIDTH = 32,
-) (
+(
     input clk,
     input rst,
 
@@ -42,14 +40,14 @@ module decode_stage
     input flush_i,
     
     // bad name
-    input if_input_t if_input_i,
+    input if_output_pkt_t if_input_i,
 
     output error_o,
     // cntrls
 
     // free list
     // input free_list_update_pkt_t free_list_update_pkt_i,
-    input decode_commit_pkt_t decode_commit_pkt_i, // For now, will not use flipflops
+    input commit_stage_pkt_t decode_commit_pkt_i, // For now, will not use flipflops
     // output logic free_list_empty_o;
 
     input rt_and_iq_pending_update_pkt_t rt_iq_update_pkt_i,
@@ -74,7 +72,7 @@ module decode_stage
 );
 
     /* input flip flops */
-    logic if_input_t if_input_ff;
+    if_output_pkt_t if_input_ff;
 
     free_list_update_pkt_t free_list_update_pkt_ff;
     // rename_table_update_pkt_t rename_table_update_pkt_ff;
@@ -100,7 +98,7 @@ module decode_stage
         .clk(clk),
         .rst(rst),
         // writing
-        .wr_en_i(decode_commit_pkt_i.wr_en),
+        .wr_en_i(decode_commit_pkt_i.wr_en && !decode_commit_pkt_i.dest_valid),
         .prev_phys_ptr_i(decode_commit_pkt_i.prev_prf_ptr),
         .exception_i(exception_i),
         .commited_ptr_i(decode_commit_pkt_i.prf_ptr),
@@ -151,7 +149,7 @@ module decode_stage
         .rob_dest_arf_i(rename_table_rob_dest_arf),
         .rob_dest_prf_o(rename_table_rob_dest_prf),
         // ports for committing
-        .commit_en_i(decode_commit_pkt_i.wr_en),
+        .commit_en_i(decode_commit_pkt_i.wr_en && decode_commit_pkt_i.dest_valid),
         .commit_arf_i(decode_commit_pkt_i.arf_ptr),
         .commit_prf_i(decode_commit_pkt_i.prf_ptr),
         // ports for exception handling

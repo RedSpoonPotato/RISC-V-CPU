@@ -16,9 +16,7 @@ import exec_mem_utils_pkg::*;
 import issue_queue_pkg::*;
 import writeback_pkg::*;
 import instr_fetch_pkg::*;
-#(
-    parameter DATA_WIDTH = 32
-) (
+(
     input clk,
     input rst,
 
@@ -29,7 +27,7 @@ import instr_fetch_pkg::*;
     output ex_mem_stage_pkt_t ex_mem_stage_pkt_o,
 
     // output to wb stage
-    output spec_exec_answr_pkt_t spec_exec_answr_o;
+    output spec_exec_answr_pkt_t spec_exec_answr_o
 
     // for updating pending bits in decode stage
     // output rename_table_and_issue_queue_update_pkt_t rt_iq_update_pkt_o

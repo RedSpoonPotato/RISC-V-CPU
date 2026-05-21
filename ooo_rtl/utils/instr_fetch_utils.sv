@@ -29,6 +29,7 @@ package instr_fetch_pkg;
     //     logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_ptr;
     // } spec_exec_answr_pkt_t;
 
+    // should change name b/c its not really  a packet in if shift register
     typedef struct packed {
         // logic valid;
         logic trgt_en;
@@ -38,6 +39,16 @@ package instr_fetch_pkg;
         logic branch_en;
         // logic [DATA_WIDTH-1:0] pc;
     } shift_reg_pkt_t;
+
+    typedef struct packed {
+        // logic valid;
+        // logic trgt_en;
+        logic [DATA_WIDTH-1:0] trgt;
+        // logic branch_pred_en; // prob dont need
+        logic branch_pred;
+        // logic branch_en;
+        logic [DATA_WIDTH-1:0] pc;
+    } shift_reg_pkt_2_t;
 
     // typedef struct packed {
 

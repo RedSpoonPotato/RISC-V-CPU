@@ -2,6 +2,8 @@
     double check outptus for repeated signals that are redundant
 
     dont actually need ptr incrementing in rob b/c we keep track of rob pointers in decode stage
+
+    might need to fliplfop some of the inputs
 */
 
 module writeback_stage

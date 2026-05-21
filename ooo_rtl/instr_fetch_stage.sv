@@ -36,7 +36,7 @@ module instr_fetch_stage
     input instr_fetch_ctrl_pkt_t instr_fetch_ctrl_pkt_i,
     
     // from ex_mem for branch misprediction recovery
-    input spec_exec_answr_pkt_t spec_exec_answr_pkt_i,
+    // input spec_exec_answr_pkt_t spec_exec_answr_pkt_i,
 
     input logic is_spec_instr_i, // from decode stage
     
@@ -45,10 +45,10 @@ module instr_fetch_stage
 
     output if_output_pkt_t if_output_pkt_o,
 
-    input shift_reg_pkt_t spec_exec_answr_pkt_o
+    input shift_reg_pkt_t spec_exec_answr_pkt_i
 );
 
-    spec_exec_answr_pkt_t spec_exec_answr_pkt_ff;
+    shift_reg_pkt_t spec_exec_answr_pkt_ff;
     always_ff @(posedge clk) begin
         spec_exec_answr_pkt_ff <= spec_exec_answr_pkt_i;
     end
@@ -57,7 +57,6 @@ module instr_fetch_stage
 
     logic crrct_trgt_en;
     assign crrct_trgt_en = spec_exec_answr_pkt_ff.jalr_en || spec_exec_answr_pkt_ff.branch_en;
-
 
     // logic grab_new_pc;
 
@@ -77,7 +76,8 @@ module instr_fetch_stage
         // updating state
         .write_en_i(spec_exec_answr_pkt_ff.branch_en),
         .correct_result_i(spec_exec_answr_pkt_ff.branch_taken),
-        .old_pc_i(spec_exec_answr_pkt_ff.old_pc)
+        // .old_pc_i(spec_exec_answr_pkt_ff.old_pc)
+        .old_pc_i(shift_reg_pkt_2.pc)
     );
 
     // reading
@@ -96,7 +96,8 @@ module instr_fetch_stage
         // updating state
         .write_en_i(crrct_trgt_en),
         .correct_trgt_i(spec_exec_answr_pkt_ff.calc_pc),
-        .old_pc_i(spec_exec_answr_pkt_ff.old_pc)
+        // .old_pc_i(spec_exec_answr_pkt_ff.old_pc)
+        .old_pc_i(shift_reg_pkt_2.pc)
     );
 
     assign instr_mem_addr = instr_fetch_ctrl_pkt_i.valid ? instr_fetch_ctrl_pkt_i.instr_addr : if_output_pkt_o.pc;
@@ -114,6 +115,7 @@ module instr_fetch_stage
 
     // logic shft_reg_brnch_mispredict;
     // logic shft_reg_trgt_mispredict;
+    shift_reg_pkt_2_t shift_reg_pkt_2;
     trgt_shift_register trgt_shift_register_inst
     (
         .clk(clk),
@@ -123,13 +125,24 @@ module instr_fetch_stage
         .brnch_pred_i(if_output_pkt_o.bp_pred),
         // outputs
         .is_spec_instr_i(is_spec_instr_i),
-        .rd_en_i(spec_exec_commit_rd_en_i),
+        .rd_en_i(spec_exec_answr_pkt_ff.trgt_en),
         // .old_pc_o(shift_reg_old_pc)
-        .shift_reg_pkt_o(shift_reg_pkt_o)
+        .shift_reg_pkt_2_o(shift_reg_pkt_2)
     );
        
-
-
+    // calculated 
+    logic branch_mispredict;
+    logic trgt_mispredict;
+    always_comb begin
+        branch_mispredict = '0;
+        trgt_mispredict = '0;
+        if (spec_exec_answr_pkt_ff.branch_en) begin: Jump
+            branch_mispredict = shift_reg_pkt_2.branch_pred != spec_exec_answr_pkt_ff.branch_taken;
+        end
+        if (spec_exec_answr_pkt_ff.trgt_en) begin: Branch
+            trgt_mispredict = shift_reg_pkt_2.trgt != spec_exec_answr_pkt_ff.calc_pc;
+        end
+    end
 
     // branch prediction
     // cases: branch, jalr, and jal
@@ -137,14 +150,15 @@ module instr_fetch_stage
     always_ff @(posedge clk) begin
         if (rst) begin
             if_output_pkt_o.pc <= '0;
-            // grab_new_pc <= 0;
         end else begin
-            // grab_new_pc <= 1;
             if (stall) begin // NEED TO DRIVE THIS
                 if_output_pkt_o.pc <= if_output_pkt_o.pc;
-                // grab_new_pc <= 0;
-            end else if (shft_reg_brnch_mispredict || shft_reg_trgt_mispredict) begin: Mispredict
+            end else if (trgt_mispredict && ~branch_mispredict) begin: JumpMispredict
                 if_output_pkt_o.pc <= spec_exec_answr_pkt_ff.calc_pc;
+            end else if (branch_mispredict) begin
+                if_output_pkt_o.pc <= (spec_exec_answr_pkt_ff.branch_pred) ? 
+                    spec_exec_answr_pkt_ff.calc_pc : 
+                    shift_reg_pkt_2.pc + 4;
             end else if (tb_hit && bp_hit && if_output_pkt_o.bp_pred) begin: SpecBranch
                 if_output_pkt_o.pc <= tb_predict_trgt;
             end else if (tb_hit && !bp_hit) begin: SpecJump
@@ -165,18 +179,20 @@ import instr_fetch_pkg::*;
     // making predictions
     input logic [DATA_WIDTH-1:0] predict_trgt_i,
     input logic brnch_pred_i,
+    input logic [DATA_WIDTH-1:0] old_pc_i,
     // input spec_exec_answr_pkt_t spec_exec_answr_pkt_i,
     // outputs
     // output logic brnch_mispredict_o,
     // output logic trgt_mispredict_o,
     input logic is_spec_instr_i, // comes 1 cycle later from decode stage
     input logic rd_en_i,
-    output shift_reg_pkt_t shift_reg_pkt_o
+    output shift_reg_pkt_2_t shift_reg_pkt_2_o
 );
-    shift_reg_pkt_t predicted_trgt_and_pred_pkt, predicted_trgt_and_pred_pkt_ff;
+    shift_reg_pkt_2_t predicted_trgt_and_pred_pkt, predicted_trgt_and_pred_pkt_ff;
     always_comb begin
         predicted_trgt_and_pred_pkt.trgt = predict_trgt_i;
         predicted_trgt_and_pred_pkt.branch_pred = brnch_pred_i;
+        predicted_trgt_and_pred_pkt.pc = old_pc_i;
     end
 
     always_ff @(posedge clk) begin
@@ -189,15 +205,15 @@ import instr_fetch_pkg::*;
 
     fifo_modded #(
         .DEPTH(MAX_SPEC_EXEC_INSTRS),
-        .DATA_WIDTH($bits(shift_reg_pkt_t)),
-        .T(shift_reg_pkt_t)
+        .DATA_WIDTH($bits(shift_reg_pkt_2_t)),
+        .T(shift_reg_pkt_2_t)
     ) shift_reg_fifo (
         .clk(clk),
         .rst(rst),
         .rd_en_i(rd_en_i),
         .wr_en_i(is_spec_instr_i),
         .data_i(predicted_trgt_and_pred_pkt_ff),
-        .data_o(shift_reg_pkt_o)
+        .data_o(shift_reg_pkt_2_o)
     );
 
     // shift_reg_pkt_t shift_reg [OUTCOME_DELAY-1:0];
@@ -273,13 +289,12 @@ import brnch_predict_pkg::*;
             always_ff @(posedge clk) begin : MakingAPredictionWrite
                 if (rst) begin
                     bp_cache <= '0;
-                end 
-                else if (miss_condition) begin: No_hit
+                // end else if (miss_condition) begin: No_hit
                 //     // instantiation
                 //     bp_cache[curr_index].valid <= 1'b1;
                 //     bp_cache[curr_index].tag <= curr_tag;
                 //     bp_cache[curr_index].brnch_hist <= 2'b00;
-                // end 
+                end 
             end
             
             always_comb begin : MakingAPredictionRead

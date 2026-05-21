@@ -1,6 +1,8 @@
 // package general_pkg;
 package decode_pkg;
 
+    parameter DATA_WIDTH = 32;
+
 
     localparam PRF_COUNT = 32;
     localparam DATA_WIDTH = 32;

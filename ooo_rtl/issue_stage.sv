@@ -12,10 +12,7 @@
 module issue_stage 
 import decode_pkg::*;
 import issue_queue_pkg::*;
-#(
-    parameter DATA_WIDTH = 32,
-    parameter PRF_COUNT,
-) (
+(
     input clk,
     input rst,
 
@@ -41,7 +38,8 @@ import issue_queue_pkg::*;
     // from decode stage
     input pc_buff_instance_pkt_t buff_inst_i,
     // 
-    input logic [$clog2(MAX_PC_INSTRS)-1:0] rd_ptr_i,
+    // dont think i need
+    // input logic [$clog2(MAX_PC_INSTRS)-1:0] rd_ptr_i
 
     // input logic pc_instr_i
 );
