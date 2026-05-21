@@ -1,11 +1,10 @@
-module core #(
-
-) (
+module core 
+import core_pkg::*;
+(
     input clk,
     input rst,
     input instr_fetch_ctrl_pkt_t instr_fetch_ctrl_pkt_i
 );
-    // import global_params::*;
     
     logic decode_is_spec_instr;
     if_output_pkt_t instr_fetch_output_pkt;
