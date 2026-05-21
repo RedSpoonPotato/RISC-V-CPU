@@ -7,7 +7,7 @@ package writeback_pkg;
     localparam MAX_EXEC_CYCLE = 4;
     localparam IMM_COMPRESS = 20;
 
-    import decode_utils::PRF_COUNT;
+    import decode_pkg::PRF_COUNT;
     import utils::DATA_WIDTH;
 
 

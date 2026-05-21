@@ -1,8 +1,4 @@
 package core_pkg;
-    parameter int INSTR_WIDTH = 32;
-    parameter int DATA_WIDTH = 32;
-    parameter int INSTR_MEM_DEPTH = 1024;
-    parameter int BRANCH_STALL_CYCLES = 2;
     
     import instr_fetch_pkg::instr_fetch_ctrl_pkt_t;
     import instr_fetch_pkg::if_output_pkt_t;
