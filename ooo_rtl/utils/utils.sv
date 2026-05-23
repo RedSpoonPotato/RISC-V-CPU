@@ -114,7 +114,7 @@ module fifo_modded #(
     // writing
     always_ff @(posedge clk) begin
         if (rst) begin
-            data_array = '0;
+            data_array = '{default:'0};
             wr_ptr = 0;
         end else if (wr_en_i) begin
             data_array[wr_ptr[PTR_WIDTH-2:0]] <= data_i;
@@ -158,9 +158,9 @@ module register_file_sync_read #(
 
     always_ff @(posedge clk) begin : Writing
         if (rst) begin
-            reg_mem <= '0;
-            data_r_1_o <= '0;
-            data_r_2_o <= '0;
+            reg_mem <= '{default:'0};
+            data_r_1_o <= '{default:'0};
+            data_r_2_o <= '{default:'0};
         end else begin
             if (write_en_i) begin
                 reg_mem[addr_w_i] <= data_w_i;
@@ -198,7 +198,7 @@ module register_file_async_read #(
 
     always_ff @(posedge clk) begin : Writing
         if (rst) begin
-            reg_mem <= '0;
+            reg_mem <= '{default:'0};
         end else begin
             if (write_en_i) begin
                 reg_mem[addr_w_i] <= data_w_i;
@@ -228,10 +228,33 @@ module sram_sync_read #(
     logic [DATA_WIDTH-1:0] mem [0:(1<<ADDR_WIDTH)-1];
 
     always_ff @(posedge clk) begin
-            if (we) begin
-                mem[addr] <= din;
-            end
-            dout <= mem[addr]; // synchronous read
+        if (we) begin
+            mem[addr] <= din;
         end
+        dout <= mem[addr]; // synchronous read
+    end
+
+endmodule
+
+module sram_async_read #(
+    parameter ADDR_WIDTH = 10,  // depth = 2^ADDR_WIDTH
+    parameter DATA_WIDTH = 32
+)(
+    input  logic                     clk,
+    input  logic                     we,        // write enable
+    input  logic [ADDR_WIDTH-1:0]    addr,
+    input  logic [DATA_WIDTH-1:0]    din,
+    output logic [DATA_WIDTH-1:0]    dout
+);
+    // Memory array
+    logic [DATA_WIDTH-1:0] mem [0:(1<<ADDR_WIDTH)-1];
+
+    always_ff @(posedge clk) begin
+        if (we) begin
+            mem[addr] <= din;
+        end
+    end
+    
+    assign dout = mem[addr];
 
 endmodule

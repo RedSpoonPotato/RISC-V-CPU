@@ -51,12 +51,14 @@ import instr_fetch_pkg::*;
     shift_reg_pkt_t spec_exec_answr_pkt_ff;
     always_ff @(posedge clk) begin
         spec_exec_answr_pkt_ff <= spec_exec_answr_pkt_i;
-        assert(spec_exec_answr_pkt_ff.jalr_en && spec_exec_answr_pkt_ff.branch_en);
+        // assert(spec_exec_answr_pkt_ff.jalr_en && spec_exec_answr_pkt_ff.branch_en);
     end
 
+    logic [DATA_WIDTH-1:0] pc;
+    assign if_output_pkt_o.pc = pc;
 
     logic crrct_trgt_en;
-    assign crrct_trgt_en = spec_exec_answr_pkt_ff.jalr_en || spec_exec_answr_pkt_ff.branch_en;
+    assign crrct_trgt_en = spec_exec_answr_pkt_ff.trgt_en || spec_exec_answr_pkt_ff.branch_en;
 
     // logic grab_new_pc;
 
@@ -70,12 +72,12 @@ import instr_fetch_pkg::*;
         .rst(rst),
         // reading
         // .rd_en_i(grab_new_pc),
-        .curr_addr_i(if_output_pkt_o.pc),
+        .curr_addr_i(pc),
         .hit_o(bp_hit),
         .pred_o(if_output_pkt_o.bp_pred),
         // updating state
         .write_en_i(spec_exec_answr_pkt_ff.branch_en),
-        .correct_result_i(spec_exec_answr_pkt_ff.branch_taken),
+        .correct_result_i(spec_exec_answr_pkt_ff.branch_pred),
         // .old_pc_i(spec_exec_answr_pkt_ff.old_pc)
         .old_pc_i(shift_reg_pkt_2.pc)
     );
@@ -90,20 +92,20 @@ import instr_fetch_pkg::*;
         .rst(rst),
         // reading
         // .rd_en_i(grab_new_pc),
-        .curr_addr_i(if_output_pkt_o.pc),
+        .curr_addr_i(pc),
         .hit_o(tb_hit),
         .predict_trgt_o(tb_predict_trgt),
         // updating state
         .write_en_i(crrct_trgt_en),
-        .correct_trgt_i(spec_exec_answr_pkt_ff.calc_pc),
+        .correct_trgt_i(spec_exec_answr_pkt_ff.trgt),
         // .old_pc_i(spec_exec_answr_pkt_ff.old_pc)
         .old_pc_i(shift_reg_pkt_2.pc)
     );
 
     logic [DATA_WIDTH-1:0] instr_mem_addr;
-    assign instr_mem_addr = instr_fetch_ctrl_pkt_i.valid ? instr_fetch_ctrl_pkt_i.instr_addr : if_output_pkt_o.pc;
+    assign instr_mem_addr = instr_fetch_ctrl_pkt_i.valid ? instr_fetch_ctrl_pkt_i.instr_addr : pc;
 
-    sram_sync_read #(
+    sram_async_read #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(10) // for now, hardcoding to 10 bits (1024 entries)
     ) instr_memory (
@@ -124,7 +126,7 @@ import instr_fetch_pkg::*;
         // making predictions
         .predict_trgt_i(tb_predict_trgt),
         .brnch_pred_i(if_output_pkt_o.bp_pred),
-        .old_pc_i(if_output_pkt_o.pc),
+        .old_pc_i(pc),
         // outputs
         .is_spec_instr_i(is_spec_instr_i),
         .rd_en_i(spec_exec_answr_pkt_ff.trgt_en),
@@ -136,13 +138,13 @@ import instr_fetch_pkg::*;
     logic branch_mispredict;
     logic trgt_mispredict;
     always_comb begin
-        branch_mispredict = '0;
-        trgt_mispredict = '0;
+        branch_mispredict = 0;
+        trgt_mispredict = 0;
         if (spec_exec_answr_pkt_ff.branch_en) begin: Jump
-            branch_mispredict = shift_reg_pkt_2.branch_pred != spec_exec_answr_pkt_ff.branch_taken;
+            branch_mispredict = shift_reg_pkt_2.branch_pred != spec_exec_answr_pkt_ff.branch_pred;
         end
         if (spec_exec_answr_pkt_ff.trgt_en) begin: Branch
-            trgt_mispredict = shift_reg_pkt_2.trgt != spec_exec_answr_pkt_ff.calc_pc;
+            trgt_mispredict = shift_reg_pkt_2.trgt != spec_exec_answr_pkt_ff.trgt;
         end
     end
 
@@ -151,23 +153,23 @@ import instr_fetch_pkg::*;
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            if_output_pkt_o.pc <= '0;
+            pc <= '{default:'0};
         end else begin
             // if (stall) begin // NEED TO DRIVE THIS
-                // if_output_pkt_o.pc <= if_output_pkt_o.pc;
+                // pc <= pc;
             // end else if (trgt_mispredict && ~branch_mispredict) begin: JumpMispredict
             if (trgt_mispredict && ~branch_mispredict) begin: JumpMispredict
-                if_output_pkt_o.pc <= spec_exec_answr_pkt_ff.calc_pc;
+                pc <= spec_exec_answr_pkt_ff.trgt;
             end else if (branch_mispredict) begin
-                if_output_pkt_o.pc <= (spec_exec_answr_pkt_ff.branch_pred) ? 
-                    spec_exec_answr_pkt_ff.calc_pc : 
+                pc <= (spec_exec_answr_pkt_ff.branch_pred) ? 
+                    spec_exec_answr_pkt_ff.trgt : 
                     shift_reg_pkt_2.pc + 4;
             end else if (tb_hit && bp_hit && if_output_pkt_o.bp_pred) begin: SpecBranch
-                if_output_pkt_o.pc <= tb_predict_trgt;
+                pc <= tb_predict_trgt;
             end else if (tb_hit && !bp_hit) begin: SpecJump
-                if_output_pkt_o.pc <= tb_predict_trgt;
+                pc <= tb_predict_trgt;
             end else begin: NoSpec
-                if_output_pkt_o.pc <= if_output_pkt_o.pc + 4; // assuming 4 byte instructions, will need to change for compressed instrs
+                pc <= pc + 4; // assuming 4 byte instructions, will need to change for compressed instrs
             end
         end
     end
@@ -200,9 +202,11 @@ import decode_pkg::DATA_WIDTH;
         predicted_trgt_and_pred_pkt.pc = old_pc_i;
     end
 
+    // WHY DID I MAKE THIS INTO A FLIPFLOP?
+
     always_ff @(posedge clk) begin
         if (rst) begin
-            predicted_trgt_and_pred_pkt_ff <= '0;
+            predicted_trgt_and_pred_pkt_ff <= '{default:'0};
         end else begin
             predicted_trgt_and_pred_pkt_ff <= predicted_trgt_and_pred_pkt;
         end
@@ -225,7 +229,7 @@ import decode_pkg::DATA_WIDTH;
     // shift_reg_pkt_t shift_reg [OUTCOME_DELAY-1:0];
     // always @(posedge clk) begin
     //     if (rst) begin
-    //         shift_reg <= '0;
+    //         shift_reg <= '{default:'0};
     //     end else begin
     //         shift_reg[0].trgt <= predict_trgt_i;
     //         shift_reg[0].branch_pred <= brnch_pred_i;
@@ -294,7 +298,7 @@ import decode_pkg::DATA_WIDTH;
 
             always_ff @(posedge clk) begin : MakingAPredictionWrite
                 if (rst) begin
-                    bp_cache <= '0;
+                    bp_cache <= '{default:'0};
                 // end else if (miss_condition) begin: No_hit
                 //     // instantiation
                 //     bp_cache[curr_index].valid <= 1'b1;
@@ -346,8 +350,8 @@ import decode_pkg::DATA_WIDTH;
 
             always_ff @(posedge clk) begin : MakingAPredictionWrite
                 if (rst) begin
-                    bp_cache <= '0;
-                    set_ptr <= '0;
+                    bp_cache <= '{default:'0};
+                    set_ptr <= '{default:'0};
                 end 
                 // else if (curr_miss_condition) begin: No_hit
                 //     // instantiation
@@ -428,7 +432,7 @@ import decode_pkg::DATA_WIDTH;
 
             always_ff @(posedge clk) begin : MakingAPredictionWrite
                 if (rst) begin
-                    tb_cache <= '0;
+                    tb_cache <= '{default:'0};
                 end
             end
             
@@ -436,7 +440,7 @@ import decode_pkg::DATA_WIDTH;
                 if (miss_condition) begin
                     // output
                     hit_o = 1'b0;
-                    predict_trgt_o = '0; // default to pc + 4
+                    predict_trgt_o = '{default:'0}; // default to pc + 4
                 end else begin
                     hit_o = 1'b1;
                     predict_trgt_o = tb_cache[curr_index].trgt;
@@ -464,7 +468,7 @@ import decode_pkg::DATA_WIDTH;
             logic [SET_ASSOCIATIVITY-1:0] curr_hit_array_w;
             logic [$clog2(SET_ASSOCIATIVITY)-1:0] curr_hit_ptr;
             always_comb begin
-                curr_hit_ptr = '0;
+                curr_hit_ptr = '{default:'0};
                 for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin : Hit
                     curr_hit_array_w[i] = tb_cache[curr_index][i] == curr_tag && tb_cache[curr_index][i].valid;
                     if (curr_hit_array_w[i]) begin
@@ -477,8 +481,8 @@ import decode_pkg::DATA_WIDTH;
 
             always_ff @(posedge clk) begin : MakingAPredictionWrite
                 if (rst) begin
-                    tb_cache <= '0;
-                    set_ptr <= '0;
+                    tb_cache <= '{default:'0};
+                    set_ptr <= '{default:'0};
                 end
             end
             
@@ -486,7 +490,7 @@ import decode_pkg::DATA_WIDTH;
                 if (curr_miss_condition) begin
                     // output
                     hit_o = 1'b0;
-                    predict_trgt_o = '0; // default to pc + 4
+                    predict_trgt_o = '{default:'0}; // default to pc + 4
                 end else begin
                     hit_o = 1'b1;
                     predict_trgt_o = tb_cache[curr_index][curr_hit_ptr].trgt;

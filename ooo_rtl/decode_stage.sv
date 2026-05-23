@@ -99,11 +99,12 @@ module decode_stage
     (
         .clk(clk),
         .rst(rst),
-        // writing
+        // notify of reaching phys register
         .wr_en_i(decode_commit_pkt_i.wr_en && !decode_commit_pkt_i.dest_valid),
-        .prev_phys_ptr_i(decode_commit_pkt_i.prev_prf_ptr),
+        .prev_phys_ptr_i(decode_commit_pkt_i.prev_phys_reg_addr),
+        // for commiting
         .exception_i(exception_i),
-        .commited_ptr_i(decode_commit_pkt_i.prf_ptr),
+        .commited_ptr_i(decode_commit_pkt_i.phys_reg_addr),
         // reading
         .rd_en_i(free_list_rd_en),
         .free_ptr_o(free_list_free_ptr),
@@ -138,7 +139,7 @@ module decode_stage
         // to signal its in PRF
         .prf_ptr_sb_i(rt_iq_update_pkt_ff.prf_ptr),
         .arf_ptr_sb_i(rt_iq_update_pkt_ff.arf_ptr),
-        .writeback_en_i(rt_iq_update_pkt_ff.wb_en),
+        .writeback_en_i(rt_iq_update_pkt_ff.wr_en),
         // ports for issue queue to read from 
         .arf_src0_i(rename_table_arf_src0),
         .arf_src1_i(rename_table_arf_src1),
@@ -151,8 +152,8 @@ module decode_stage
         .rob_dest_prf_o(rename_table_rob_dest_prf),
         // ports for committing
         .commit_en_i(decode_commit_pkt_i.wr_en && decode_commit_pkt_i.dest_valid),
-        .commit_arf_i(decode_commit_pkt_i.arf_ptr),
-        .commit_prf_i(decode_commit_pkt_i.prf_ptr),
+        .commit_arf_i(decode_commit_pkt_i.arch_reg_addr),
+        .commit_prf_i(decode_commit_pkt_i.phys_reg_addr),
         // ports for exception handling
         .exception_i(exception_i)
     );
@@ -171,8 +172,8 @@ module decode_stage
         .iq_entry_i(issue_queue_entry),
         // updating state of pending bit
         // for writing from right before writeback stage into decode stage
-        .prf_dst_i(rt_iq_update_pkt_ff.prf_dst_ptr),
-        .prf_wr_en_i(rt_iq_update_pkt_ff.prf_wr_en),
+        .prf_dst_i(rt_iq_update_pkt_ff.prf_ptr),
+        .prf_wr_en_i(rt_iq_update_pkt_ff.wr_en),
         // for checking for structural hazards
         .future_exec_stage_slots_i(issue_queue_future_exec_stage_slots),      
         .instr_o(issue_queue_instr_out),
@@ -204,9 +205,9 @@ module decode_stage
 
     // setting rest of rename table inputs
     always_comb begin
-        rename_table_prf_dest_ptr = '0;
-        rename_table_arf_ptr = '0;
-        rename_table_decode_en = '0;
+        rename_table_prf_dest_ptr = '{default:'0};
+        rename_table_arf_ptr = '{default:'0};
+        rename_table_decode_en = 0;
         if (free_list_rd_en) begin
             rename_table_prf_dest_ptr = free_list_free_ptr;
             rename_table_arf_ptr = instr_ff[11:7];
@@ -259,15 +260,15 @@ module decode_stage
         // iq being full should also count as sstalling
         // if stalling, comeback to this valid signal
         // issue_queue_entry.valid = !new_instr_ready || iq_instr_ready;
-        issue_queue_entry.valid = iq_instr_ready && instr_ff.valid; // valid in this case means wr_en to iq
+        issue_queue_entry.valid = iq_instr_ready && if_input_ff.instr_valid; // valid in this case means wr_en to iq
         issue_queue_entry.dest_ptr = free_list_free_ptr;
         issue_queue_entry.src0_pending = rename_table_src0_pending;
-        issue_queue_entry.src0_ptr = issue_queue_entry.src0_valid ? rename_table_prf_src0 : '0;
+        issue_queue_entry.src0_ptr = issue_queue_entry.src0_valid ? rename_table_prf_src0 : '{default:'0};
         issue_queue_entry.src1_pending = rename_table_src1_pending;
-        issue_queue_entry.src1_ptr = issue_queue_entry.src1_valid ? rename_table_prf_src1 : '0;
+        issue_queue_entry.src1_ptr = issue_queue_entry.src1_valid ? rename_table_prf_src1 : '{default:'0};
         issue_queue_entry.rob_ptr = rob_counter;
-        issue_queue_entry.spec_exec_ptr = cntrl_instr ? spec_exec_counter : '0;
-        issue_queue_entry.pc_buff_ptr = pc_instr ? pc_instr_counter : '0;
+        issue_queue_entry.spec_exec_ptr = cntrl_instr ? spec_exec_counter : '{default:'0};
+        issue_queue_entry.pc_buff_ptr = pc_instr ? pc_instr_counter : '{default:'0};
     end
 
     // setting decode stage output and scoreboard
@@ -281,7 +282,7 @@ module decode_stage
             decode_instr_o = issue_queue_pkg::entry_to_output(issue_queue_entry);
             decode_instr_o.valid = 1;
         end else begin // stalling
-            decode_instr_o = '0;
+            decode_instr_o = '{default:'0};
             decode_instr_o.valid = 0;
         end
 
@@ -298,9 +299,9 @@ module decode_stage
     logic [$clog2(MAX_PC_INSTRS)-1:0] pc_instr_counter;
     always_ff @(posedge clk) begin
         if (rst) begin
-            rob_counter <= '0;
-            spec_exec_counter <= '0;
-            pc_instr_counter <= '0;
+            rob_counter <= '{default:'0};
+            spec_exec_counter <= '{default:'0};
+            pc_instr_counter <= '{default:'0};
         end else begin
             // if () // IMPLEMENT LATER FOR STALLING, BUT FOR NOW, will always increment
             rob_counter <= rob_counter + 1;
@@ -329,7 +330,7 @@ module decode_stage
             // rob_instance_pkt_o.rob_ptr = rob_counter;
             // rob_instance_pkt_o.rob_count = rob_counter; // no need i believe
         // end else begin
-            // rob_instance_pkt_o = '0;
+            // rob_instance_pkt_o = '{default:'0};
         // end
 
         spec_exec_buffer_instance_pkt_o.wr_en = cntrl_instr;
@@ -355,7 +356,7 @@ import issue_queue_pkg::*;
 (
     input clk,
     input rst,
-    // writing
+    // commiting
     input logic wr_en_i,
     input logic [$clog2(PRF_COUNT)-1:0] prev_phys_ptr_i,
     // for exception handling
@@ -374,12 +375,12 @@ import issue_queue_pkg::*;
     // writing
     always_ff @(posedge clk) begin
         if (rst) begin
-            free_list <= '1;
-            commit_list <= '0;
+            free_list <= '{default:'1};
+            commit_list <= '{default:'0};
         end else begin
             if (wr_en_i) begin
                 if (exception_i) begin
-                    free_list <= !commit_list;
+                    free_list <= ~commit_list;
                 end
                 free_list[prev_phys_ptr_i] <= 1;
                 commit_list[prev_phys_ptr_i] <= 0;
@@ -465,8 +466,8 @@ module rename_table_async_read #(
     // write logic
     always_ff @(posedge clk) begin
         if (rst) begin
-            rename_table = '0;
-            commit_map = '0;
+            rename_table = '{default:'0};
+            commit_map = '{default:'0};
         end 
         else begin
             if (exception_i) begin
@@ -492,9 +493,9 @@ module rename_table_async_read #(
     end
     
     // read logic (asynchronous)
-    assign prf_src0_o = rename_table[arf_src0_i].rob_ptr;
+    assign prf_src0_o = rename_table[arf_src0_i].prf_ptr;
     assign src0_pending_o = rename_table[arf_src0_i].pending;
-    assign prf_src1_o = rename_table[arf_src1_i].rob_ptr;
+    assign prf_src1_o = rename_table[arf_src1_i].prf_ptr;
     assign src1_pending_o = rename_table[arf_src1_i].pending;
     assign rob_dest_prf_o = rename_table[rob_dest_arf_i].prf_ptr;
 
@@ -535,11 +536,11 @@ module issue_queue
     assign wr_en = iq_entry_i.valid;
     always_ff @(posedge clk) begin
         if (rst) begin
-            iq <= '0;
+            iq <= '{default:'0};
             // need to set other values
-            empty_o <= 1;
-            full_o <= 0;
-            all_stalled_o <= 0;
+            // empty_o <= 1;
+            // full_o <= 0;
+            // all_stalled_o <= 0;
         end 
         else begin
             if (wr_en && !full_o) begin
@@ -602,8 +603,8 @@ module issue_queue
     // asynch read
     logic [IQ_SIZE-1:0] priority_ready_array;
     always_comb begin
-        priority_ready_array = '0;
-        instr_o = '0; 
+        priority_ready_array = '{default:'0};
+        instr_o = '{default:'0}; 
         if (!empty_o && !all_stalled_o) begin
             // search for highest priority "ready" entry
             for (int i = 0; i < IQ_SIZE; i++) begin
@@ -648,7 +649,7 @@ import issue_queue_pkg::*;
 
     always_ff @(posedge clk) begin
         if (rst || clear_i) begin
-            exec_stage_slots_int <= '0;
+            exec_stage_slots_int <= '{default:'0};
         end else begin
             for (int i = MAX_EXEC_CYCLE+1; i >= 0; i--) begin
                 if (i == MAX_EXEC_CYCLE+1) begin

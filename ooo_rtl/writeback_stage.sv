@@ -111,9 +111,9 @@ import instr_fetch_pkg::*;
     // buffer management
     always_ff @(posedge clk) begin
         if (rst) begin
-            sea_buff <= '0;
-            head_ptr <= '0;
-            tail_ptr <= '0;
+            sea_buff <= '{default:'0};
+            head_ptr <= '{default:'0};
+            tail_ptr <= '{default:'0};
         end else begin
             // instantiation
             if (spec_exec_buffer_instance_pkt_i.wr_en && !full_o) begin
@@ -138,7 +138,7 @@ import instr_fetch_pkg::*;
         if (commit_en_i) begin
             spec_exec_answr_pkt_o = sea_buff[tail_ptr_lower];
         end else begin
-            spec_exec_answr_pkt_o = '0;
+            spec_exec_answr_pkt_o = '{default:'0};
         end
     end
 
@@ -182,12 +182,12 @@ import issue_stage_pkg::*;
     // reorder buffer management
     always_ff @(posedge clk) begin
         if (rst) begin
-            reorder_buffer <= '0;
+            reorder_buffer <= '{default:'0};
             foreach (reorder_buffer[i]) begin
                 reorder_buffer[i].state <= FREE;
             end
-            head_ptr <= '0;
-            tail_ptr <= '0;
+            head_ptr <= '{default:'0};
+            tail_ptr <= '{default:'0};
         end else begin
             // instantiation
             if (rob_instance_pkt_i.wr_en && !rob_full_o) begin
@@ -212,7 +212,7 @@ import issue_stage_pkg::*;
         if (reorder_buffer[tail_ptr_lower].state == FINISHED) begin
             commit_stage_pkt_o = set_commit_pkt(reorder_buffer[tail_ptr_lower]);
         end else begin
-            commit_stage_pkt_o.wr_en <= 0;
+            commit_stage_pkt_o.wr_en = 0;
         end
     end
 
@@ -224,24 +224,22 @@ import issue_stage_pkg::*;
             wb_phys_reg_pkt_o.dest_data = ex_mem_stage_pkt_i.dest_data;
         end else begin
             wb_phys_reg_pkt_o.wr_en = 0;
-            wb_phys_reg_pkt_o.dest_ptr = '0;
-            wb_phys_reg_pkt_o.dest_data = '0;
+            wb_phys_reg_pkt_o.dest_ptr = '{default:'0};
+            wb_phys_reg_pkt_o.dest_data = '{default:'0};
         end
     end
 
     // updating pending state in issue queue and rename table
     always_comb begin
         if (ex_mem_stage_pkt_i.instr_valid) begin
-            // assert(ex_mem_stage_pkt_i.instr_valid);
-            rt_iq_update_pkt_o.wr_en = ex_mem_stage_pkt_i.dest_valid; 
+            rt_iq_update_pkt_o.wr_en = ex_mem_stage_pkt_i.dest_valid;
             rt_iq_update_pkt_o.prf_ptr = reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].phys_reg_addr;
             rt_iq_update_pkt_o.arf_ptr = reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].arch_reg_addr;
         end else begin
             rt_iq_update_pkt_o.wr_en = 0;
-            rt_iq_update_pkt_o.prf_ptr = '0;
-            rt_iq_update_pkt_o.arf_ptr = '0;
+            rt_iq_update_pkt_o.prf_ptr = '{default:'0};
+            rt_iq_update_pkt_o.arf_ptr = '{default:'0};
         end
-        assert(ex_mem_stage_pkt_i.instr_valid);
     end
 
 

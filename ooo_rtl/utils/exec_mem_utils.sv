@@ -8,7 +8,7 @@ package exec_mem_utils_pkg;
     import instr_fetch_pkg::*;
 
     localparam MEM_ENTRY_NUM = 1024;
-    localparam
+    localparam MEM_INDEX_WIDTH = $clog2(MEM_ENTRY_NUM);
 
 
     //  COMEBACK AND DEFINE

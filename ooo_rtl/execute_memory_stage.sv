@@ -156,7 +156,7 @@ import issue_stage_pkg::*;
         end else if (funct_unit_one_hot_o[AUIPC]) begin
             ex_mem_stage_pkt_o.dest_data = result_arry[3];
         end else begin
-            ex_mem_stage_pkt_o.dest_data = '0;
+            ex_mem_stage_pkt_o.dest_data = '{default:'0};
         end
     end
         
@@ -172,7 +172,7 @@ import issue_stage_pkg::*;
         end else if (funct_unit_one_hot_o[JALR]) begin
             spec_exec_answr_o.calc_pc = jump_trgt;
         end else begin
-            spec_exec_answr_o.calc_pc = '0;
+            spec_exec_answr_o.calc_pc = '{default:'0};
         end
         spec_exec_answr_o.spec_exec_ptr = ex_mem_scoreboard_data_o.spec_exec_ptr;
     end
@@ -216,7 +216,7 @@ import issue_stage_pkg::*;
             for (int i = MAX_EXEC_CYCLE_DELAY-1; i >= 0; i--) begin
                 if (i == MAX_EXEC_CYCLE_DELAY-1) begin
                     exec_stage_slots_int[i] <= NOOP;
-                    ex_mem_scoreboard_data_slots[i] <= '0;
+                    ex_mem_scoreboard_data_slots[i] <= '{default:'0};
                 end else begin
                     exec_stage_slots_int[i] <= exec_stage_slots_int[i+1];
                     ex_mem_scoreboard_data_slots[i] <= ex_mem_scoreboard_data_slots[i+1];
@@ -262,8 +262,8 @@ import decode_pkg::DATA_WIDTH;
             pc = pc_i;
             imm = imm_i;
         end else begin
-            pc = '0;
-            imm = '0;
+            pc = '{default:'0};
+            imm = '{default:'0};
         end
     end
 
@@ -295,10 +295,10 @@ import issue_stage_pkg::*;
             imm = imm_i;
             funct_code = funct_code_i;
         end else begin
-            pc = '0;
-            rs1_data = '0;
-            imm = '0;
-            funct_code = '0;
+            pc = '{default:'0};
+            rs1_data = '{default:'0};
+            imm = '{default:'0};
+            funct_code = '{default:'0};
         end
     end
 
@@ -370,17 +370,17 @@ import issue_stage_pkg::*;
 
     always_comb begin
         if (en_i) begin
-            src0_data <= src0_data_i;
-            src1_data <= src1_data_i;
-            funct_code <= funct_code_i;
-            imm <= imm_i;
-            pc <= pc_i;
+            src0_data = src0_data_i;
+            src1_data = src1_data_i;
+            funct_code = funct_code_i;
+            imm = imm_i;
+            pc = pc_i;
         end else begin
-            src0_data <= 0;
-            src1_data <= 0;
-            funct_code <= 0;
-            imm <= 0;
-            pc <= 0;            
+            src0_data = 0;
+            src1_data = 0;
+            funct_code = 0;
+            imm = 0;
+            pc = 0;            
         end
     end
 
@@ -392,6 +392,7 @@ module mem_stage
 import issue_queue_pkg::*;
 import decode_pkg::*;
 import issue_stage_pkg::*;
+import exec_mem_utils_pkg::*;
 (
     input clk,
     // input rst,
@@ -414,19 +415,19 @@ import issue_stage_pkg::*;
             offset = offset_i;
             store_data = store_data_i;
         end else begin
-            base_addr = '0;
-            offset = '0;
-            store_data = '0;
+            base_addr = '{default:'0};
+            offset = '{default:'0};
+            store_data = '{default:'0};
         end
     end
 
     sram_sync_read #(
         .DATA_WIDTH(DATA_WIDTH),
-        .ADDR_WIDTH(10) // for now, hardcoding to 10 bits (1024 entries)
+        .ADDR_WIDTH(MEM_INDEX_WIDTH) // for now, hardcoding to 10 bits (1024 entries)
     ) data_memory (
         .clk(clk),
         .we(en_i && store_i),
-        .addr(addr),
+        .addr(addr[MEM_INDEX_WIDTH-1:0]),
         .din(store_data),
         .dout(load_data_o)
     );

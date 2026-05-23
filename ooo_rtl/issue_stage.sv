@@ -121,7 +121,7 @@ import issue_stage_pkg::*;
 
     // always_comb begin
         fetch_pkt_o.funct_unit = get_ex_mem_type(instr_op_ff, fetch_pkt_o.valid);
-        fetch_pkt_o.func_unit_one_hot = get_ex_mem_type_one_hot(instr_op_ff, fetch_pkt_o.valid);
+        fetch_pkt_o.funct_unit_one_hot = get_ex_mem_type_one_hot(instr_op_ff, fetch_pkt_o.valid);
         fetch_pkt_o.src0_data = phys_reg_src0_data;
         // assert ((instr_ff.imm_valid == 1 && instr_ff.store == 1) || instr_ff.store == 0);
         // fetch_pkt_o.src1_data   = phys_reg_src1_data;
@@ -130,7 +130,7 @@ import issue_stage_pkg::*;
         end else begin
             fetch_pkt_o.src1_data = format_20b_to_datawidth(imm_compr_ff, instr_op_ff);
         end
-        fetch_pkt_o.mem_offset_or_brnch_imm =  (fetch_pkt_o.funct_unit == MEM || fetch_pkt_o.funct_unit == BRANCH) ? format_20b_to_datawidth(imm_compr_ff, instr_op_ff) : '0;
+        fetch_pkt_o.mem_offset_or_brnch_imm =  (fetch_pkt_o.funct_unit == MEM || fetch_pkt_o.funct_unit == BRANCH) ? format_20b_to_datawidth(imm_compr_ff, instr_op_ff) : '{default:'0};
         assert ((instr_ff.imm_valid == 1 && instr_ff.store == 1) || instr_ff.store == 0);
     end
 
@@ -153,7 +153,7 @@ import issue_stage_pkg::*;
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            pc_buffer <= '0;
+            pc_buffer <= '{default:'0};
         end else begin
             if (buff_inst_i.wr_en) begin
                 pc_buffer[buff_inst_i.wr_ptr] <= buff_inst_i.pc_in;
