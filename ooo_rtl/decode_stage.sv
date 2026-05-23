@@ -32,6 +32,9 @@
 module decode_stage 
     import decode_pkg::*;
     import writeback_pkg::*;
+    import instr_fetch_pkg::*;
+    import issue_queue_pkg::*;
+    import issue_stage_pkg::*;
 (
     input clk,
     input rst,
@@ -59,10 +62,10 @@ module decode_stage
     output iq_output_t decode_instr_o,
 
     // instantiating rob entry
-    output rob_instance_pkt_t rob_instance_pkt_o
+    output rob_instance_pkt_t rob_instance_pkt_o,
 
     // to if stage
-    output logic is_spec_instr_o
+    output logic is_spec_instr_o,
 
     output spec_exec_buffer_instance_pkt_t spec_exec_buffer_instance_pkt_o,
 
@@ -74,7 +77,7 @@ module decode_stage
     /* input flip flops */
     if_output_pkt_t if_input_ff;
 
-    free_list_update_pkt_t free_list_update_pkt_ff;
+    // free_list_update_pkt_t free_list_update_pkt_ff;
     // rename_table_update_pkt_t rename_table_update_pkt_ff;
     // issue_queue_update_pkt_t issue_queue_update_pkt_ff;
     rt_and_iq_pending_update_pkt_t rt_iq_update_pkt_ff;
@@ -92,9 +95,8 @@ module decode_stage
     logic [$clog2(PRF_COUNT)-1:0] free_list_free_ptr;
     logic free_list_empty;
 
-    free_list free_list_inst #(
-        parameter PRF_COUNT
-    ) (
+    free_list free_list_inst
+    (
         .clk(clk),
         .rst(rst),
         // writing
@@ -106,7 +108,8 @@ module decode_stage
         .rd_en_i(free_list_rd_en),
         .free_ptr_o(free_list_free_ptr),
         // state
-        .empty_o(free_list_empty)
+        .no_free_o(free_list_empty)
+        // .empty_o(free_list_empty)
     );
 
     /* rename table */
@@ -125,9 +128,7 @@ module decode_stage
     logic [4:0] rename_table_rob_dest_arf;
     logic [$clog2(PRF_COUNT)-1:0] rename_table_rob_dest_prf;
 
-    rename_table_async_read rename_table_async_read_inst #(
-        parameter PRF_COUNT = 32
-    ) (
+    rename_table_async_read rename_table_async_read_inst(
         .clk(clk),
         .rst(rst),
         // initial write
@@ -196,11 +197,10 @@ module decode_stage
         // 1 extra: 1 for reg fetch stage
         .future_exec_stage_slots_o(issue_queue_future_exec_stage_slots),
         // stalling or clearing
-        .clear_i(mini_scoreboard_clear), // same functionality as rst
+        .clear_i(mini_scoreboard_clear) // same functionality as rst
     );
 
-
-    logic instr_ff = if_input_ff.instr;
+    logic [31:0] instr_ff = if_input_ff.instr;
 
     // setting rest of rename table inputs
     always_comb begin
@@ -337,7 +337,8 @@ module decode_stage
 
         pc_buff_inst_o.wr_en = pc_instr;
         pc_buff_inst_o.wr_ptr = pc_instr_counter;
-        pc_buff_inst_o.pc_in = if_instr_i.pc;
+        // pc_buff_inst_o.pc_in = if_instr_i.pc;
+        pc_buff_inst_o.pc_in = if_input_ff.pc;
 
     end
 
@@ -350,7 +351,7 @@ endmodule
 
 // automatically outputs the next available free prf pointer
 module free_list 
-import decode_utils::*;
+import issue_queue_pkg::*;
 (
     input clk,
     input rst,
@@ -436,7 +437,7 @@ module rename_table_async_read #(
     output logic src1_pending_o,
     // ports for rob_instance_creation logic to read from
     input logic [4:0] rob_dest_arf_i,
-    output logic [$clog2(PRF_COUNT)-1:0] rob_dest_prf_o
+    output logic [$clog2(PRF_COUNT)-1:0] rob_dest_prf_o,
     // ports for committing
     input logic commit_en_i,
     input logic [4:0] commit_arf_i,
@@ -481,7 +482,7 @@ module rename_table_async_read #(
                 end
                 if (writeback_en_i) begin
                     if (rename_table[arf_ptr_sb_i].prf_ptr == prf_ptr_sb_i)
-                        rename_table[i].pending <= 1'b0;
+                        rename_table[arf_ptr_sb_i].pending <= 1'b0;
                 end
             end
             if (commit_en_i) begin
@@ -520,11 +521,11 @@ module issue_queue
     
     
     // output logic [INSTR_COMPRESS_WIDTH-1:0] compr_instr_o;
-    output iq_output_t instr_o;
+    output iq_output_t instr_o,
     // also other output information 
     output logic empty_o,
     output logic full_o,
-    output logic all_stalled_o, // when all current entries are still stalling, does also account for input "prf_dst_i"
+    output logic all_stalled_o // when all current entries are still stalling, does also account for input "prf_dst_i"
 );  
 
     iq_entry_t iq [0:IQ_SIZE-1];
@@ -603,7 +604,7 @@ module issue_queue
     always_comb begin
         priority_ready_array = '0;
         instr_o = '0; 
-        if (!empty && !all_stalled_o) begin
+        if (!empty_o && !all_stalled_o) begin
             // search for highest priority "ready" entry
             for (int i = 0; i < IQ_SIZE; i++) begin
                 if (ready_array[i]) begin
@@ -616,7 +617,7 @@ module issue_queue
     end
     // synchronously updating validity
     always_ff @(posedge clk) begin
-        if (!empty && !all_stalled_o) begin
+        if (!empty_o && !all_stalled_o) begin
             for (int i = 0; i < IQ_SIZE; i++) begin
                 if (priority_ready_array[i]) begin
                     iq[i].valid <= 0;
@@ -639,7 +640,7 @@ import issue_queue_pkg::*;
     // 1 extra: 1 for reg fetch stage
     output logic [MAX_EXEC_CYCLE:0] future_exec_stage_slots_o,
     // stalling or clearing
-    input clear_i, // same functionality as rst
+    input clear_i // same functionality as rst
 );
 
     // 2 extra: 1 for reg fetch stage, 1 for wb to follow design from slides

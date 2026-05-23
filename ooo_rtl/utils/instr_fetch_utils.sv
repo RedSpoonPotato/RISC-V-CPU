@@ -79,7 +79,7 @@ package brnch_predict_pkg;
     parameter SET_ASSOCIATIVITY = 1;
     // parameter OUTCOME_DELAY = 2; // # of cycles until the "brnch_taken_i" result comes in    
 
-    // 32-bit instr: [TAG][INDEX][BLOCK_OFFSET]
+    // 32-bit address: [TAG][INDEX][BLOCK_OFFSET]
     localparam INDEX_WIDTH = $clog2(CACHE_LINES);
     localparam BLOCK_OFFSET = 2; // each instr is 4 bytes
     localparam TAG_WIDTH = DATA_WIDTH - INDEX_WIDTH - BLOCK_OFFSET;
@@ -129,7 +129,7 @@ package trgt_buffer_pkg;
     parameter SET_ASSOCIATIVITY = 1;
     // parameter OUTCOME_DELAY = 2; // # of cycles until the "brnch_taken_i" result comes in    
 
-    // 32-bit instr: [TAG][INDEX][BLOCK_OFFSET]
+    // 32-bit address: [TAG][INDEX][BLOCK_OFFSET]
     localparam INDEX_WIDTH = $clog2(CACHE_LINES);
     localparam BLOCK_OFFSET = 2; // each instr is 4 bytes
     localparam TAG_WIDTH = DATA_WIDTH - INDEX_WIDTH - BLOCK_OFFSET;
@@ -155,7 +155,7 @@ package trgt_buffer_pkg;
     typedef struct packed {
         logic                   valid;
         logic [TAG_WIDTH-1:0]   tag;
-        logic [INSTR_WIDTH-1:0] trgt;
+        logic [DATA_WIDTH-1:0] trgt;
     } trgt_buff_cache_line_t;
 
     typedef struct packed {

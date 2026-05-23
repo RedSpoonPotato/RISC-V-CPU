@@ -8,7 +8,7 @@ package writeback_pkg;
     localparam IMM_COMPRESS = 20;
 
     import decode_pkg::PRF_COUNT;
-    import utils::DATA_WIDTH;
+    import decode_pkg::DATA_WIDTH;
 
 
 
@@ -63,12 +63,9 @@ package writeback_pkg;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
     } commit_stage_pkt_t;
 
-    typedef struct packed {
-        
-    };
 
     function automatic rob_entry_t rob_instantiation (
-        input rob_instance_pkt_t rob_instance_pkt_i;
+        input rob_instance_pkt_t rob_instance_pkt_i
     );
         rob_entry_t rob_entry;
         rob_entry.speculative = rob_instance_pkt_i.speculative;
@@ -81,7 +78,7 @@ package writeback_pkg;
     endfunction
 
     function automatic commit_stage_pkt_t set_commit_pkt (
-        input rob_entry_t rob_entry_i;
+        input rob_entry_t rob_entry_i
     );
         commit_stage_pkt_t commit_pkt;
         commit_pkt.wr_en = 1;

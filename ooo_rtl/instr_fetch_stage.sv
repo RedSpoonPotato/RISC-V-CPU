@@ -26,6 +26,8 @@
 */
 
 module instr_fetch_stage 
+import instr_fetch_pkg::*;
+
 (
     input clk,
     input rst,
@@ -49,9 +51,9 @@ module instr_fetch_stage
     shift_reg_pkt_t spec_exec_answr_pkt_ff;
     always_ff @(posedge clk) begin
         spec_exec_answr_pkt_ff <= spec_exec_answr_pkt_i;
+        assert(spec_exec_answr_pkt_ff.jalr_en && spec_exec_answr_pkt_ff.branch_en);
     end
 
-    assert(spec_exec_answr_pkt_ff.jalr_en && spec_exec_answr_pkt_ff.branch_en);
 
     logic crrct_trgt_en;
     assign crrct_trgt_en = spec_exec_answr_pkt_ff.jalr_en || spec_exec_answr_pkt_ff.branch_en;
@@ -81,7 +83,7 @@ module instr_fetch_stage
     // reading
     // logic rd_en_i,
     logic tb_hit;
-    logic [INSTR_WIDTH-1:0] tb_predict_trgt;
+    logic [DATA_WIDTH-1:0] tb_predict_trgt;
     trgt_buffer trgt_buffer_inst
     (
         .clk(clk),
@@ -98,6 +100,7 @@ module instr_fetch_stage
         .old_pc_i(shift_reg_pkt_2.pc)
     );
 
+    logic [DATA_WIDTH-1:0] instr_mem_addr;
     assign instr_mem_addr = instr_fetch_ctrl_pkt_i.valid ? instr_fetch_ctrl_pkt_i.instr_addr : if_output_pkt_o.pc;
 
     sram_sync_read #(
@@ -121,6 +124,7 @@ module instr_fetch_stage
         // making predictions
         .predict_trgt_i(tb_predict_trgt),
         .brnch_pred_i(if_output_pkt_o.bp_pred),
+        .old_pc_i(if_output_pkt_o.pc),
         // outputs
         .is_spec_instr_i(is_spec_instr_i),
         .rd_en_i(spec_exec_answr_pkt_ff.trgt_en),
@@ -149,9 +153,10 @@ module instr_fetch_stage
         if (rst) begin
             if_output_pkt_o.pc <= '0;
         end else begin
-            if (stall) begin // NEED TO DRIVE THIS
-                if_output_pkt_o.pc <= if_output_pkt_o.pc;
-            end else if (trgt_mispredict && ~branch_mispredict) begin: JumpMispredict
+            // if (stall) begin // NEED TO DRIVE THIS
+                // if_output_pkt_o.pc <= if_output_pkt_o.pc;
+            // end else if (trgt_mispredict && ~branch_mispredict) begin: JumpMispredict
+            if (trgt_mispredict && ~branch_mispredict) begin: JumpMispredict
                 if_output_pkt_o.pc <= spec_exec_answr_pkt_ff.calc_pc;
             end else if (branch_mispredict) begin
                 if_output_pkt_o.pc <= (spec_exec_answr_pkt_ff.branch_pred) ? 
@@ -171,6 +176,8 @@ endmodule
 
 module trgt_shift_register
 import instr_fetch_pkg::*;
+import decode_pkg::DATA_WIDTH;
+
 (
     input logic clk,
     input logic rst,
@@ -201,6 +208,7 @@ import instr_fetch_pkg::*;
         end
     end
 
+
     fifo_modded #(
         .DEPTH(MAX_SPEC_EXEC_INSTRS),
         .DATA_WIDTH($bits(shift_reg_pkt_2_t)),
@@ -208,9 +216,9 @@ import instr_fetch_pkg::*;
     ) shift_reg_fifo (
         .clk(clk),
         .rst(rst),
+        .data_i(predicted_trgt_and_pred_pkt_ff),
         .rd_en_i(rd_en_i),
         .wr_en_i(is_spec_instr_i),
-        .data_i(predicted_trgt_and_pred_pkt_ff),
         .data_o(shift_reg_pkt_2_o)
     );
 
@@ -255,6 +263,7 @@ endmodule
 
 module branch_predictor
 import brnch_predict_pkg::*;
+import decode_pkg::DATA_WIDTH;
 (
     input clk,
     input rst,
@@ -262,14 +271,13 @@ import brnch_predict_pkg::*;
     // input logic rd_en_i,
     input logic [DATA_WIDTH-1:0] curr_addr_i,
     output logic hit_o,
-    output logic pred_o
+    output logic pred_o,
     // updating state
     input logic write_en_i,
-    input logic correct_result_i
-    input logic [INSTR_WIDTH-1:0] old_pc_i,
+    input logic correct_result_i,
+    input logic [DATA_WIDTH-1:0] old_pc_i
 );
-    // 32-bit instr: [TAG][INDEX][BLOCK_OFFSET]
-
+    // 32-bit address: [TAG][INDEX][BLOCK_OFFSET]
     logic [TAG_WIDTH-1:0] curr_tag;
     logic [INDEX_WIDTH-1:0] curr_index;
     assign curr_tag = curr_addr_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
@@ -388,6 +396,7 @@ endmodule
 // works for both branch (alt trgt's, not pc+4) and jumping
 module trgt_buffer
 import trgt_buffer_pkg::*;
+import decode_pkg::DATA_WIDTH;
 (
     input clk,
     input rst,
@@ -395,13 +404,13 @@ import trgt_buffer_pkg::*;
     // input logic rd_en_i,
     input logic [DATA_WIDTH-1:0] curr_addr_i,
     output logic hit_o,
-    output logic [INSTR_WIDTH-1:0] predict_trgt_o
+    output logic [DATA_WIDTH-1:0] predict_trgt_o,
     // updating state
     input logic write_en_i,
-    input logic [INSTR_WIDTH-1:0] correct_trgt_i,
-    input logic [INSTR_WIDTH-1:0] old_pc_i,
+    input logic [DATA_WIDTH-1:0] correct_trgt_i,
+    input logic [DATA_WIDTH-1:0] old_pc_i
 );
-    // 32-bit instr: [TAG][INDEX][BLOCK_OFFSET]
+    // 32-bit address: [TAG][INDEX][BLOCK_OFFSET]
 
     logic [TAG_WIDTH-1:0] curr_tag;
     logic [INDEX_WIDTH-1:0] curr_index;
@@ -477,10 +486,10 @@ import trgt_buffer_pkg::*;
                 if (curr_miss_condition) begin
                     // output
                     hit_o = 1'b0;
-                    pred_trgt_o = '0; // default to pc + 4
+                    predict_trgt_o = '0; // default to pc + 4
                 end else begin
                     hit_o = 1'b1;
-                    pred_trgt_o = tb_cache[curr_index][curr_hit_ptr].trgt;
+                    predict_trgt_o = tb_cache[curr_index][curr_hit_ptr].trgt;
                 end
             end
 

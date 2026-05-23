@@ -8,6 +8,9 @@
 
 module writeback_stage
 import writeback_pkg::*;
+import issue_stage_pkg::*;
+import exec_mem_utils_pkg::*;
+import instr_fetch_pkg::*;
 (
     input clk,
     input rst,
@@ -75,27 +78,34 @@ endmodule
 module spec_exec_answer_buffer
 import writeback_pkg::*;
 import exec_mem_utils_pkg::*;
+import instr_fetch_pkg::*;
 (
     input clk,
     input rst,
     // updating state
     // input ex_mem_stage_pkt_t ex_mem_stage_pkt_i,
-    input spec_exec_answr_pkt_t spec_exec_answr_i
+    input spec_exec_answr_pkt_t spec_exec_answr_i,
     // state
     output full_o,
     // instantiation
     input spec_exec_buffer_instance_pkt_t spec_exec_buffer_instance_pkt_i,
     // comitting
-    input logic commit_en_i
+    input logic commit_en_i,
     output shift_reg_pkt_t spec_exec_answr_pkt_o
 );
 
     shift_reg_pkt_t sea_buff [0:MAX_SPEC_EXEC_INSTRS-1];
     logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] head_ptr;
     logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] tail_ptr;
+    logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] head_ptr_lower;
+    logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] tail_ptr_lower;
+    assign head_ptr_lower = head_ptr[$clog2(MAX_SPEC_EXEC_INSTRS)-1:0];
+    assign tail_ptr_lower = tail_ptr[$clog2(MAX_SPEC_EXEC_INSTRS)-1:0];
+
+
 
     assign full_o = 
-        tail_ptr[$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] == head_ptr[$clog2(MAX_SPEC_EXEC_INSTRS)-1:0]
+        tail_ptr_lower == head_ptr_lower
          && tail_ptr[$clog2(MAX_SPEC_EXEC_INSTRS)] == head_ptr[$clog2(MAX_SPEC_EXEC_INSTRS)];
 
     // buffer management
@@ -114,7 +124,7 @@ import exec_mem_utils_pkg::*;
                 sea_buff[spec_exec_answr_i.spec_exec_ptr].trgt_en <= 1'b1;
                 sea_buff[spec_exec_answr_i.spec_exec_ptr].trgt <= spec_exec_answr_i.calc_pc;
                 sea_buff[spec_exec_answr_i.spec_exec_ptr].branch_en <= spec_exec_answr_i.branch_en;
-                sea_buff[spec_exec_answr_i.spec_exec_ptr].branch_taken <= spec_exec_answr_i.branch_taken;
+                sea_buff[spec_exec_answr_i.spec_exec_ptr].branch_pred <= spec_exec_answr_i.branch_taken;
             end
             // committing
             if (commit_en_i) begin
@@ -126,7 +136,7 @@ import exec_mem_utils_pkg::*;
     // committing
     always_comb begin
         if (commit_en_i) begin
-            spec_exec_answr_pkt_o = sea_buff[tail_ptr];
+            spec_exec_answr_pkt_o = sea_buff[tail_ptr_lower];
         end else begin
             spec_exec_answr_pkt_o = '0;
         end
@@ -137,6 +147,7 @@ endmodule
 module rob_buffer
 import writeback_pkg::*;
 import exec_mem_utils_pkg::*;
+import issue_stage_pkg::*;
 (
     input clk,
     input rst,
@@ -158,9 +169,13 @@ import exec_mem_utils_pkg::*;
     rob_entry_t reorder_buffer [0:ROB_COUNT-1];
     logic [$clog2(ROB_COUNT):0] head_ptr;
     logic [$clog2(ROB_COUNT):0] tail_ptr;
+    logic [$clog2(ROB_COUNT)-1:0] head_ptr_lower;
+    logic [$clog2(ROB_COUNT)-1:0] tail_ptr_lower;
+    assign head_ptr_lower = head_ptr[$clog2(ROB_COUNT)-1:0];
+    assign tail_ptr_lower = tail_ptr[$clog2(ROB_COUNT)-1:0];
 
     assign rob_full_o = 
-        tail_ptr[$clog2(ROB_COUNT)-1:0] == head_ptr[$clog2(ROB_COUNT)-1:0]
+        tail_ptr_lower == head_ptr_lower
          && tail_ptr[$clog2(ROB_COUNT)] == head_ptr[$clog2(ROB_COUNT)];
     // assign rob_empty_o = tail_ptr == head_ptr;
 
@@ -176,8 +191,8 @@ import exec_mem_utils_pkg::*;
         end else begin
             // instantiation
             if (rob_instance_pkt_i.wr_en && !rob_full_o) begin
-                reorder_buffer[head_ptr] <= rob_instantiation(rob_instance_pkt_i);
-                reorder_buffer[head_ptr].state <= PENDING;
+                reorder_buffer[head_ptr_lower] <= rob_instantiation(rob_instance_pkt_i);
+                reorder_buffer[head_ptr_lower].state <= PENDING;
                 head_ptr <= head_ptr + 1;
             end
             // updating state
@@ -185,8 +200,8 @@ import exec_mem_utils_pkg::*;
                 reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].state <= FINISHED;
             end
             // committing
-            if (reorder_buffer[tail_ptr].state == FINISHED) begin
-                reorder_buffer[tail_ptr].state <= FREE;
+            if (reorder_buffer[tail_ptr_lower].state == FINISHED) begin
+                reorder_buffer[tail_ptr_lower].state <= FREE;
                 tail_ptr <= tail_ptr + 1;
             end
         end 
@@ -194,8 +209,8 @@ import exec_mem_utils_pkg::*;
 
     // committing
     always_comb begin
-        if (reorder_buffer[tail_ptr].state == FINISHED) begin
-            commit_stage_pkt_o = set_commit_pkt(reorder_buffer[tail_ptr]);
+        if (reorder_buffer[tail_ptr_lower].state == FINISHED) begin
+            commit_stage_pkt_o = set_commit_pkt(reorder_buffer[tail_ptr_lower]);
         end else begin
             commit_stage_pkt_o.wr_en <= 0;
         end
@@ -217,7 +232,7 @@ import exec_mem_utils_pkg::*;
     // updating pending state in issue queue and rename table
     always_comb begin
         if (ex_mem_stage_pkt_i.instr_valid) begin
-            assert(ex_mem_stage_pkt_i.instr_valid);
+            // assert(ex_mem_stage_pkt_i.instr_valid);
             rt_iq_update_pkt_o.wr_en = ex_mem_stage_pkt_i.dest_valid; 
             rt_iq_update_pkt_o.prf_ptr = reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].phys_reg_addr;
             rt_iq_update_pkt_o.arf_ptr = reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].arch_reg_addr;
@@ -226,6 +241,7 @@ import exec_mem_utils_pkg::*;
             rt_iq_update_pkt_o.prf_ptr = '0;
             rt_iq_update_pkt_o.arf_ptr = '0;
         end
+        assert(ex_mem_stage_pkt_i.instr_valid);
     end
 
 

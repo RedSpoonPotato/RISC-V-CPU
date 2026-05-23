@@ -9,6 +9,10 @@
     note: need ot got back to issue_utils and account for pc_plus_4 in fetch_packet_t
 
     Need to edit mem stage to account for differetn sizes
+
+    go back to funct_unit_scoreboard uprorerly desifined function, see exec_mem_utils.sv
+
+    did we implement the different mem access sizes (byte, half word, word)
 */
 
 module execute_memory_stage 
@@ -16,6 +20,7 @@ import exec_mem_utils_pkg::*;
 import issue_queue_pkg::*;
 import writeback_pkg::*;
 import instr_fetch_pkg::*;
+import issue_stage_pkg::*;
 (
     input clk,
     input rst,
@@ -36,9 +41,9 @@ import instr_fetch_pkg::*;
     fetch_packet_t fetch_pkt_ff;
     always_ff @(posedge clk) begin
         fetch_pkt_ff <= fetch_pkt_i;
+        assert (fetch_pkt_ff.valid || fetch_pkt_ff.funct_unit == NOOP) else $fatal("Invalid instruction issued to execute stage");
     end
 
-    assert (fetch_pkt_ff.valid || fetch_pkt_ff.funct_unit == NOOP) else $fatal("Invalid instruction issued to execute stage");
 
     // routing instruction
     EX_MEM_TYPE scoreboard_curr_funct_unit_output;
@@ -63,9 +68,9 @@ import instr_fetch_pkg::*;
     // alu path (1 cycle)
     logic [DATA_WIDTH-1:0] alu_result;
     logic alu_zero;
-    alu_stage alu_stage_inst (
-        .clk(clk),
-        .rst(rst),
+    alu_stage #(
+        .DATA_WIDTH(DATA_WIDTH)
+    ) alu_stage_inst (
         .en_i(fetch_pkt_ff.funct_unit_one_hot[ALU]),
         .a_i(fetch_pkt_ff.src0_data),
         .b_i(fetch_pkt_ff.src1_data),
@@ -78,7 +83,7 @@ import instr_fetch_pkg::*;
     // logic [DATA_WIDTH-1:0] mem_load_data;
     mem_stage mem_stage_inst (
         .clk(clk),
-        .rst(rst),
+        // .rst(rst),
         .en_i(fetch_pkt_ff.funct_unit_one_hot[MEM]),
         .store_i(fetch_pkt_ff.store),
         .funct_code_i(fetch_pkt_ff.funct_code),
@@ -92,8 +97,8 @@ import instr_fetch_pkg::*;
     // branch path (1 cycle for now): if(rs1 == rs2) PC += imm
     logic [DATA_WIDTH-1:0] brnch_trgt;
     branch_stage branch_stage_inst (
-        .clk(clk),
-        .rst(rst),
+        // .clk(clk),
+        // .rst(rst),
         .en_i(fetch_pkt_ff.funct_unit_one_hot[BRANCH]),
         .funct_code_i(fetch_pkt_ff.funct_code),
         .src0_data_i(fetch_pkt_ff.src0_data),
@@ -108,8 +113,8 @@ import instr_fetch_pkg::*;
     // also for jal: rd = PC+4; PC = PC + imm
     logic [DATA_WIDTH-1:0] jump_trgt;
     jalr_stage jalr_stage_inst (
-        .clk(clk),
-        .rst(rst),
+        // .clk(clk),
+        // .rst(rst),
         .en_i(fetch_pkt_ff.funct_unit_one_hot[JALR]),
         .funct_code_i(fetch_pkt_ff.funct_code),
         .pc_i(fetch_pkt_ff.pc),
@@ -122,8 +127,8 @@ import instr_fetch_pkg::*;
     // auipc path: rd = PC + (imm << 12)
     // logic [DATA_WIDTH-1:0] auipc_result;
     auipc_stage auipc_stage_inst (
-        .clk(clk),
-        .rst(rst),
+        // .clk(clk),
+        // .rst(rst),
         .en_i(fetch_pkt_ff.funct_unit_one_hot[AUIPC]),
         .pc_i(fetch_pkt_ff.pc),
         .imm_i(fetch_pkt_ff.src1_data), // for now, just using imm_compr as imm, will change later
@@ -182,6 +187,7 @@ endmodule
 module funct_unit_scoreboard
 import issue_queue_pkg::*;
 import exec_mem_utils_pkg::*;
+import issue_stage_pkg::*;
 (
     input clk,
     input rst,
@@ -194,20 +200,21 @@ import exec_mem_utils_pkg::*;
     output EX_MEM_TYPE current_funct_unit_output_o,
     output ex_mem_scoreboard_data_t sb_data_pkt_o,
     // stalling or clearing
-    input clear_i, // same functionality as rst
+    input clear_i // same functionality as rst
 );
-    EX_MEM_TYPE exec_stage_slots_int [MAX_EXEC_CYCLE_V2-2:0];
-    ex_mem_scoreboard_data_t ex_mem_scoreboard_data_slots [MAX_EXEC_CYCLE_V2-2:0];
+    EX_MEM_TYPE exec_stage_slots_int [MAX_EXEC_CYCLE_DELAY-1:0];
+    ex_mem_scoreboard_data_t ex_mem_scoreboard_data_slots [MAX_EXEC_CYCLE_DELAY-1:0];
 
-    logic [] new_op_delay = get_exec_stage_delays_v2(funct_unit_i);
+    // COME BACK TO THIS FUNCTION AND SIZING, NOT PROPERLY SET YET
+    logic [$clog2(MAX_EXEC_CYCLE_V2)-1:0] new_op_delay = get_exec_stage_delays_v3(funct_unit_i);
 
     always_ff @(posedge clk) begin
         if (rst || clear_i) begin
             exec_stage_slots_int <= '{default: NOOP};
             ex_mem_scoreboard_data_slots <= '{default: '0};
         end else begin
-            for (int i = MAX_EXEC_CYCLE_V2-2; i >= 0; i--) begin
-                if (i == MAX_EXEC_CYCLE_V2-2) begin
+            for (int i = MAX_EXEC_CYCLE_DELAY-1; i >= 0; i--) begin
+                if (i == MAX_EXEC_CYCLE_DELAY-1) begin
                     exec_stage_slots_int[i] <= NOOP;
                     ex_mem_scoreboard_data_slots[i] <= '0;
                 end else begin
@@ -240,6 +247,7 @@ endmodule
 
 module auipc_stage
 import issue_queue_pkg::*;
+import decode_pkg::DATA_WIDTH;
 (
     input logic en_i,
     input logic [DATA_WIDTH-1:0] pc_i,
@@ -264,6 +272,7 @@ endmodule
 
 module jalr_stage
 import issue_queue_pkg::*;
+import issue_stage_pkg::*;
 (
     input logic en_i,
     input logic [DATA_WIDTH-1:0] pc_i,
@@ -305,6 +314,7 @@ endmodule
 
 module branch_unit
 import issue_queue_pkg::*;
+import issue_stage_pkg::*;
 (
     input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
     input logic [DATA_WIDTH-1:0] src0_data_i,
@@ -334,6 +344,7 @@ endmodule
 // branch: doing comparison, trgt address is done in decode stage, or even in IF 2nd stage
 module branch_stage
 import issue_queue_pkg::*;
+import issue_stage_pkg::*;
 (
     input logic en_i,
     input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
@@ -380,6 +391,7 @@ endmodule
 module mem_stage 
 import issue_queue_pkg::*;
 import decode_pkg::*;
+import issue_stage_pkg::*;
 (
     input clk,
     // input rst,
@@ -421,10 +433,10 @@ import decode_pkg::*;
 endmodule
 
 module alu #(
-    parameter DATA_WIDTH = 32,
+    parameter DATA_WIDTH = 32
 ) (
     input  [DATA_WIDTH-1:0] a_i,
-    input  [DATA_WIDTH-1:0] b_i
+    input  [DATA_WIDTH-1:0] b_i,
     input  [3:0]  alu_cntrl_i,
     output logic [DATA_WIDTH-1:0] result_o,
     output logic zero_o
@@ -452,20 +464,22 @@ module alu #(
             SLL:  result_o = a_i << b_i[4:0];
             SRL:  result_o = a_i >> b_i[4:0];
             SRA:  result_o = $signed(a_i) >>> b_i[4:0];
-            SLT:  result_o = ($signed(a_i) < $signed(b_i)) ? DATA_WIDTH'd1 : DATA_WIDTH'd0;
-            SLTU: result_o = (a_i < b_i) ? DATA_WIDTH'd1 : DATA_WIDTH'd0;
+            SLT:  result_o = ($signed(a_i) < $signed(b_i)) ? 1 : 0;
+            SLTU: result_o = (a_i < b_i) ? 1 : 0;
 
             // will add rest of rv32m instructions later
-            default:  result_o = DATA_WIDTH'b010;
+            default:  result_o = 3'b010;
         endcase
     end
     // The Zero flag is asserted if the result_o is all zeros.
-    assign zero_o = (result_o == DATA_WIDTH'b0);
+    assign zero_o = (result_o == 0);
 
 endmodule
 
-module alu_stage #(
-    parameter DATA_WIDTH = 32,
+module alu_stage 
+import issue_stage_pkg::*;
+#(
+    parameter DATA_WIDTH = 32
 ) (
     input  en_i,
     input  [DATA_WIDTH-1:0] a_i,
@@ -475,15 +489,15 @@ module alu_stage #(
     output logic zero_o
 );
 
-    // logic [DATA_WIDTH-1:0] a, b;
-    // logic [4:0] alu_cntrl;
+    logic [DATA_WIDTH-1:0] a, b;
+    logic [FUNCT_COMB_WIDTH-1:0] alu_cntrl;
 
     alu #(
         .DATA_WIDTH(DATA_WIDTH)
     ) alu_inst (
         .a_i(a),
         .b_i(b),
-        .alu_cntrl_i(alu_cntrl),
+        .alu_cntrl_i(alu_cntrl), // going to assume, but unsure if we truncate
         .result_o(result_o),
         .zero_o(zero_o)
     );

@@ -4,8 +4,34 @@ package exec_mem_utils_pkg;
     import issue_queue_pkg::*;
     import decode_pkg::*;
     import writeback_pkg::*;
+    import issue_stage_pkg::*;
+    import instr_fetch_pkg::*;
+
+    localparam MEM_ENTRY_NUM = 1024;
+    localparam
 
 
+    //  COMEBACK AND DEFINE
+    // function automatic logic [$clog2(MAX_EXEC_CYCLE_V2-1)-1:0] get_exec_stage_delays_v2 (
+    //     input EX_MEM_TYPE funct_unit_i,
+    // );
+    //     return MAX_EXEC_CYCLE_V2-1;
+    // endfunction
+
+    // function automatic logic [$clog2(MAX_EXEC_CYCLE_DELAY)-1:0] get_exec_stage_delays_v3(
+    function automatic logic [$clog2(MAX_EXEC_CYCLE_V2)-1:0] get_exec_stage_delays_v3(
+        input EX_MEM_TYPE funct_unit_type
+    );
+        case (funct_unit_type)
+            ALU: return 0;
+            MEM: return 1;
+            BRANCH: return 0;
+            JALR: return 0;
+            AUIPC: return 0;
+            default:
+                return 0; // Default to 1 cycle for unsupported types
+        endcase
+    endfunction
 
     typedef struct packed {
         // ex_mem_stage_pkt_t ex_mem_stage_pkt;
@@ -34,7 +60,7 @@ package exec_mem_utils_pkg;
 
 
     function automatic ex_mem_scoreboard_data_t set_ex_mem_scoreboard_data (
-        input fetch_packet_t fetch_pkt_i;
+        input fetch_packet_t fetch_pkt_i
     );
         ex_mem_scoreboard_data_t ex_mem_scoreboard_data;
         ex_mem_scoreboard_data.instr_valid = fetch_pkt_i.valid;

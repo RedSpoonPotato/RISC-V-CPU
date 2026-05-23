@@ -9,6 +9,11 @@ package issue_queue_pkg;
     localparam IMM_COMPRESS = 20;
 
     import instr_fetch_pkg::MAX_SPEC_EXEC_INSTRS;
+    import writeback_pkg::ROB_COUNT;
+    import decode_pkg::DATA_WIDTH;
+    import instr_fetch_pkg::MAX_PC_INSTRS;
+
+
 
 
     typedef struct packed {
@@ -91,22 +96,22 @@ package issue_queue_pkg;
     } iq_output_t;
 
     // SUBJECT TO CHANGE
-    function automatic int get_exec_stage_delays (
-        input [INSTR_COMPRESS_WIDTH-1:0] op;
+    function automatic logic [$clog2(MAX_EXEC_CYCLE)-1:0] get_exec_stage_delays (
+        input [INSTR_COMPRESS_WIDTH-1:0] op
     );
         return 3;
     endfunction
 
     // SUBJECT TO CHANGE
-    function automatic int get_exec_stage_delays_from_instr (
-        input [31:0] instr;
+    function automatic logic [$clog2(MAX_EXEC_CYCLE)-1:0] get_exec_stage_delays_from_instr (
+        input [31:0] instr
     );
         return 3;
     endfunction
 
     // sets some entries to be 0, will be overwritten later
     function automatic iq_entry_t instr_to_iq_entry_partial (
-        input [31:0] instr;
+        input [31:0] instr
     );
         iq_entry_t iq_entry;
         iq_entry.valid = 0;
@@ -171,40 +176,40 @@ package issue_queue_pkg;
     // import decode_pkg::classify_instr;
 
     // UNSURE IF THIS CORRECT
-    function automatic imm_gen_32 (
-        input  logic [31:0] instruction,
-    );
-        logic [6:0] opcode;
-        assign opcode = instruciton[6:0];
-        // Internal logic for immediate generation
-        case (opcode)
-            // I-type (ADDI, SLTI, JALR, LW, etc.)
-            7'b0010011, 7'b0000011, 7'b1100111: begin
-                immediate = {{20{instruction[31]}}, instruction[31:20]};
-            end
-            // S-type (SW, SB, etc.)
-            7'b0100011: begin
-                immediate = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
-            end
-            // B-type (BEQ, BNE, etc.)
-            7'b1100011: begin
-                immediate = {{20{instruction[31]}}, instruction[7], instruction[30:25], instruction[11:8], 1'b0};
-            end
-            // U-type (LUI, AUIPC)
-            7'b0110111, 7'b0010111: begin
-                immediate = {instruction[31:12], 12'b0};
-            end
-            // J-type (JAL)
-            7'b1101111: begin
-                immediate = {{12{instruction[31]}}, instruction[19:12], instruction[20], instruction[30:21], 1'b0};
-            end
-            // R-type
-            default: begin
-                immediate = 32'b0;
-            end
-        endcase
-        return immediate;
-    endfunction
+    // function automatic imm_gen_32 (
+    //     input logic [31:0] instruction,
+    // );
+    //     logic [6:0] opcode;
+    //     assign opcode = instruction[6:0];
+    //     // Internal logic for immediate generation
+    //     case (opcode)
+    //         // I-type (ADDI, SLTI, JALR, LW, etc.)
+    //         7'b0010011, 7'b0000011, 7'b1100111: begin
+    //             immediate = {{20{instruction[31]}}, instruction[31:20]};
+    //         end
+    //         // S-type (SW, SB, etc.)
+    //         7'b0100011: begin
+    //             immediate = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
+    //         end
+    //         // B-type (BEQ, BNE, etc.)
+    //         7'b1100011: begin
+    //             immediate = {{20{instruction[31]}}, instruction[7], instruction[30:25], instruction[11:8], 1'b0};
+    //         end
+    //         // U-type (LUI, AUIPC)
+    //         7'b0110111, 7'b0010111: begin
+    //             immediate = {instruction[31:12], 12'b0};
+    //         end
+    //         // J-type (JAL)
+    //         7'b1101111: begin
+    //             immediate = {{12{instruction[31]}}, instruction[19:12], instruction[20], instruction[30:21], 1'b0};
+    //         end
+    //         // R-type
+    //         default: begin
+    //             immediate = 32'b0;
+    //         end
+    //     endcase
+    //     return immediate;
+    // endfunction
 
     // disclaimer: function below has been ai generated
     function automatic logic [19:0] extract_20b_imm(input logic [31:0] instr);
@@ -233,7 +238,8 @@ package issue_queue_pkg;
         // ----------------------------------------------------------------
         7'b110_0011:
         begin
-            extract_20b_imm = {{7{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
+            // extract_20b_imm = {{7{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
+            extract_20b_imm = {{8{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
         end
 
         // ----------------------------------------------------------------

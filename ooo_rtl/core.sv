@@ -22,7 +22,6 @@ import core_pkg::*;
     rt_and_iq_pending_update_pkt_t commit_rt_iq_update_pkt;
     iq_output_t decode_instr;
     rob_instance_pkt_t decode_rob_instance_pkt;
-    logic decode_is_spec_instr;
     spec_exec_buffer_instance_pkt_t decode_spec_exec_buffer_instance_pkt;
     pc_buff_instance_pkt_t decode_pc_buff_inst;
     decode_stage decode_stage_inst (
@@ -49,7 +48,7 @@ import core_pkg::*;
         .instr_i(decode_instr),
         .fetch_pkt_o(issue_fetch_pkt),
         .wb_phys_reg_pkt_i(writeback_phys_reg_pkt),
-        .buff_inst_i(decode_pc_buff_inst),
+        .buff_inst_i(decode_pc_buff_inst)
     );
 
     ex_mem_stage_pkt_t exec_mem_stage_pkt;

@@ -1,7 +1,7 @@
 // package general_pkg;
 package decode_pkg;
 
-    parameter DATA_WIDTH = 32;
+    // parameter DATA_WIDTH = 32;
 
 
     localparam PRF_COUNT = 32;
@@ -150,7 +150,7 @@ module register_file_sync_read #(
     // writing
     input write_en_i,
     input [REG_ADDR_WIDTH-1:0] addr_w_i,
-    input [DATA_WIDTH-1:0] data_w_i,
+    input [DATA_WIDTH-1:0] data_w_i
 );
     localparam ENTRIES = 2 ** REG_ADDR_WIDTH;
 
@@ -190,7 +190,7 @@ module register_file_async_read #(
     // writing
     input write_en_i,
     input [REG_ADDR_WIDTH-1:0] addr_w_i,
-    input [DATA_WIDTH-1:0] data_w_i,
+    input [DATA_WIDTH-1:0] data_w_i
 );
     localparam ENTRIES = 2 ** REG_ADDR_WIDTH;
 

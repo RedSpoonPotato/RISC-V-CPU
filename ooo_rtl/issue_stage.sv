@@ -12,6 +12,7 @@
 module issue_stage 
 import decode_pkg::*;
 import issue_queue_pkg::*;
+import issue_stage_pkg::*;
 (
     input clk,
     input rst,
@@ -36,7 +37,7 @@ import issue_queue_pkg::*;
     input wb_phys_reg_pkt_t wb_phys_reg_pkt_i,
 
     // from decode stage
-    input pc_buff_instance_pkt_t buff_inst_i,
+    input pc_buff_instance_pkt_t buff_inst_i
     // 
     // dont think i need
     // input logic [$clog2(MAX_PC_INSTRS)-1:0] rd_ptr_i
@@ -57,10 +58,10 @@ import issue_queue_pkg::*;
     logic [DATA_WIDTH-1:0] phys_reg_src0_data;
     logic [DATA_WIDTH-1:0] phys_reg_src1_data;
 
-    register_file_async_read physical_register #(
+    register_file_async_read #(
         .DATA_WIDTH(DATA_WIDTH),
         .REG_ADDR_WIDTH($clog2(PRF_COUNT))
-    ) (
+    ) physical_register (
         .clk(clk),
         .rst(rst),
         // reading
@@ -71,9 +72,10 @@ import issue_queue_pkg::*;
         // writing
         .write_en_i(wb_phys_reg_pkt_i.wr_en),
         .addr_w_i(wb_phys_reg_pkt_i.dest_ptr),
-        .data_w_i(wb_phys_reg_pkt_i.dest_data),
+        .data_w_i(wb_phys_reg_pkt_i.dest_data)
     );
 
+    logic [DATA_WIDTH-1:0] pc_out;
     pc_buffer pc_buff_inst
     (
         .clk(clk),
@@ -87,7 +89,8 @@ import issue_queue_pkg::*;
 
     // logic [DATA_WIDTH-1:0] imm;
 
-    logic [IMM_COMPR_WIDTH-1:0] imm_compr_ff;
+    // logic [IMM_COMPR_WIDTH-1:0] imm_compr_ff;
+    logic [IMM_COMPRESS-1:0] imm_compr_ff;
     logic [6:0] instr_op_ff;
     logic is_imm_ff;
 
@@ -120,7 +123,7 @@ import issue_queue_pkg::*;
         fetch_pkt_o.funct_unit = get_ex_mem_type(instr_op_ff, fetch_pkt_o.valid);
         fetch_pkt_o.func_unit_one_hot = get_ex_mem_type_one_hot(instr_op_ff, fetch_pkt_o.valid);
         fetch_pkt_o.src0_data = phys_reg_src0_data;
-        assert ((instr_ff.imm_valid == 1 && instr_ff.store == 1) || instr_ff.store == 0);
+        // assert ((instr_ff.imm_valid == 1 && instr_ff.store == 1) || instr_ff.store == 0);
         // fetch_pkt_o.src1_data   = phys_reg_src1_data;
         if (fetch_pkt_o.store || !is_imm_ff) begin
             fetch_pkt_o.src1_data = phys_reg_src1_data;
@@ -128,6 +131,7 @@ import issue_queue_pkg::*;
             fetch_pkt_o.src1_data = format_20b_to_datawidth(imm_compr_ff, instr_op_ff);
         end
         fetch_pkt_o.mem_offset_or_brnch_imm =  (fetch_pkt_o.funct_unit == MEM || fetch_pkt_o.funct_unit == BRANCH) ? format_20b_to_datawidth(imm_compr_ff, instr_op_ff) : '0;
+        assert ((instr_ff.imm_valid == 1 && instr_ff.store == 1) || instr_ff.store == 0);
     end
 
 endmodule
@@ -135,6 +139,7 @@ endmodule
 module pc_buffer 
 import decode_pkg::*;
 import instr_fetch_pkg::*;
+import issue_stage_pkg::*;
 (
     input clk,
     input rst,
@@ -157,7 +162,7 @@ import instr_fetch_pkg::*;
     end
     
     always_comb begin
-        if (rd_ptr_i == buff_inst_ff.wr_ptr) begin: Forwarding
+        if (rd_ptr_i == buff_inst_i.wr_ptr) begin: Forwarding
             pc_out_o = buff_inst_i.pc_in;
         end else begin
             pc_out_o = pc_buffer[rd_ptr_i];
