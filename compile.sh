@@ -9,3 +9,4 @@ verilator --lint-only --top core -f project.f --error-limit 6 \
     -Wno-IMPLICITSTATIC -Wno-PINMISSING -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC
 
 echo "\n### Finished Compilation ###\n"
+

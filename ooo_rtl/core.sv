@@ -1,10 +1,23 @@
+/*
+    For now, will disable "instr_fetch_ctrl_pkt_i" port for easy synthesis.
+    Later, will make a higher module containing core module that also is built for axi master interface to access DDR memory on soc.
+
+*/
+
 module core 
 import core_pkg::*;
 (
     input clk,
-    input rst,
-    input instr_fetch_ctrl_pkt_t instr_fetch_ctrl_pkt_i
+    input rst
+    // input instr_fetch_ctrl_pkt_t instr_fetch_ctrl_pkt_i
 );
+
+    // temp, remove later when wanting to implement proper memmory acccesses, or if you decide to have it entirely made of brams
+    instr_fetch_ctrl_pkt_t instr_fetch_ctrl_pkt_i;
+    always_comb begin
+        instr_fetch_ctrl_pkt_i = '{default: '0};
+    end
+
     
     logic decode_is_spec_instr;
     if_output_pkt_t instr_fetch_output_pkt;

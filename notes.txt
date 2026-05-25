@@ -1,0 +1,8 @@
+for  ZUBOARD 1CG, apparently contains:
+    SLICEM Count: approx 2,925
+    SLICEL Count: approx 5,850
+    my approximation of distributed ram: 512 bits * 2,925 SLICEMs = 1.49Mb
+    bram capacity: 4.8 Mb
+    
+
+    

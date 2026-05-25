@@ -105,9 +105,10 @@ import instr_fetch_pkg::*;
     logic [DATA_WIDTH-1:0] instr_mem_addr;
     assign instr_mem_addr = instr_fetch_ctrl_pkt_i.valid ? instr_fetch_ctrl_pkt_i.instr_addr : pc;
 
+    // synthesizes to distrbuted ram
     sram_async_read #(
         .DATA_WIDTH(DATA_WIDTH),
-        .ADDR_WIDTH(10) // for now, hardcoding to 10 bits (1024 entries)
+        .ADDR_WIDTH(INSTR_MEM_INDEX_WIDTH) // for now, hardcoding to 10 bits (1024 entries)
     ) instr_memory (
         .clk(clk),
         .we(instr_fetch_ctrl_pkt_i.valid),
@@ -115,6 +116,11 @@ import instr_fetch_pkg::*;
         .din(instr_fetch_ctrl_pkt_i.instr_in),
         .dout(if_output_pkt_o.instr)
     );
+
+    // temporary initalization
+    initial begin
+        $readmemh("memory/instr_mem_simple.mem", instr_memory.mem);
+    end
 
     // logic shft_reg_brnch_mispredict;
     // logic shft_reg_trgt_mispredict;

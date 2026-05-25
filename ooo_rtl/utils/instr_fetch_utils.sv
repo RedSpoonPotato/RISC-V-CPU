@@ -15,6 +15,9 @@ package instr_fetch_pkg;
     parameter MAX_AUIPC_INSTRS = 4;
     parameter MAX_PC_INSTRS = MAX_SPEC_EXEC_INSTRS + MAX_AUIPC_INSTRS; // max number of instrs that can be waiting on a pc calculation (branches, jumps, auipc)
 
+    localparam INSTR_MEM_ENTRY_NUM = 1024;
+    localparam INSTR_MEM_INDEX_WIDTH = $clog2(INSTR_MEM_ENTRY_NUM);
+
     typedef struct packed {
         logic wr_en;
         // logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] buff_ptr;
