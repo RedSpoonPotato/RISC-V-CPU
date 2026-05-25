@@ -1,10 +1,11 @@
 
-package exec_mem_utils_pkg;
+package exec_mem_pkg;
 
-    import issue_queue_pkg::*;
     import decode_pkg::*;
+    import general_pkg::*;
+    export general_pkg::*;
     import writeback_pkg::*;
-    import issue_stage_pkg::*;
+    import issue_pkg::*;
     import instr_fetch_pkg::*;
 
     localparam MEM_ENTRY_NUM = 1024;

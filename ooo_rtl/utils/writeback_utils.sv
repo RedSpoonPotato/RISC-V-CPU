@@ -1,16 +1,16 @@
 package writeback_pkg;
 
-    localparam IQ_SIZE = 16;
-    localparam ROB_COUNT = 32;
+    import general_pkg::*;
+    export general_pkg::*;
+
+
+
+    // localparam IQ_SIZE = 16;
+    // localparam ROB_COUNT = 32;
     // localparam PRF_COUNT = 32;
-    localparam INSTR_COMPRESS_WIDTH = 17;
-    localparam MAX_EXEC_CYCLE = 4;
-    localparam IMM_COMPRESS = 20;
-
-    import decode_pkg::PRF_COUNT;
-    import decode_pkg::DATA_WIDTH;
-
-
+    // localparam INSTR_COMPRESS_WIDTH = 17;
+    // localparam MAX_EXEC_CYCLE = 4;
+    // localparam IMM_COMPRESS = 20;
 
     typedef struct packed {
         logic wr_en;

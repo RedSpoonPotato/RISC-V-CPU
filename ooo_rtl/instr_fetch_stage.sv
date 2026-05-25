@@ -23,6 +23,10 @@
     im thinking decode stage
 
     will import correct results form wb stage, and dont send predicted result to wb stage, do comparison here
+
+    remove temporary for initilization for bram/distrbuted ram implemenetation and do proerp initalization
+
+    when to have instr_o.valid not be valid?
 */
 
 module instr_fetch_stage 
@@ -108,7 +112,8 @@ import instr_fetch_pkg::*;
     // synthesizes to distrbuted ram
     sram_async_read #(
         .DATA_WIDTH(DATA_WIDTH),
-        .ADDR_WIDTH(INSTR_MEM_INDEX_WIDTH) // for now, hardcoding to 10 bits (1024 entries)
+        .ADDR_WIDTH(INSTR_MEM_INDEX_WIDTH), // for now, hardcoding to 10 bits (1024 entries)
+        .INIT_FILE("memory/instr_mem_simple.mem") // temporary for initilization for bram/distrbuted ram implemenetation
     ) instr_memory (
         .clk(clk),
         .we(instr_fetch_ctrl_pkt_i.valid),
@@ -116,11 +121,6 @@ import instr_fetch_pkg::*;
         .din(instr_fetch_ctrl_pkt_i.instr_in),
         .dout(if_output_pkt_o.instr)
     );
-
-    // temporary initalization
-    initial begin
-        $readmemh("memory/instr_mem_simple.mem", instr_memory.mem);
-    end
 
     // logic shft_reg_brnch_mispredict;
     // logic shft_reg_trgt_mispredict;
@@ -157,12 +157,20 @@ import instr_fetch_pkg::*;
     // branch prediction
     // cases: branch, jalr, and jal
 
+    // unsure if supposed to be register, but for now yes i guess
+    logic instr_valid;
+    assign if_output_pkt_o.instr_valid = instr_valid;
+
     always_ff @(posedge clk) begin
         if (rst) begin
             pc <= '{default:'0};
+            instr_valid <= 1'b0;
         end else begin
+            instr_valid <= 1'b1;
             // if (stall) begin // NEED TO DRIVE THIS
                 // pc <= pc;
+                // set instr to not be valid?
+                // instr_valid <= 1'b0;
             // end else if (trgt_mispredict && ~branch_mispredict) begin: JumpMispredict
             if (trgt_mispredict && ~branch_mispredict) begin: JumpMispredict
                 pc <= spec_exec_answr_pkt_ff.trgt;
@@ -184,7 +192,7 @@ endmodule
 
 module trgt_shift_register
 import instr_fetch_pkg::*;
-import decode_pkg::DATA_WIDTH;
+import general_pkg::DATA_WIDTH;
 
 (
     input logic clk,
@@ -273,7 +281,7 @@ endmodule
 
 module branch_predictor
 import brnch_predict_pkg::*;
-import decode_pkg::DATA_WIDTH;
+import general_pkg::DATA_WIDTH;
 (
     input clk,
     input rst,
@@ -300,19 +308,8 @@ import decode_pkg::DATA_WIDTH;
 
             logic miss_condition;
             // assign miss_condition = !(bp_cache[curr_index].valid && bp_cache[curr_index].tag == curr_tag && rd_en_i);
-            assign miss_condition = !(bp_cache[curr_index].valid && bp_cache[curr_index].tag == curr_tag);
+            assign miss_condition = !(bp_cache[curr_index].valid && (bp_cache[curr_index].tag == curr_tag));
 
-            always_ff @(posedge clk) begin : MakingAPredictionWrite
-                if (rst) begin
-                    bp_cache <= '{default:'0};
-                // end else if (miss_condition) begin: No_hit
-                //     // instantiation
-                //     bp_cache[curr_index].valid <= 1'b1;
-                //     bp_cache[curr_index].tag <= curr_tag;
-                //     bp_cache[curr_index].brnch_hist <= 2'b00;
-                end 
-            end
-            
             always_comb begin : MakingAPredictionRead
                 if (miss_condition) begin
                     // output
@@ -326,9 +323,11 @@ import decode_pkg::DATA_WIDTH;
 
             // makign assumption write_en_i "1" iff entry in prev_predict_pkts is valid
             always_ff @(posedge clk) begin : CheckingAPrediction
-                if (write_en_i && !rst) begin
-                    logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
-                    logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
+                if (rst) begin
+                    bp_cache <= '{default:'0};
+                end else if (write_en_i) begin
+                    automatic logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
+                    automatic logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
                     if (bp_cache[old_index].tag == old_tag && bp_cache[old_index].valid) begin: Hit
                         bp_cache[old_index].brnch_hist <= update_state(bp_cache[old_index].brnch_hist, correct_result_i);
                     end else begin: NoHit
@@ -348,24 +347,10 @@ import decode_pkg::DATA_WIDTH;
             logic [SET_ASSOCIATIVITY-1:0] curr_hit_array_w;
             always_comb begin
                 for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin : Hit
-                    curr_hit_array_w[i] = bp_cache[curr_index][i] == curr_tag && bp_cache[curr_index][i].valid;
+                    curr_hit_array_w[i] = (bp_cache[curr_index][i] == curr_tag) && bp_cache[curr_index][i].valid;
                 end
                 // curr_miss_condition = !(|curr_hit_array_w) || !rd_en_i;
                 curr_miss_condition = !(|curr_hit_array_w);
-            end
-
-            always_ff @(posedge clk) begin : MakingAPredictionWrite
-                if (rst) begin
-                    bp_cache <= '{default:'0};
-                    set_ptr <= '{default:'0};
-                end 
-                // else if (curr_miss_condition) begin: No_hit
-                //     // instantiation
-                //     bp_cache[curr_index][set_ptr[curr_index]].valid <= 1'b1;
-                //     bp_cache[curr_index][set_ptr[curr_index]].tag <= curr_tag;
-                //     bp_cache[curr_index][set_ptr[curr_index]].brnch_hist <= 2'b00;
-                //     set_ptr[curr_index] <= set_ptr[curr_index] + 1;
-                // end 
             end
             
             always_comb begin : MakingAPredictionRead
@@ -381,14 +366,17 @@ import decode_pkg::DATA_WIDTH;
 
             // making assumption write_en_i "1" iff entry in prev_predict_pkts is valid
             always_ff @(posedge clk) begin : CheckingAPrediction
-                if (write_en_i && !rst) begin
-                    logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
-                    logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
+                if (rst) begin
+                    bp_cache <= '{default:'0};
+                    set_ptr <= '{default:'0};
+                end else if (write_en_i) begin
+                    automatic logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
+                    automatic logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
                     logic [SET_ASSOCIATIVITY-1:0] old_hit_array_w;
                     for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin : Hit
                         old_hit_array_w[i] = bp_cache[old_index][i].tag == old_tag && bp_cache[old_index][i].valid;
                         if (old_hit_array_w[i]) begin
-                            bp_cache[old_index][i].brnch_hist <= update_state(bp_cache[old_index].brnch_hist, correct_result_i);
+                            bp_cache[old_index][i].brnch_hist <= update_state(bp_cache[old_index][i].brnch_hist, correct_result_i);
                         end
                     end
                     if (!(|old_hit_array_w)) begin: NoHit
@@ -406,7 +394,7 @@ endmodule
 // works for both branch (alt trgt's, not pc+4) and jumping
 module trgt_buffer
 import trgt_buffer_pkg::*;
-import decode_pkg::DATA_WIDTH;
+import general_pkg::DATA_WIDTH;
 (
     input clk,
     input rst,
@@ -435,12 +423,6 @@ import decode_pkg::DATA_WIDTH;
             // valid
             // logic miss_condition = !(tb_cache[curr_index].valid && tb_cache[curr_index].tag == curr_tag && rd_en_i);
             logic miss_condition = !(tb_cache[curr_index].valid && tb_cache[curr_index].tag == curr_tag);
-
-            always_ff @(posedge clk) begin : MakingAPredictionWrite
-                if (rst) begin
-                    tb_cache <= '{default:'0};
-                end
-            end
             
             always_comb begin : MakingAPredictionRead
                 if (miss_condition) begin
@@ -455,9 +437,11 @@ import decode_pkg::DATA_WIDTH;
 
             // making assumption write_en_i "1" iff entry in prev_predict_pkts is valid
             always_ff @(posedge clk) begin : CheckingAPrediction
-                if (write_en_i && !rst) begin
-                    logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
-                    logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
+                if (rst) begin
+                    tb_cache <= '{default:'0};
+                end else if (write_en_i) begin
+                    automatic logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
+                    automatic logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
                     // if (tb_cache[old_index].tag == old_tag && tb_cache[old_index].valid) begin:
                         tb_cache[old_index].valid <= 1'b1;
                         tb_cache[old_index].tag <= old_tag;
@@ -484,13 +468,6 @@ import decode_pkg::DATA_WIDTH;
                 // curr_miss_condition = !(|curr_hit_array_w) || !rd_en_i;
                 curr_miss_condition = !(|curr_hit_array_w);
             end
-
-            always_ff @(posedge clk) begin : MakingAPredictionWrite
-                if (rst) begin
-                    tb_cache <= '{default:'0};
-                    set_ptr <= '{default:'0};
-                end
-            end
             
             always_comb begin : MakingAPredictionRead
                 if (curr_miss_condition) begin
@@ -505,9 +482,12 @@ import decode_pkg::DATA_WIDTH;
 
             // making assumption write_en_i "1" iff entry in prev_predict_pkts is valid
             always_ff @(posedge clk) begin : CheckingAPrediction
-                if (write_en_i && !rst) begin
-                    logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
-                    logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
+                if (rst) begin
+                    tb_cache <= '{default:'0};
+                    set_ptr <= '{default:'0};
+                end else if (write_en_i) begin
+                    automatic logic [TAG_WIDTH-1:0] old_tag = old_pc_i[DATA_WIDTH-1:DATA_WIDTH-TAG_WIDTH];
+                    automatic logic [INDEX_WIDTH-1:0] old_index = old_pc_i[DATA_WIDTH-TAG_WIDTH-1:BLOCK_OFFSET];
                     logic [SET_ASSOCIATIVITY-1:0] old_hit_array_w;
                     for (int i = 0; i < SET_ASSOCIATIVITY; i++) begin : Hit
                         old_hit_array_w[i] = tb_cache[old_index][i] == old_tag && tb_cache[old_index][i].valid;

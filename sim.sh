@@ -7,5 +7,9 @@ else
     source start.sh
 fi
 
+
+mkdir logs
+mkdir jous
 # echo "source build.tcl" | vivado -mode tcl -log logs/test.log -journal jous/test.jou
-vivado -mode tcl -log logs/test.log -journal jous/test.jou
+# vivado -mode tcl -log logs/test.log -journal jous/test.jou
+vivado -mode batch -source pure_rtl_synth.tcl -log logs/test.log -journal jous/test.jou

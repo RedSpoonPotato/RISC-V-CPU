@@ -4,16 +4,21 @@
 
 */
 
-package issue_stage_pkg;
+package issue_pkg;
 
-    localparam DATA_WIDTH = 32;
-    localparam IQ_SIZE = 16;
+    import general_pkg::*;
+    export general_pkg::*;
+
+
+
+    // localparam DATA_WIDTH = 32;
+    // localparam IQ_SIZE = 16;
     // localparam ROB_COUNT = 32;
-    localparam PRF_COUNT = 32;
-    localparam INSTR_COMPRESS_WIDTH = 17;
-    localparam MAX_EXEC_CYCLE = 4;
-    localparam IMM_COMPRESS = 20;
-    localparam FUNCT_COMB_WIDTH = 4; // representing funct3 + funct7
+    // localparam PRF_COUNT = 32;
+    // localparam INSTR_COMPRESS_WIDTH = 17;
+    // localparam MAX_EXEC_CYCLE = 4;
+    // localparam IMM_COMPRESS = 20;
+    // localparam FUNCT_COMB_WIDTH = 4; // representing funct3 + funct7
 
     import writeback_pkg::ROB_COUNT;
     import instr_fetch_pkg::MAX_SPEC_EXEC_INSTRS;
@@ -142,9 +147,11 @@ function automatic logic [FUNCT_COMB_WIDTH-1:0] get_funct_comb(
     logic [6:0] opcode = op[6:0];
     EX_MEM_TYPE instr_type = get_ex_mem_type(opcode, 1'b1);
     assert(FUNCT_COMB_WIDTH == 4);
-    if (instr_type == JALR) begin
+    if (instr_type == JALR) begin: JALR
         return op[3:0]; // 3rd bit distinguishes between JALR and JAL
-    end else begin
+    end else if (opcode == 7'b0110111) begin: LUI
+        return 4'b1111;
+    end else begin: OTHER
         logic [2:0] funct3 = op[9:7];
         logic [6:0] funct7 = op[16:10];
         return {funct7[5], funct3}; // Combine the most significant bit of funct7 with funct3

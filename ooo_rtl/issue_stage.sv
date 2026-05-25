@@ -10,9 +10,9 @@
     
 */
 module issue_stage 
+import general_pkg::*;
 import decode_pkg::*;
-import issue_queue_pkg::*;
-import issue_stage_pkg::*;
+import issue_pkg::*;
 (
     input clk,
     input rst,
@@ -137,9 +137,9 @@ import issue_stage_pkg::*;
 endmodule
 
 module pc_buffer 
-import decode_pkg::*;
+import general_pkg::*;
 import instr_fetch_pkg::*;
-import issue_stage_pkg::*;
+import issue_pkg::*;
 (
     input clk,
     input rst,

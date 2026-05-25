@@ -1,11 +1,17 @@
 // package general_pkg;
-package decode_pkg;
+package general_pkg;
 
-    // parameter DATA_WIDTH = 32;
-
-
-    localparam PRF_COUNT = 32;
+    // CHECK ALL OF THEEEESE
     localparam DATA_WIDTH = 32;
+    localparam IQ_SIZE = 16;
+    localparam ROB_COUNT = 32;
+    localparam PRF_COUNT = 32;
+    localparam INSTR_COMPRESS_WIDTH = 17;
+    localparam MAX_EXEC_CYCLE = 2;
+    localparam IMM_COMPRESS = 20;
+    localparam FUNCT_COMB_WIDTH = 4; // representing funct3 + funct7
+    localparam OUTCOME_DELAY = 3; // # of cycles until the "brnch_taken_i" result comes in  
+
 
     typedef enum logic [$clog2(6)-1:0] {R_TYPE, I_TYPE, S_TYPE, B_TYPE, U_TYPE, J_TYPE} instruction_t;
 
@@ -238,7 +244,8 @@ endmodule
 
 module sram_async_read #(
     parameter ADDR_WIDTH = 10,  // depth = 2^ADDR_WIDTH
-    parameter DATA_WIDTH = 32
+    parameter DATA_WIDTH = 32,
+    parameter INIT_FILE = ""
 )(
     input  logic                     clk,
     input  logic                     we,        // write enable
@@ -248,6 +255,12 @@ module sram_async_read #(
 );
     // Memory array
     logic [DATA_WIDTH-1:0] mem [0:(1<<ADDR_WIDTH)-1];
+
+    initial begin
+        if (INIT_FILE != "") begin
+            $readmemh(INIT_FILE, mem);
+        end
+    end
 
     always_ff @(posedge clk) begin
         if (we) begin

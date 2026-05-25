@@ -8,8 +8,10 @@ module core
 import core_pkg::*;
 (
     input clk,
-    input rst
+    input rst,
     // input instr_fetch_ctrl_pkt_t instr_fetch_ctrl_pkt_i
+    // for getting proper synth results without moudles getting optmized away
+    output commit_stage_pkt_t commit_decode_pkt
 );
 
     // temp, remove later when wanting to implement proper memmory acccesses, or if you decide to have it entirely made of brams
@@ -31,7 +33,7 @@ import core_pkg::*;
         .spec_exec_answr_pkt_i(commit_spec_exec_answr_pkt)
     );
 
-    commit_stage_pkt_t commit_decode_pkt;
+    // commit_stage_pkt_t commit_decode_pkt; // RESTORE LATER
     rt_and_iq_pending_update_pkt_t commit_rt_iq_update_pkt;
     iq_output_t decode_instr;
     rob_instance_pkt_t decode_rob_instance_pkt;

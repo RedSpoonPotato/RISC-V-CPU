@@ -30,11 +30,11 @@
 // Need to handle stalling, flushing, and branch/jalr, priority (maybe one solution is restore usig rename table like exceptions
 
 module decode_stage 
-    import decode_pkg::*;
+    import general_pkg::*;
     import writeback_pkg::*;
     import instr_fetch_pkg::*;
-    import issue_queue_pkg::*;
-    import issue_stage_pkg::*;
+    import decode_pkg::*;
+    import issue_pkg::*;
 (
     input clk,
     input rst,
@@ -253,9 +253,33 @@ module decode_stage
         mini_scoreboard_wr_en = dispatch_instr;
     end
 
+    // IMPORTANT NOTE: NEED TO COMEBACK TO THIS
+    /*
+        Will always increment by 1 unless there is some sort of stalling
+    */
+    logic [$clog2(ROB_COUNT)-1:0] rob_counter;
+    logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_counter;
+    logic [$clog2(MAX_PC_INSTRS)-1:0] pc_instr_counter;
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            rob_counter <= '{default:'0};
+            spec_exec_counter <= '{default:'0};
+            pc_instr_counter <= '{default:'0};
+        end else begin
+            // if () // IMPLEMENT LATER FOR STALLING, BUT FOR NOW, will always increment
+            rob_counter <= rob_counter + 1;
+            if (cntrl_instr) begin
+                spec_exec_counter <= spec_exec_counter + 1;
+            end
+            if (pc_instr) begin
+                pc_instr_counter <= pc_instr_counter + 1;
+            end 
+        end
+    end
+
     // setting issue queue entry values
     always_comb begin
-        issue_queue_entry = issue_queue_pkg::instr_to_iq_entry_partial(instr_ff);
+        issue_queue_entry = decode_pkg::instr_to_iq_entry_partial(instr_ff);
         // filling in remanining values (free list being full should count as stalling)
         // iq being full should also count as sstalling
         // if stalling, comeback to this valid signal
@@ -279,7 +303,7 @@ module decode_stage
             decode_instr_o = issue_queue_instr_out;
             decode_instr_o.valid = 1;
         end else if (new_instr_ready) begin
-            decode_instr_o = issue_queue_pkg::entry_to_output(issue_queue_entry);
+            decode_instr_o = decode_pkg::entry_to_output(issue_queue_entry);
             decode_instr_o.valid = 1;
         end else begin // stalling
             decode_instr_o = '{default:'0};
@@ -289,31 +313,6 @@ module decode_stage
         mini_scoreboard_op = decode_instr_o.op;
     end
 
-
-    // IMPORTANT NOTE: NEED TO COMEBACK TO THIS
-    /*
-        Will always increment by 1 unless there is some sort of stalling
-    */
-    logic [$clog2(ROB_COUNT)-1:0] rob_counter;
-    logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_counter;
-    logic [$clog2(MAX_PC_INSTRS)-1:0] pc_instr_counter;
-    always_ff @(posedge clk) begin
-        if (rst) begin
-            rob_counter <= '{default:'0};
-            spec_exec_counter <= '{default:'0};
-            pc_instr_counter <= '{default:'0};
-        end else begin
-            // if () // IMPLEMENT LATER FOR STALLING, BUT FOR NOW, will always increment
-            rob_counter <= rob_counter + 1;
-            if (cntrl_instr) begin
-                spec_exec_counter <= spec_exec_counter + 1;
-            end
-            if (pc_instr) begin
-                pc_instr_counter <= pc_instr_counter + 1;
-            end 
-
-        end
-    end
 
     // NEED TO COMEBACK TO WHEN WE ACCOUNT FOR STALLING
     // creating entry into rob table and spec_exec_buffer
@@ -326,7 +325,7 @@ module decode_stage
             rob_instance_pkt_o.dest_valid = issue_queue_entry.dest_valid;
             rob_instance_pkt_o.phys_reg_addr = issue_queue_entry.dest_ptr;
             rob_instance_pkt_o.arch_reg_addr = instr_ff[11:7];
-            rob_instance_pkt_o.prev_phys_reg_addr =  rename_table_rob_dest_prf; /// what about J and U types
+            rob_instance_pkt_o.prev_phys_reg_addr = rename_table_rob_dest_prf; /// what about J and U types
             // rob_instance_pkt_o.rob_ptr = rob_counter;
             // rob_instance_pkt_o.rob_count = rob_counter; // no need i believe
         // end else begin
@@ -352,7 +351,8 @@ endmodule
 
 // automatically outputs the next available free prf pointer
 module free_list 
-import issue_queue_pkg::*;
+import decode_pkg::*;
+import general_pkg::*;
 (
     input clk,
     input rst,
@@ -372,22 +372,6 @@ import issue_queue_pkg::*;
     logic [PRF_COUNT-1:0] commit_list; // 1'b1 means committed
     // state
     assign no_free_o = ~|free_list;
-    // writing
-    always_ff @(posedge clk) begin
-        if (rst) begin
-            free_list <= '{default:'1};
-            commit_list <= '{default:'0};
-        end else begin
-            if (wr_en_i) begin
-                if (exception_i) begin
-                    free_list <= ~commit_list;
-                end
-                free_list[prev_phys_ptr_i] <= 1;
-                commit_list[prev_phys_ptr_i] <= 0;
-                commit_list[commited_ptr_i] <= 1;
-            end
-        end
-    end
     // reading
     logic found;
     always_comb begin
@@ -400,9 +384,25 @@ import issue_queue_pkg::*;
             end
         end
     end
+    
     always_ff @(posedge clk) begin
-        if (!no_free_o && rd_en_i) begin
-            free_list[free_ptr_o] <= 0;
+        if (rst) begin
+            free_list <= '{default:'1};
+            commit_list <= '{default:'0};
+        end else begin
+            // writing
+            if (wr_en_i) begin
+                if (exception_i) begin
+                    free_list <= ~commit_list;
+                end
+                free_list[prev_phys_ptr_i] <= 1;
+                commit_list[prev_phys_ptr_i] <= 0;
+                commit_list[commited_ptr_i] <= 1;
+            end
+            // reading
+            if (!no_free_o && rd_en_i) begin
+                free_list[free_ptr_o] <= 0;
+            end
         end
     end
 endmodule
@@ -412,9 +412,10 @@ endmodule
     could potentially optimize the updating of the pending signal sent by scoreboard
     by bringing the scoreboard into the decode stage
 */
-module rename_table_async_read #(
-    parameter PRF_COUNT = 32
-) (
+module rename_table_async_read 
+import general_pkg::*;
+import decode_pkg::*;
+(
     input clk,
     input rst,
     // initial write
@@ -503,7 +504,8 @@ endmodule
 
 // should be the module that determines which is the next instruction to be issued
 module issue_queue 
-    import issue_queue_pkg::*;
+    import decode_pkg::*;
+    import general_pkg::*;
     (
     input clk,
     input rst,
@@ -534,47 +536,6 @@ module issue_queue
     // write logic
     logic wr_en;
     assign wr_en = iq_entry_i.valid;
-    always_ff @(posedge clk) begin
-        if (rst) begin
-            iq <= '{default:'0};
-            // need to set other values
-            // empty_o <= 1;
-            // full_o <= 0;
-            // all_stalled_o <= 0;
-        end 
-        else begin
-            if (wr_en && !full_o) begin
-                // find first empty slot and write instruction
-                for (int i = 0; i < IQ_SIZE; i++) begin
-                    if (!iq[i].valid) begin
-                        iq[i].valid <= 1;
-                        iq[i][$bits(iq_entry_t)-2:0] <= iq_entry_i[$bits(iq_entry_t)-2:0];
-                        // iq[i].valid <= 1;    
-                        // iq[i].op <= grab_compr_instr(instr);
-                        // iq[i].imm <= imm_gen(instr); // dont use
-                        // iq[i].speculative <= is_speculative(instr[6:0]);
-                        // iq[i].dest_valid <= is_dest(instr[6:0]);
-                        // iq[i].dest_ptr <= dest_ptr;
-                        // iq[i].src0_valid <= has_src0(instr[6:0]);
-                        // // iq[i].pe
-                        break;
-                    end
-                end
-            end
-        end
-    end
-
-    // updating pending state
-    always_ff @(posedge clk) begin
-        if (prf_wr_en_i) begin
-            for (int i = 0; i < IQ_SIZE; i++) begin
-                if (iq[i].src0_valid && iq[i].src0_pending && iq[i].src0_ptr == prf_dst_i)
-                    iq[i].src0_pending <= 0;
-                if (iq[i].src1_valid && iq[i].src1_pending && iq[i].src1_ptr == prf_dst_i)
-                    iq[i].src1_pending <= 0;
-            end
-        end
-    end
 
     // read logic
     // also can account for forwarding from before even reaching commit stage, but would have to check conditions before
@@ -616,21 +577,60 @@ module issue_queue
             end
         end
     end
-    // synchronously updating validity
+
     always_ff @(posedge clk) begin
-        if (!empty_o && !all_stalled_o) begin
-            for (int i = 0; i < IQ_SIZE; i++) begin
-                if (priority_ready_array[i]) begin
-                    iq[i].valid <= 0;
+        if (rst) begin
+            iq <= '{default:'0};
+            // need to set other values
+            // empty_o <= 1;
+            // full_o <= 0;
+            // all_stalled_o <= 0;
+        end 
+        else begin
+            if (wr_en && !full_o) begin
+                // find first empty slot and write instruction
+                for (int i = 0; i < IQ_SIZE; i++) begin
+                    if (!iq[i].valid) begin
+                        iq[i].valid <= 1;
+                        iq[i][$bits(iq_entry_t)-2:0] <= iq_entry_i[$bits(iq_entry_t)-2:0];
+                        // iq[i].valid <= 1;    
+                        // iq[i].op <= grab_compr_instr(instr);
+                        // iq[i].imm <= imm_gen(instr); // dont use
+                        // iq[i].speculative <= is_speculative(instr[6:0]);
+                        // iq[i].dest_valid <= is_dest(instr[6:0]);
+                        // iq[i].dest_ptr <= dest_ptr;
+                        // iq[i].src0_valid <= has_src0(instr[6:0]);
+                        // // iq[i].pe
+                        break;
+                    end
+                end
+            end
+            // updating pending state
+            if (prf_wr_en_i) begin
+                for (int i = 0; i < IQ_SIZE; i++) begin
+                    if (iq[i].src0_valid && iq[i].src0_pending && iq[i].src0_ptr == prf_dst_i)
+                        iq[i].src0_pending <= 0;
+                    if (iq[i].src1_valid && iq[i].src1_pending && iq[i].src1_ptr == prf_dst_i)
+                        iq[i].src1_pending <= 0;
+                end
+            end
+            // synchronously updating validity
+            if (!empty_o && !all_stalled_o) begin
+                for (int i = 0; i < IQ_SIZE; i++) begin
+                    if (priority_ready_array[i]) begin
+                        iq[i].valid <= 0;
+                    end
                 end
             end
         end
     end
+
 endmodule
 
 
 module mini_scoreboard
-import issue_queue_pkg::*;
+import decode_pkg::*;
+import general_pkg::*;
 (
     input clk,
     input rst,
@@ -659,7 +659,7 @@ import issue_queue_pkg::*;
                 end
             end
             if (wr_en_i) begin
-                exec_stage_slots_int[get_exec_stage_delays(op_i)] <= 1;
+                exec_stage_slots_int[get_exec_stage_delays_sb(op_i)] <= 1;
             end
         end
     end

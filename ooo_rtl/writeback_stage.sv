@@ -8,8 +8,8 @@
 
 module writeback_stage
 import writeback_pkg::*;
-import issue_stage_pkg::*;
-import exec_mem_utils_pkg::*;
+import issue_pkg::*;
+import exec_mem_pkg::*;
 import instr_fetch_pkg::*;
 (
     input clk,
@@ -77,7 +77,7 @@ endmodule
 
 module spec_exec_answer_buffer
 import writeback_pkg::*;
-import exec_mem_utils_pkg::*;
+import exec_mem_pkg::*;
 import instr_fetch_pkg::*;
 (
     input clk,
@@ -146,8 +146,8 @@ endmodule
 
 module rob_buffer
 import writeback_pkg::*;
-import exec_mem_utils_pkg::*;
-import issue_stage_pkg::*;
+import exec_mem_pkg::*;
+import issue_pkg::*;
 (
     input clk,
     input rst,
@@ -212,7 +212,8 @@ import issue_stage_pkg::*;
         if (reorder_buffer[tail_ptr_lower].state == FINISHED) begin
             commit_stage_pkt_o = set_commit_pkt(reorder_buffer[tail_ptr_lower]);
         end else begin
-            commit_stage_pkt_o.wr_en = 0;
+            commit_stage_pkt_o = '{default:'0};
+            // commit_stage_pkt_o.wr_en = 0;
         end
     end
 
@@ -241,6 +242,5 @@ import issue_stage_pkg::*;
             rt_iq_update_pkt_o.arf_ptr = '{default:'0};
         end
     end
-
 
 endmodule

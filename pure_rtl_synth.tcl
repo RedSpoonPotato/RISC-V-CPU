@@ -9,11 +9,14 @@ set target_part "xck26-sfvc784-2LV-c"
 set rtl_path "./ooo_rtl"
 read_verilog -sv [glob $rtl_path/utils/*.sv]
 read_verilog -sv [glob $rtl_path/*.sv]
-synth_design -top core -part $target_part
+# set_msg_config -id {Synth 8-7129} -limit 10000
+# synth_design -top core -part $target_part
+# NOTE: remove out of context flag once we implement xdc file
+synth_design -top core -part $target_part -mode out_of_context
 file mkdir ./reports
 report_utilization -file ./reports/synth_utilization.txt
-report_timing_summary -file ./reports/synth_timing_summary.txt
-report_timing -file ./reports/synth_timing_detailed.txt
+# report_timing_summary -file ./reports/synth_timing_summary.txt
+# report_timing -file ./reports/synth_timing_detailed.txt
 puts "========================================================="
 puts "Synthesis Complete! Reports Generated"
 puts "========================================================="

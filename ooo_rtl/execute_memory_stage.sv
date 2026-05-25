@@ -16,11 +16,11 @@
 */
 
 module execute_memory_stage 
-import exec_mem_utils_pkg::*;
-import issue_queue_pkg::*;
+import exec_mem_pkg::*;
+import decode_pkg::*;
 import writeback_pkg::*;
 import instr_fetch_pkg::*;
-import issue_stage_pkg::*;
+import issue_pkg::*;
 (
     input clk,
     input rst,
@@ -47,7 +47,7 @@ import issue_stage_pkg::*;
 
     // routing instruction
     EX_MEM_TYPE scoreboard_curr_funct_unit_output;
-    EX_MEM_TYPE scoreboard_clear; // NEED TO SET
+    logic scoreboard_clear; // NEED TO SET
 
     ex_mem_scoreboard_data_t ex_mem_scoreboard_data_new, ex_mem_scoreboard_data_o;
     assign ex_mem_scoreboard_data_new = set_ex_mem_scoreboard_data(fetch_pkt_ff);
@@ -68,9 +68,7 @@ import issue_stage_pkg::*;
     // alu path (1 cycle)
     logic [DATA_WIDTH-1:0] alu_result;
     logic alu_zero;
-    alu_stage #(
-        .DATA_WIDTH(DATA_WIDTH)
-    ) alu_stage_inst (
+    alu_stage alu_stage_inst (
         .en_i(fetch_pkt_ff.funct_unit_one_hot[ALU]),
         .a_i(fetch_pkt_ff.src0_data),
         .b_i(fetch_pkt_ff.src1_data),
@@ -86,7 +84,7 @@ import issue_stage_pkg::*;
         // .rst(rst),
         .en_i(fetch_pkt_ff.funct_unit_one_hot[MEM]),
         .store_i(fetch_pkt_ff.store),
-        .funct_code_i(fetch_pkt_ff.funct_code),
+        // .funct_code_i(fetch_pkt_ff.funct_code),
         .base_addr_i(fetch_pkt_ff.src0_data),
         .offset_i(fetch_pkt_ff.mem_offset_or_brnch_imm), // for now, just using imm_compr as offset, will change later
         .store_data_i(fetch_pkt_ff.src1_data), // for store instructions
@@ -185,9 +183,9 @@ import issue_stage_pkg::*;
 endmodule
 
 module funct_unit_scoreboard
-import issue_queue_pkg::*;
-import exec_mem_utils_pkg::*;
-import issue_stage_pkg::*;
+import decode_pkg::*;
+import exec_mem_pkg::*;
+import issue_pkg::*;
 (
     input clk,
     input rst,
@@ -246,8 +244,8 @@ endmodule
 
 
 module auipc_stage
-import issue_queue_pkg::*;
-import decode_pkg::DATA_WIDTH;
+import decode_pkg::*;
+import general_pkg::DATA_WIDTH;
 (
     input logic en_i,
     input logic [DATA_WIDTH-1:0] pc_i,
@@ -267,12 +265,12 @@ import decode_pkg::DATA_WIDTH;
         end
     end
 
-    assign result_o = pc + (imm << 12);
+    assign result_o = pc + imm;
 endmodule
 
 module jalr_stage
-import issue_queue_pkg::*;
-import issue_stage_pkg::*;
+import decode_pkg::*;
+import issue_pkg::*;
 (
     input logic en_i,
     input logic [DATA_WIDTH-1:0] pc_i,
@@ -313,8 +311,8 @@ import issue_stage_pkg::*;
 endmodule
 
 module branch_unit
-import issue_queue_pkg::*;
-import issue_stage_pkg::*;
+import decode_pkg::*;
+import issue_pkg::*;
 (
     input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
     input logic [DATA_WIDTH-1:0] src0_data_i,
@@ -343,8 +341,8 @@ endmodule
 
 // branch: doing comparison, trgt address is done in decode stage, or even in IF 2nd stage
 module branch_stage
-import issue_queue_pkg::*;
-import issue_stage_pkg::*;
+import decode_pkg::*;
+import issue_pkg::*;
 (
     input logic en_i,
     input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
@@ -389,16 +387,16 @@ endmodule
 
 // for now doing a simple memory, 2 cycles
 module mem_stage 
-import issue_queue_pkg::*;
 import decode_pkg::*;
-import issue_stage_pkg::*;
-import exec_mem_utils_pkg::*;
+import general_pkg::*;
+import issue_pkg::*;
+import exec_mem_pkg::*;
 (
     input clk,
     // input rst,
     input logic en_i,
     input logic store_i,
-    input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
+    // input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
     input logic [DATA_WIDTH-1:0] base_addr_i,
     input logic [DATA_WIDTH-1:0] offset_i,
     input logic [DATA_WIDTH-1:0] store_data_i,
@@ -433,9 +431,9 @@ import exec_mem_utils_pkg::*;
     );
 endmodule
 
-module alu #(
-    parameter DATA_WIDTH = 32
-) (
+module alu 
+import general_pkg::*;
+(
     input  [DATA_WIDTH-1:0] a_i,
     input  [DATA_WIDTH-1:0] b_i,
     input  [3:0]  alu_cntrl_i,
@@ -453,6 +451,8 @@ module alu #(
     localparam SRA  = 4'b1101;
     localparam SLT  = 4'b0010;
     localparam SLTU = 4'b0011;
+    // Does not match {funct7[5], funct3};
+    localparam LUI  = 4'b1111;
 
     always_comb begin
         case (alu_cntrl_i)
@@ -467,6 +467,7 @@ module alu #(
             SRA:  result_o = $signed(a_i) >>> b_i[4:0];
             SLT:  result_o = ($signed(a_i) < $signed(b_i)) ? 1 : 0;
             SLTU: result_o = (a_i < b_i) ? 1 : 0;
+            LUI:  result_o = b_i;
 
             // will add rest of rv32m instructions later
             default:  result_o = 3'b010;
@@ -478,10 +479,9 @@ module alu #(
 endmodule
 
 module alu_stage 
-import issue_stage_pkg::*;
-#(
-    parameter DATA_WIDTH = 32
-) (
+import issue_pkg::*;
+import general_pkg::*;
+(
     input  en_i,
     input  [DATA_WIDTH-1:0] a_i,
     input  [DATA_WIDTH-1:0] b_i,
@@ -493,9 +493,7 @@ import issue_stage_pkg::*;
     logic [DATA_WIDTH-1:0] a, b;
     logic [FUNCT_COMB_WIDTH-1:0] alu_cntrl;
 
-    alu #(
-        .DATA_WIDTH(DATA_WIDTH)
-    ) alu_inst (
+    alu alu_inst (
         .a_i(a),
         .b_i(b),
         .alu_cntrl_i(alu_cntrl), // going to assume, but unsure if we truncate
