@@ -20,17 +20,25 @@ import core_pkg::*;
         instr_fetch_ctrl_pkt_i = '{default: '0};
     end
 
+    logic decode_stall;
+    logic issue_stall;
+    logic wb_stall;
+    logic stall;
+    assign stall = decode_stall && issue_stall && wb_stall;
     
     logic decode_is_spec_instr;
     if_output_pkt_t instr_fetch_output_pkt;
     shift_reg_pkt_t commit_spec_exec_answr_pkt;
+    logic instr_fetch_exception;
     instr_fetch_stage instr_fetch_stage_inst (
         .clk(clk),
         .rst(rst),
         .instr_fetch_ctrl_pkt_i(instr_fetch_ctrl_pkt_i),
         .is_spec_instr_i(decode_is_spec_instr),
         .if_output_pkt_o(instr_fetch_output_pkt),
-        .spec_exec_answr_pkt_i(commit_spec_exec_answr_pkt)
+        .spec_exec_answr_pkt_i(commit_spec_exec_answr_pkt),
+        .exception_o(instr_fetch_exception),
+        .stall_i(stall)
     );
 
     // commit_stage_pkt_t commit_decode_pkt; // RESTORE LATER
@@ -42,17 +50,16 @@ import core_pkg::*;
     decode_stage decode_stage_inst (
         .clk(clk),
         .rst(rst),
-        .flush_i(),
         .if_input_i(instr_fetch_output_pkt),
-        .error_o(),
         .decode_commit_pkt_i(commit_decode_pkt), // For now(), will not use flipflops
         .rt_iq_update_pkt_i(commit_rt_iq_update_pkt),
-        .exception_i(), // not sure if we need to flipflop this
         .decode_instr_o(decode_instr),
         .rob_instance_pkt_o(decode_rob_instance_pkt),
         .is_spec_instr_o(decode_is_spec_instr),
         .spec_exec_buffer_instance_pkt_o(decode_spec_exec_buffer_instance_pkt),
-        .pc_buff_inst_o(decode_pc_buff_inst)
+        .pc_buff_inst_o(decode_pc_buff_inst),
+        .exception_i(instr_fetch_exception),
+        .stall_o(decode_stall)
     );
 
     fetch_packet_t issue_fetch_pkt;
@@ -63,7 +70,9 @@ import core_pkg::*;
         .instr_i(decode_instr),
         .fetch_pkt_o(issue_fetch_pkt),
         .wb_phys_reg_pkt_i(writeback_phys_reg_pkt),
-        .buff_inst_i(decode_pc_buff_inst)
+        .buff_inst_i(decode_pc_buff_inst),
+        .exception_i(instr_fetch_exception),
+        .stall_o(issue_stall)
     );
 
     ex_mem_stage_pkt_t exec_mem_stage_pkt;
@@ -73,7 +82,8 @@ import core_pkg::*;
         .rst(rst),
         .fetch_pkt_i(issue_fetch_pkt),
         .ex_mem_stage_pkt_o(exec_mem_stage_pkt),
-        .spec_exec_answr_o(exec_mem_spec_exec_answr)
+        .spec_exec_answr_o(exec_mem_spec_exec_answr),
+        .exception_i(instr_fetch_exception)
     );
 
     writeback_stage writeback_stage_inst (
@@ -83,13 +93,13 @@ import core_pkg::*;
         .rob_instance_pkt_i(decode_rob_instance_pkt),
         .ex_mem_stage_pkt_i(exec_mem_stage_pkt),
         .commit_stage_pkt_o(commit_decode_pkt),
-        .rob_full_o(),
         .wb_phys_reg_pkt_o(writeback_phys_reg_pkt),
         .rt_iq_update_pkt_o(commit_rt_iq_update_pkt),
         .spec_exec_buffer_instance_pkt_i(decode_spec_exec_buffer_instance_pkt),
         .spec_exec_answr_i(exec_mem_spec_exec_answr),
-        .seab_full_o(),
-        .spec_exec_answr_pkt_o(commit_spec_exec_answr_pkt)
+        .spec_exec_answr_pkt_o(commit_spec_exec_answr_pkt),
+        .exception_i(instr_fetch_exception),
+        .stall_o(wb_stall)
     );
 
 endmodule

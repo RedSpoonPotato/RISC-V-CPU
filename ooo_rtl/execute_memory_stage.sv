@@ -13,6 +13,10 @@
     go back to funct_unit_scoreboard uprorerly desifined function, see exec_mem_utils.sv
 
     did we implement the different mem access sizes (byte, half word, word)
+
+    implement store buffer in order to handle spec execution (need to send exception signal into mem stage, 
+    unless store buffer is in wb stage)
+
 */
 
 module execute_memory_stage 
@@ -32,23 +36,22 @@ import issue_pkg::*;
     output ex_mem_stage_pkt_t ex_mem_stage_pkt_o,
 
     // output to wb stage
-    output spec_exec_answr_pkt_t spec_exec_answr_o
+    output spec_exec_answr_pkt_t spec_exec_answr_o,
 
     // for updating pending bits in decode stage
     // output rename_table_and_issue_queue_update_pkt_t rt_iq_update_pkt_o
+    input logic exception_i
 );
 
     fetch_packet_t fetch_pkt_ff;
+    logic exception_ff;
     always_ff @(posedge clk) begin
         fetch_pkt_ff <= fetch_pkt_i;
+        exception_ff <= exception_i;
         assert (fetch_pkt_ff.valid || fetch_pkt_ff.funct_unit == NOOP) else $fatal("Invalid instruction issued to execute stage");
     end
 
-
     // routing instruction
-    EX_MEM_TYPE scoreboard_curr_funct_unit_output;
-    logic scoreboard_clear; // NEED TO SET
-
     ex_mem_scoreboard_data_t ex_mem_scoreboard_data_new, ex_mem_scoreboard_data_o;
     assign ex_mem_scoreboard_data_new = set_ex_mem_scoreboard_data(fetch_pkt_ff);
 
@@ -57,9 +60,9 @@ import issue_pkg::*;
         .rst(rst),
         .funct_unit_i(fetch_pkt_ff.funct_unit),
         .sb_data_pkt_i(ex_mem_scoreboard_data_new),
-        .current_funct_unit_output_o(scoreboard_curr_funct_unit_output),
+        // .current_funct_unit_output_o(scoreboard_curr_funct_unit_output),
         .sb_data_pkt_o(ex_mem_scoreboard_data_o),
-        .clear_i(scoreboard_clear) // will connect this later
+        .exception_i(exception_ff)
     );
 
     // alu, mem, jalr, auipc
@@ -195,10 +198,10 @@ import issue_pkg::*;
     input ex_mem_scoreboard_data_t sb_data_pkt_i,
     // outputting to iq
     // 1 extra: 1 for reg fetch stage
-    output EX_MEM_TYPE current_funct_unit_output_o,
+    // output EX_MEM_TYPE current_funct_unit_output_o,
     output ex_mem_scoreboard_data_t sb_data_pkt_o,
     // stalling or clearing
-    input clear_i // same functionality as rst
+    input exception_i // same functionality as rst
 );
     EX_MEM_TYPE exec_stage_slots_int [MAX_EXEC_CYCLE_DELAY-1:0];
     ex_mem_scoreboard_data_t ex_mem_scoreboard_data_slots [MAX_EXEC_CYCLE_DELAY-1:0];
@@ -207,7 +210,7 @@ import issue_pkg::*;
     logic [$clog2(MAX_EXEC_CYCLE_V2)-1:0] new_op_delay = get_exec_stage_delays_v3(funct_unit_i);
 
     always_ff @(posedge clk) begin
-        if (rst || clear_i) begin
+        if (rst || exception_i) begin
             exec_stage_slots_int <= '{default: NOOP};
             ex_mem_scoreboard_data_slots <= '{default: '0};
         end else begin
@@ -229,15 +232,17 @@ import issue_pkg::*;
     end
 
     always_comb begin
-        if (new_op_delay == 0 && funct_unit_i != NOOP) begin: Forwarding
-            current_funct_unit_output_o = funct_unit_i;
+        if (exception_i) begin
+            // current_funct_unit_output_o = NOOP;
+            sb_data_pkt_o = '{default: '0};
+        end else if (new_op_delay == 0 && funct_unit_i != NOOP) begin: Forwarding
+            // current_funct_unit_output_o = funct_unit_i;
             sb_data_pkt_o = sb_data_pkt_i;
             assert(exec_stage_slots_int[0] == NOOP) else $fatal("Scoreboard error: new instruction issued to occupied exec stage slot");
         end else begin
-            current_funct_unit_output_o = exec_stage_slots_int[0];
+            // current_funct_unit_output_o = exec_stage_slots_int[0];
             sb_data_pkt_o = ex_mem_scoreboard_data_slots[0];
         end
-        
     end
 
 endmodule

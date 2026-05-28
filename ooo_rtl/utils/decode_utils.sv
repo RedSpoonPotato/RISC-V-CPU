@@ -81,6 +81,7 @@ package decode_pkg;
         logic [$clog2(PRF_COUNT)-1:0] src1_ptr;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_ptr;
+        logic pc_instr;
         logic [$clog2(MAX_PC_INSTRS)-1:0] pc_buff_ptr;
     } iq_entry_t;
     
@@ -100,6 +101,7 @@ package decode_pkg;
         logic [$clog2(PRF_COUNT)-1:0] src1_ptr;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_ptr;
+        logic pc_instr;
         logic [$clog2(MAX_PC_INSTRS)-1:0] pc_buff_ptr;
     } iq_output_t;
 
@@ -124,10 +126,11 @@ package decode_pkg;
 
     // sets some entries to be 0, will be overwritten later
     function automatic iq_entry_t instr_to_iq_entry_partial (
-        input [31:0] instr
+        input [31:0] instr,
+        input instr_valid
     );
         iq_entry_t iq_entry;
-        iq_entry.valid = 0;
+        iq_entry.valid = 1;
         iq_entry.op = grab_compr_instr(instr);
         iq_entry.exec_dur = get_exec_stage_delays_from_instr(instr);
         iq_entry.imm_valid = general_pkg::has_imm(instr[6:0]);
@@ -165,6 +168,7 @@ package decode_pkg;
         out.src1_ptr    = in.src1_ptr;
         out.rob_ptr     = in.rob_ptr;
         out.spec_exec_ptr = in.spec_exec_ptr;
+        out.pc_instr    = in.pc_instr;
         out.pc_buff_ptr = in.pc_buff_ptr;
         return out;
     endfunction

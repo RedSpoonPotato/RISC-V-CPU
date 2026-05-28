@@ -49,7 +49,10 @@ import instr_fetch_pkg::*;
 
     output if_output_pkt_t if_output_pkt_o,
 
-    input shift_reg_pkt_t spec_exec_answr_pkt_i
+    input shift_reg_pkt_t spec_exec_answr_pkt_i,
+
+    output logic exception_o,
+    input logic stall_i
 );
 
     shift_reg_pkt_t spec_exec_answr_pkt_ff;
@@ -125,6 +128,7 @@ import instr_fetch_pkg::*;
     // logic shft_reg_brnch_mispredict;
     // logic shft_reg_trgt_mispredict;
     shift_reg_pkt_2_t shift_reg_pkt_2;
+    logic trgt_shift_buff_full;
     trgt_shift_register trgt_shift_register_inst
     (
         .clk(clk),
@@ -137,12 +141,14 @@ import instr_fetch_pkg::*;
         .is_spec_instr_i(is_spec_instr_i),
         .rd_en_i(spec_exec_answr_pkt_ff.trgt_en),
         // .old_pc_o(shift_reg_old_pc)
-        .shift_reg_pkt_2_o(shift_reg_pkt_2)
+        .shift_reg_pkt_2_o(shift_reg_pkt_2),
+        .full_o(trgt_shift_buff_full)
     );
-       
+
     // calculated 
     logic branch_mispredict;
     logic trgt_mispredict;
+    logic jump_mispredict
     always_comb begin
         branch_mispredict = 0;
         trgt_mispredict = 0;
@@ -152,32 +158,41 @@ import instr_fetch_pkg::*;
         if (spec_exec_answr_pkt_ff.trgt_en) begin: Branch
             trgt_mispredict = shift_reg_pkt_2.trgt != spec_exec_answr_pkt_ff.trgt;
         end
+        jump_mispredict = trgt_mispredict && ~branch_mispredict;
     end
+
+    assign exception_o = jump_mispredict || branch_mispredict;
 
     // branch prediction
     // cases: branch, jalr, and jal
 
     // unsure if supposed to be register, but for now yes i guess
-    logic instr_valid;
-    assign if_output_pkt_o.instr_valid = instr_valid;
+    // logic instr_valid;
+    logic master_stall;
+    assign master_stall = stall_i || trgt_shift_buff_full;
+    // assign instr_valid  !master_stall;
+    assign if_output_pkt_o.instr_valid = !master_stall;
 
     always_ff @(posedge clk) begin
         if (rst) begin
             pc <= '{default:'0};
-            instr_valid <= 1'b0;
+            // instr_valid <= 1'b0;
         end else begin
-            instr_valid <= 1'b1;
+            // instr_valid <= 1'b1;
             // if (stall) begin // NEED TO DRIVE THIS
                 // pc <= pc;
                 // set instr to not be valid?
                 // instr_valid <= 1'b0;
             // end else if (trgt_mispredict && ~branch_mispredict) begin: JumpMispredict
-            if (trgt_mispredict && ~branch_mispredict) begin: JumpMispredict
+            if (jump_mispredict) begin: JumpMispredict
                 pc <= spec_exec_answr_pkt_ff.trgt;
-            end else if (branch_mispredict) begin
+            end else if (branch_mispredict) begin: BranchMispredict
                 pc <= (spec_exec_answr_pkt_ff.branch_pred) ? 
                     spec_exec_answr_pkt_ff.trgt : 
                     shift_reg_pkt_2.pc + 4;
+            end else if (exception_i) begin: Stall
+                pc <= pc;
+                // instr_valid <= 1'b0;
             end else if (tb_hit && bp_hit && if_output_pkt_o.bp_pred) begin: SpecBranch
                 pc <= tb_predict_trgt;
             end else if (tb_hit && !bp_hit) begin: SpecJump
@@ -207,7 +222,8 @@ import general_pkg::DATA_WIDTH;
     // output logic trgt_mispredict_o,
     input logic is_spec_instr_i, // comes 1 cycle later from decode stage
     input logic rd_en_i,
-    output shift_reg_pkt_2_t shift_reg_pkt_2_o
+    output shift_reg_pkt_2_t shift_reg_pkt_2_o,
+    output logic full_o
 );
     shift_reg_pkt_2_t predicted_trgt_and_pred_pkt, predicted_trgt_and_pred_pkt_ff;
     always_comb begin
@@ -226,6 +242,7 @@ import general_pkg::DATA_WIDTH;
         end
     end
 
+    logic
 
     fifo_modded #(
         .DEPTH(MAX_SPEC_EXEC_INSTRS),
@@ -237,7 +254,8 @@ import general_pkg::DATA_WIDTH;
         .data_i(predicted_trgt_and_pred_pkt_ff),
         .rd_en_i(rd_en_i),
         .wr_en_i(is_spec_instr_i),
-        .data_o(shift_reg_pkt_2_o)
+        .data_o(shift_reg_pkt_2_o),
+        .full_o(full_o)
     );
 
     // shift_reg_pkt_t shift_reg [OUTCOME_DELAY-1:0];
