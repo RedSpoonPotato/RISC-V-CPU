@@ -226,8 +226,7 @@ module decode_stage
     logic pc_instr;
 
     logic master_instr_valid; // NEED TO SET, should depend alos upon exception
-    logic master_dispatch_instr;
-    logic master_stall; // dont update pendings states
+    assign master_instr_valid = if_input_ff.instr_valid && exception_ff;
 
     // setting cntrl instructions
     always_comb begin
@@ -395,18 +394,19 @@ import general_pkg::*;
             free_list <= '{default:'1};
             commit_list <= '{default:'0};
         end else begin
-            // writing
-            if (wr_en_i) begin
-                if (exception_i) begin
-                    free_list <= ~commit_list;
+            if (exception_i) begin
+                free_list <= ~commit_list;
+            end else begin
+                // writing
+                if (wr_en_i) begin
+                    free_list[prev_phys_ptr_i] <= 1;
+                    commit_list[prev_phys_ptr_i] <= 0;
+                    commit_list[commited_ptr_i] <= 1;
                 end
-                free_list[prev_phys_ptr_i] <= 1;
-                commit_list[prev_phys_ptr_i] <= 0;
-                commit_list[commited_ptr_i] <= 1;
-            end
-            // reading
-            if (!none_free_o && rd_en_i) begin
-                free_list[free_ptr_o] <= 0;
+                // reading
+                if (!none_free_o && rd_en_i) begin
+                    free_list[free_ptr_o] <= 0;
+                end
             end
         end
     end
@@ -491,7 +491,11 @@ import decode_pkg::*;
                     if (rename_table[arf_ptr_sb_i].prf_ptr == prf_ptr_sb_i)
                         rename_table[arf_ptr_sb_i].pending <= 1'b0;
                 end
+                // if (commit_en_i) begin
+                //     commit_map[commit_arf_i] <= commit_prf_i;
+                // end
             end
+            // is outside the exception_i conditional b/c commit_en_i from input to decode stage is not flipflopped
             if (commit_en_i) begin
                 commit_map[commit_arf_i] <= commit_prf_i;
             end
