@@ -42,7 +42,6 @@ import issue_pkg::*;
     // 
     // dont think i need
     // input logic [$clog2(MAX_PC_INSTRS)-1:0] rd_ptr_i
-
     // input logic pc_instr_i
     input logic exception_i,
     output logic stall_o
@@ -117,6 +116,7 @@ import issue_pkg::*;
             fetch_pkt_o.dest_ptr    = instr_ff.dest_ptr;
             fetch_pkt_o.rob_ptr     = instr_ff.rob_ptr;
             fetch_pkt_o.spec_exec_ptr = instr_ff.spec_exec_ptr;
+            fetch_pkt_o.mem_buff_ptr = instr_ff.mem_buff_ptr;
             fetch_pkt_o.pc = pc_out;
             fetch_pkt_o.funct_unit = get_ex_mem_type(instr_op_ff, fetch_pkt_o.valid);
             fetch_pkt_o.funct_unit_one_hot = get_ex_mem_type_one_hot(instr_op_ff, fetch_pkt_o.valid);

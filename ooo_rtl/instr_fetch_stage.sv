@@ -52,20 +52,22 @@ import instr_fetch_pkg::*;
     input shift_reg_pkt_t spec_exec_answr_pkt_i,
 
     output logic exception_o,
-    input logic stall_i
+    input logic stall_i,
+    input logic load_addr_conflict_i,
+    input logic [DATA_WIDTH-1:0] mem_buff_pc_i
 );
 
-    shift_reg_pkt_t spec_exec_answr_pkt_ff;
-    always_ff @(posedge clk) begin
-        spec_exec_answr_pkt_ff <= spec_exec_answr_pkt_i;
-        // assert(spec_exec_answr_pkt_ff.jalr_en && spec_exec_answr_pkt_ff.branch_en);
-    end
+    // shift_reg_pkt_t spec_exec_answr_pkt_ff;
+    // always_ff @(posedge clk) begin
+    //     spec_exec_answr_pkt_ff <= spec_exec_answr_pkt_i;
+    //     // assert(spec_exec_answr_pkt_ff.jalr_en && spec_exec_answr_pkt_ff.branch_en);
+    // end
 
     logic [DATA_WIDTH-1:0] pc;
     assign if_output_pkt_o.pc = pc;
 
     logic crrct_trgt_en;
-    assign crrct_trgt_en = spec_exec_answr_pkt_ff.trgt_en || spec_exec_answr_pkt_ff.branch_en;
+    assign crrct_trgt_en = spec_exec_answr_pkt_i.trgt_en || spec_exec_answr_pkt_i.branch_en;
 
     // logic grab_new_pc;
 
@@ -83,9 +85,9 @@ import instr_fetch_pkg::*;
         .hit_o(bp_hit),
         .pred_o(if_output_pkt_o.bp_pred),
         // updating state
-        .write_en_i(spec_exec_answr_pkt_ff.branch_en),
-        .correct_result_i(spec_exec_answr_pkt_ff.branch_pred),
-        // .old_pc_i(spec_exec_answr_pkt_ff.old_pc)
+        .write_en_i(spec_exec_answr_pkt_i.branch_en),
+        .correct_result_i(spec_exec_answr_pkt_i.branch_pred),
+        // .old_pc_i(spec_exec_answr_pkt_i.old_pc)
         .old_pc_i(shift_reg_pkt_2.pc)
     );
 
@@ -104,8 +106,8 @@ import instr_fetch_pkg::*;
         .predict_trgt_o(tb_predict_trgt),
         // updating state
         .write_en_i(crrct_trgt_en),
-        .correct_trgt_i(spec_exec_answr_pkt_ff.trgt),
-        // .old_pc_i(spec_exec_answr_pkt_ff.old_pc)
+        .correct_trgt_i(spec_exec_answr_pkt_i.trgt),
+        // .old_pc_i(spec_exec_answr_pkt_i.old_pc)
         .old_pc_i(shift_reg_pkt_2.pc)
     );
 
@@ -139,7 +141,7 @@ import instr_fetch_pkg::*;
         .old_pc_i(pc),
         // outputs
         .is_spec_instr_i(is_spec_instr_i),
-        .rd_en_i(spec_exec_answr_pkt_ff.trgt_en),
+        .rd_en_i(spec_exec_answr_pkt_i.trgt_en),
         // .old_pc_o(shift_reg_old_pc)
         .shift_reg_pkt_2_o(shift_reg_pkt_2),
         .full_o(trgt_shift_buff_full)
@@ -148,20 +150,21 @@ import instr_fetch_pkg::*;
     // calculated 
     logic branch_mispredict;
     logic trgt_mispredict;
-    logic jump_mispredict
+    logic jump_mispredict;
+    logic exception_internal;
     always_comb begin
         branch_mispredict = 0;
         trgt_mispredict = 0;
-        if (spec_exec_answr_pkt_ff.branch_en) begin: Jump
-            branch_mispredict = shift_reg_pkt_2.branch_pred != spec_exec_answr_pkt_ff.branch_pred;
+        if (spec_exec_answr_pkt_i.branch_en) begin: Jump
+            branch_mispredict = shift_reg_pkt_2.branch_pred != spec_exec_answr_pkt_i.branch_pred;
         end
-        if (spec_exec_answr_pkt_ff.trgt_en) begin: Branch
-            trgt_mispredict = shift_reg_pkt_2.trgt != spec_exec_answr_pkt_ff.trgt;
+        if (spec_exec_answr_pkt_i.trgt_en) begin: Branch
+            trgt_mispredict = shift_reg_pkt_2.trgt != spec_exec_answr_pkt_i.trgt;
         end
         jump_mispredict = trgt_mispredict && ~branch_mispredict;
     end
 
-    assign exception_o = jump_mispredict || branch_mispredict;
+    assign exception_internal = jump_mispredict || branch_mispredict || load_addr_conflict_i;
 
     // branch prediction
     // cases: branch, jalr, and jal
@@ -177,7 +180,9 @@ import instr_fetch_pkg::*;
         if (rst) begin
             pc <= '{default:'0};
             // instr_valid <= 1'b0;
+            exception_o <= '0;
         end else begin
+            exception_o <= exception_internal;
             // instr_valid <= 1'b1;
             // if (stall) begin // NEED TO DRIVE THIS
                 // pc <= pc;
@@ -185,12 +190,14 @@ import instr_fetch_pkg::*;
                 // instr_valid <= 1'b0;
             // end else if (trgt_mispredict && ~branch_mispredict) begin: JumpMispredict
             if (jump_mispredict) begin: JumpMispredict
-                pc <= spec_exec_answr_pkt_ff.trgt;
+                pc <= spec_exec_answr_pkt_i.trgt;
             end else if (branch_mispredict) begin: BranchMispredict
-                pc <= (spec_exec_answr_pkt_ff.branch_pred) ? 
-                    spec_exec_answr_pkt_ff.trgt : 
+                pc <= (spec_exec_answr_pkt_i.branch_pred) ? 
+                    spec_exec_answr_pkt_i.trgt : 
                     shift_reg_pkt_2.pc + 4;
-            end else if (exception_i) begin: Stall
+            end else if (load_addr_conflict_i) begin: MemoryAddrConflict
+                pc <= mem_buff_pc_i;
+            end else if (stall_i) begin: Stall
                 pc <= pc;
                 // instr_valid <= 1'b0;
             end else if (tb_hit && bp_hit && if_output_pkt_o.bp_pred) begin: SpecBranch

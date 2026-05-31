@@ -68,6 +68,8 @@ module decode_stage
     // output logic pc_instr
     output pc_buff_instance_pkt_t pc_buff_inst_o,
 
+    output logic mem_buff_wr_en_o,
+
     input logic exception_i, // not sure if we need to flipflop this
     output logic stall_o
 );
@@ -224,6 +226,7 @@ module decode_stage
     logic dispatch_instr;
     logic cntrl_instr; // branch or jump
     logic pc_instr;
+    logic mem_instr;
 
     logic master_instr_valid; // NEED TO SET, should depend alos upon exception
     assign master_instr_valid = if_input_ff.instr_valid && exception_ff;
@@ -235,8 +238,14 @@ module decode_stage
                       (instr_ff[6:0] == 7'b1101111) || // JAL
                       (instr_ff[6:0] == 7'b1100111);   // JALR
         
-        pc_instr = (cntrl_instr || 
-                    instr_ff[6:0] == 7'b0010111); // AUIPC
+        mem_instr = (instr_ff[6:0] == 7'b0000011) || (instr_ff[6:0] == 7'b0100011);
+
+        // pc_instr = (cntrl_instr || 
+                    // instr_ff[6:0] == 7'b0010111); // AUIPC
+
+        pc_instr = cntrl_instr || 
+            instr_ff[6:0] == 7'b0010111 || // AUIPC
+            instr_ff[6:0] == 7'b0100011; // Store
         
         // free_list_rd_en = 1;
         // i think this is bad, this is really a stall condition
@@ -261,13 +270,16 @@ module decode_stage
     end
 
     logic [$clog2(ROB_COUNT):0] rob_head_counter;
-    logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_counter;
+    logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] spec_exec_counter;
     logic [$clog2(MAX_PC_INSTRS)-1:0] pc_instr_counter;
+    logic [$clog2(MEM_BUFF_SIZE):0] mem_buff_counter;
+    
     always_ff @(posedge clk) begin
         if (rst) begin
             rob_counter <= '{default:'0};
             spec_exec_counter <= '{default:'0};
             pc_instr_counter <= '{default:'0};
+            mem_buff_counter <= '{default:'0};
         end else begin
             if (master_instr_valid) begin
                 rob_counter <= rob_counter + 1;
@@ -277,6 +289,9 @@ module decode_stage
                 if (pc_instr) begin
                     pc_instr_counter <= pc_instr_counter + 1;
                 end 
+                if (mem_instr) begin
+                    mem_buff_counter <= mem_buff_counter + 1;
+                end
             end
         end
     end
@@ -342,11 +357,14 @@ module decode_stage
             pc_buff_inst_o.pc_in = if_input_ff.pc;
             // to if
             is_spec_instr_o = cntrl_instr;
+            // to ex_mem
+            mem_buff_wr_en_o = mem_instr;
         end else begin
             rob_instance_pkt_o = '{default:'0};
             spec_exec_answer_buffer_pkt_o.wr_en = '0;
             pc_buff_inst_o = '{default:'0};
             is_spec_instr_o = '0;
+            mem_buff_wr_en_o = '0;
         end
     end
 

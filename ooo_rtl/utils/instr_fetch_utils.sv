@@ -18,6 +18,8 @@ package instr_fetch_pkg;
     localparam MAX_AUIPC_INSTRS = 4;
     localparam MAX_PC_INSTRS = MAX_SPEC_EXEC_INSTRS + MAX_AUIPC_INSTRS; // max number of instrs that can be waiting on a pc calculation (branches, jumps, auipc)
 
+    localparam MAX_MEM_INSTRS = 10;
+
     localparam INSTR_MEM_ENTRY_NUM = 1024;
     localparam INSTR_MEM_INDEX_WIDTH = $clog2(INSTR_MEM_ENTRY_NUM);
 

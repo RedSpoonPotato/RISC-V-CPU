@@ -11,6 +11,7 @@ package general_pkg;
     localparam IMM_COMPRESS = 20;
     localparam FUNCT_COMB_WIDTH = 4; // representing funct3 + funct7
     localparam OUTCOME_DELAY = 3; // # of cycles until the "brnch_taken_i" result comes in  
+    localparam MEM_BUFF_SIZE = 32;
 
 
     typedef enum logic [$clog2(6)-1:0] {R_TYPE, I_TYPE, S_TYPE, B_TYPE, U_TYPE, J_TYPE} instruction_t;

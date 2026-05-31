@@ -38,9 +38,13 @@ import issue_pkg::*;
     // output to wb stage
     output spec_exec_answr_pkt_t spec_exec_answr_o,
 
+    input logic mem_buff_wr_en_i,
+
     // for updating pending bits in decode stage
     // output rename_table_and_issue_queue_update_pkt_t rt_iq_update_pkt_o
-    input logic exception_i
+    input logic exception_i,
+
+    output mem_addr_pkt_t mem_addr_pkt_o
 );
 
     fetch_packet_t fetch_pkt_ff;
@@ -87,13 +91,15 @@ import issue_pkg::*;
         // .rst(rst),
         .en_i(fetch_pkt_ff.funct_unit_one_hot[MEM]),
         .store_i(fetch_pkt_ff.store),
+        .pc(fetch_pkt_ff.pc),
+        .mem_buff_ptr(fetch_pkt_ff.mem_buff_ptr),
         // .funct_code_i(fetch_pkt_ff.funct_code),
         .base_addr_i(fetch_pkt_ff.src0_data),
         .offset_i(fetch_pkt_ff.mem_offset_or_brnch_imm), // for now, just using imm_compr as offset, will change later
         .store_data_i(fetch_pkt_ff.src1_data), // for store instructions
-        .load_data_o(result_arry[1]) // will connect this to writeback stage later
+        .load_data_o(result_arry[1]), // will connect this to writeback stage later
+        .mem_addr_pkt_o(mem_addr_pkt_o)
     );
-
 
     // branch path (1 cycle for now): if(rs1 == rs2) PC += imm
     logic [DATA_WIDTH-1:0] brnch_trgt;
@@ -401,14 +407,17 @@ import exec_mem_pkg::*;
     // input rst,
     input logic en_i,
     input logic store_i,
+    input logic [DATA_WIDTH-1:0] pc,
+    input logic [$clog2(MEM_BUFF_SIZE):0] mem_buff_ptr,
     // input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
     input logic [DATA_WIDTH-1:0] base_addr_i,
     input logic [DATA_WIDTH-1:0] offset_i,
     input logic [DATA_WIDTH-1:0] store_data_i,
-    output logic [DATA_WIDTH-1:0] load_data_o
+    output logic [DATA_WIDTH-1:0] load_data_o,
+    output mem_addr_pkt_t mem_addr_pkt_o
 );
 
-    logic [DATA_WIDTH-1:0] base_addr, offset, store_data, addr;
+    logic [DATA_WIDTH-1:0] base_addr, offset, store_data, addr, pc;
 
     assign addr = base_addr + offset;
 
@@ -423,6 +432,14 @@ import exec_mem_pkg::*;
             store_data = '{default:'0};
         end
     end
+
+    always_comb begin
+        mem_addr_pkt_o.wr_en = en_i;
+        mem_addr_pkt_o.buff_ptr = mem_buff_ptr;
+        mem_addr_pkt_o.is_store = store_i;
+        mem_addr_pkt_o.addr = addr;
+        mem_addr_pkt_o.pc = pc;
+    end    
 
     sram_sync_read #(
         .DATA_WIDTH(DATA_WIDTH),

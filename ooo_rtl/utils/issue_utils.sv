@@ -55,9 +55,10 @@ package issue_pkg;
         logic [DATA_WIDTH-1:0] mem_offset_or_brnch_imm;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         // additional fields
-        logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_ptr;
+        logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] spec_exec_ptr;
         // logic [$clog2(MAX_PC_INSTRS-1):0] pc_buff_ptr;
         logic [DATA_WIDTH-1:0] pc; // for branch target calculation, and for JALR and AUIPC
+        logic [$clog2(MEM_BUFF_SIZE):0] mem_buff_ptr;
     } fetch_packet_t;
 
 

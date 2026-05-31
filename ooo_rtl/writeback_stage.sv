@@ -36,17 +36,22 @@ import instr_fetch_pkg::*;
     output shift_reg_pkt_t spec_exec_answr_pkt_o,
     
     input logic exception_i,
-    output logic stall_o
+    output logic stall_o,
+    input logic mem_buff_wr_en_i,
+    input mem_addr_pkt_t mem_addr_pkt_i,
+    output logic load_addr_conflict_o
 );
     // rob_instance_pkt_t rob_instance_pkt_ff; not gonna use b/c can save on flipflops while still functional
     ex_mem_stage_pkt_t ex_mem_stage_pkt_ff;
+    spec_exec_answr_pkt_t spec_exec_answr_ff;
     logic exception_ff;
     always_ff @(posedge clk) begin
         ex_mem_stage_pkt_ff <= ex_mem_stage_pkt_i;
         exception_ff <= exception_i;
+        spec_exec_answr_ff <= spec_exec_answr_i;
     end
 
-    logic rob_full, seab_full;
+    logic rob_full, seab_full, mem_addr_full;
 
     rob_buffer rob_buffer_inst (
         .clk(clk),
@@ -70,7 +75,7 @@ import instr_fetch_pkg::*;
         .clk(clk),
         .rst(rst),
         // updating state
-        .spec_exec_answr_i(spec_exec_answr_i),
+        .spec_exec_answr_i(spec_exec_answr_ff),
         // state
         .full_o(seab_full),
         // instantiation
@@ -81,7 +86,116 @@ import instr_fetch_pkg::*;
         .exception_i(exception_ff)
     );
 
-    assign stall_o = rob_full && seab_full;
+    mem_addr_buffer mem_addr_buffer_inst (
+        .clk(clk),
+        .rst(rst),
+        // updating state
+        .mem_addr_pkt_i(mem_addr_pkt_i),
+        // state
+        .full_o(mem_addr_full),
+        // instantiation
+        .mem_buff_instance_wr_en_i(mem_buff_instance_wr_en_i),
+        // comitting
+        .commit_en_i(commit_stage_pkt_o.wr_en),
+        .load_addr_conflict_o(load_addr_conflict_o),
+        .exception_i(exception_ff)
+    );
+
+    assign stall_o = rob_full && seab_full && mem_addr_full;
+
+endmodule
+
+
+module mem_addr_buffer
+import writeback_pkg::*;
+import exec_mem_pkg::*;
+import instr_fetch_pkg::*;
+(
+    input clk,
+    input rst,
+    // updating state
+    // input ex_mem_stage_pkt_t ex_mem_stage_pkt_i,
+    // input spec_exec_answr_pkt_t spec_exec_answr_i,
+    input mem_addr_pkt_t mem_addr_pkt_i,
+    // state
+    output full_o,
+    // instantiation
+    // input spec_exec_buffer_instance_pkt_t spec_exec_buffer_instance_pkt_i,
+    input logic mem_buff_instance_wr_en_i,
+    // comitting
+    input logic commit_en_i,
+    // output shift_reg_pkt_t spec_exec_answr_pkt_o,
+    // combinational output
+    output logic load_addr_conflict_o,
+    output logic [DATA_WIDTH-1:0] pc_o,
+    input logic exception_i
+);
+
+    mem_addr_entry_t mem_addr_buff [0:MAX_MEM_INSTRS-1];
+    logic [$clog2(MAX_MEM_INSTRS):0] head_ptr;
+    logic [$clog2(MAX_MEM_INSTRS):0] tail_ptr;
+    logic [$clog2(MAX_MEM_INSTRS)-1:0] head_ptr_lower;
+    logic [$clog2(MAX_MEM_INSTRS)-1:0] tail_ptr_lower;
+    assign head_ptr_lower = head_ptr[$clog2(MAX_MEM_INSTRS)-1:0];
+    assign tail_ptr_lower = tail_ptr[$clog2(MAX_MEM_INSTRS)-1:0];
+
+    assign full_o = 
+        tail_ptr_lower == head_ptr_lower
+         && tail_ptr[$clog2(MAX_MEM_INSTRS)] != head_ptr[$clog2(MAX_MEM_INSTRS)];
+
+    // buffer management
+    always_ff @(posedge clk) begin
+        if (rst || exception_i || load_addr_conflict_o) begin
+            mem_addr_buff <= '{default:'0};
+            head_ptr <= '{default:'0};
+            tail_ptr <= '{default:'0};
+        end else begin
+            // instantiation
+            if (mem_buff_instance_wr_en_i && !full_o) begin
+                // mem_addr_buff[head_ptr_lower].valid = 1'b1;
+                head_ptr <= head_ptr + 1;
+            end
+            // updating state
+            if (mem_addr_pkt_i.wr_en) begin
+                mem_addr_buff[mem_addr_pkt_i.buff_ptr].valid <= 1'b1;
+                mem_addr_buff[mem_addr_pkt_i.buff_ptr].is_store <= mem_addr_pkt_i.is_store;
+                mem_addr_buff[mem_addr_pkt_i.buff_ptr].addr <= mem_addr_pkt_i.addr;
+                mem_addr_buff[mem_addr_pkt_i.buff_ptr].pc <= mem_addr_pkt_i.pc;
+            end
+            // committing
+            if (commit_en_i) begin
+                mem_addr_buff[tail_ptr_lower].valid <= 1'b0;
+                tail_ptr <= tail_ptr + 1;
+            end
+        end
+    end
+
+    // committing
+    logic [MAX_MEM_INSTRS-1:0] cnflct_arry;
+    logic frwd_cnflct;
+    always_comb begin
+        cnflct_arry = '0;
+        frwd_cnflct = '0;
+        if (commit_en_i && !exception_i) begin
+            for (int i = 0; i < MAX_MEM_INSTRS; i++) begin
+                cnflct_arry[i] = mem_addr_buff[i].valid &&
+                    i != tail_ptr_lower &&
+                    !mem_addr_buff[i].is_store &&
+                    mem_addr_buff[i].addr == mem_addr_buff[tail_ptr_lower].addr;
+            end
+            frwd_cnflct = mem_addr_pkt_i.wr_en &&
+                mem_addr_pkt_i.valid && 
+                !mem_addr_pkt_i.is_store &&
+                mem_addr_pkt_i.addr == mem_addr_buff[tail_ptr_lower].addr &&
+                mem_addr_buff[tail_ptr_lower].valid;
+
+            load_addr_conflict_o = |cnflct_arry || frwd_cnflct;
+        end else begin
+            load_addr_conflict_o = '0;
+        end
+
+        pc_o = mem_addr_buff[tail_ptr_lower].pc;
+    end
 
 endmodule
 
@@ -105,6 +219,8 @@ import instr_fetch_pkg::*;
 
     input logic exception_i
 );
+    logic empty;
+    logic forward;
 
     shift_reg_pkt_t sea_buff [0:MAX_SPEC_EXEC_INSTRS-1];
     logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] head_ptr;
@@ -116,7 +232,9 @@ import instr_fetch_pkg::*;
 
     assign full_o = 
         tail_ptr_lower == head_ptr_lower
-         && tail_ptr[$clog2(MAX_SPEC_EXEC_INSTRS)] == head_ptr[$clog2(MAX_SPEC_EXEC_INSTRS)];
+         && tail_ptr[$clog2(MAX_SPEC_EXEC_INSTRS)] != head_ptr[$clog2(MAX_SPEC_EXEC_INSTRS)];
+
+    assign empty = head_ptr == tail_ptr;
 
     // buffer management
     always_ff @(posedge clk) begin
@@ -130,23 +248,27 @@ import instr_fetch_pkg::*;
                 head_ptr <= head_ptr + 1;
             end
             // updating state
-            if (spec_exec_answr_i.trgt_en) begin
-                sea_buff[spec_exec_answr_i.spec_exec_ptr].trgt_en <= 1'b1;
-                sea_buff[spec_exec_answr_i.spec_exec_ptr].trgt <= spec_exec_answr_i.calc_pc;
-                sea_buff[spec_exec_answr_i.spec_exec_ptr].branch_en <= spec_exec_answr_i.branch_en;
-                sea_buff[spec_exec_answr_i.spec_exec_ptr].branch_pred <= spec_exec_answr_i.branch_taken;
+            if (spec_exec_answr_i.trgt_en && !forward) begin
+                sea_buff[spec_exec_answr_i.spec_exec_ptr] <= set_wb_shift_reg_pkt(spec_exec_buffer_instance_pkt_i);
             end
             // committing
-            if (commit_en_i) begin
+            if (commit_en_i || forward) begin
                 tail_ptr <= tail_ptr + 1;
             end
         end
     end
 
+    assign forward = empty && spec_exec_answr_i.trgt_en;
+
     // committing
     always_comb begin
         if (commit_en_i && !exception_i) begin
-            spec_exec_answr_pkt_o = sea_buff[tail_ptr_lower];
+            if (forward) begin: Forwarding
+                // spec_exec_answr_pkt_o = spec_exec_answr_i;
+                spec_exec_answr_pkt_o = set_wb_shift_reg_pkt(spec_exec_buffer_instance_pkt_i);
+            end else begin
+                spec_exec_answr_pkt_o = sea_buff[tail_ptr_lower];
+            end
         end else begin
             spec_exec_answr_pkt_o = '{default:'0};
         end
@@ -188,7 +310,7 @@ import issue_pkg::*;
 
     assign rob_full_o = 
         tail_ptr_lower == head_ptr_lower
-         && tail_ptr[$clog2(ROB_COUNT)] == head_ptr[$clog2(ROB_COUNT)];
+         && tail_ptr[$clog2(ROB_COUNT)] != head_ptr[$clog2(ROB_COUNT)];
     // assign rob_empty_o = tail_ptr == head_ptr;
 
     // reorder buffer management

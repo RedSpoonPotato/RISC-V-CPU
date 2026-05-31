@@ -63,7 +63,7 @@ package writeback_pkg;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
     } commit_stage_pkt_t;
 
-
+    
     function automatic rob_entry_t rob_instantiation (
         input rob_instance_pkt_t rob_instance_pkt_i
     );
@@ -91,4 +91,15 @@ package writeback_pkg;
         return commit_pkt;
     endfunction
         
+    function automatic shift_reg_pkt_t set_wb_shift_reg_pkt (
+        input spec_exec_answr_pkt_t spec_exec_answr_i
+    );
+        shift_reg_pkt_t out_pkt;
+        out_pkt.trgt_en = 1'b1;
+        out_pkt.trgt = spec_exec_answr_i.calc_pc;
+        out_pkt.branch_en = spec_exec_answr_i.branch_en;
+        out_pkt.branch_pred = spec_exec_answr_i.branch_taken;
+        return out_pkt;
+    endfunction
+
 endpackage

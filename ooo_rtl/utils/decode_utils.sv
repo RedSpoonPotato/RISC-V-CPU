@@ -80,9 +80,10 @@ package decode_pkg;
         logic src1_pending;
         logic [$clog2(PRF_COUNT)-1:0] src1_ptr;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
-        logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_ptr;
+        logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] spec_exec_ptr;
         logic pc_instr;
         logic [$clog2(MAX_PC_INSTRS)-1:0] pc_buff_ptr;
+        logic [$clog2(MEM_BUFF_SIZE):0] mem_buff_ptr;
     } iq_entry_t;
     
     typedef struct packed {
@@ -100,9 +101,10 @@ package decode_pkg;
         // logic src1_valid;
         logic [$clog2(PRF_COUNT)-1:0] src1_ptr;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
-        logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] spec_exec_ptr;
+        logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] spec_exec_ptr;
         logic pc_instr;
         logic [$clog2(MAX_PC_INSTRS)-1:0] pc_buff_ptr;
+        logic [$clog2(MEM_BUFF_SIZE):0] mem_buff_ptr;
     } iq_output_t;
 
     // SUBJECT TO CHANGE
@@ -170,6 +172,7 @@ package decode_pkg;
         out.spec_exec_ptr = in.spec_exec_ptr;
         out.pc_instr    = in.pc_instr;
         out.pc_buff_ptr = in.pc_buff_ptr;
+        out.mem_buff_ptr = in.mem_buff_ptr;
         return out;
     endfunction
 
