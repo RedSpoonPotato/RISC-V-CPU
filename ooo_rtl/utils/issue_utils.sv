@@ -148,11 +148,11 @@ function automatic logic [FUNCT_COMB_WIDTH-1:0] get_funct_comb(
     logic [6:0] opcode = op[6:0];
     EX_MEM_TYPE instr_type = get_ex_mem_type(opcode, 1'b1);
     assert(FUNCT_COMB_WIDTH == 4);
-    if (instr_type == JALR) begin: JALR
+    if (instr_type == JALR) begin: Jalr
         return op[3:0]; // 3rd bit distinguishes between JALR and JAL
-    end else if (opcode == 7'b0110111) begin: LUI
+    end else if (opcode == 7'b0110111) begin: Lui
         return 4'b1111;
-    end else begin: OTHER
+    end else begin: Other
         logic [2:0] funct3 = op[9:7];
         logic [6:0] funct7 = op[16:10];
         return {funct7[5], funct3}; // Combine the most significant bit of funct7 with funct3

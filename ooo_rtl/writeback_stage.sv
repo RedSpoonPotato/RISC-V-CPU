@@ -84,7 +84,7 @@ import instr_fetch_pkg::*;
         .spec_exec_buffer_instance_pkt_i(spec_exec_buffer_instance_pkt_i),
         // comitting
         .commit_en_i(commit_stage_pkt_o.wr_en),
-        .commit_spec_instr_en_i(commit_stage_pkt_o.speculative)
+        .commit_spec_instr_en_i(commit_stage_pkt_o.speculative),
         .spec_exec_answr_pkt_o(spec_exec_answr_pkt_o),
         .exception_i(exception_ff)
     );
@@ -97,15 +97,15 @@ import instr_fetch_pkg::*;
         // state
         .full_o(mem_addr_full),
         // instantiation
-        .mem_buff_instance_wr_en_i(mem_buff_instance_wr_en_i),
+        .mem_buff_instance_wr_en_i(mem_buff_wr_en_i),
         // comitting
         .commit_en_i(commit_stage_pkt_o.wr_en),
         .store_commit_en_i(commit_stage_pkt_o.store),
         .mem_commit_en_i(commit_stage_pkt_o.mem_op),
         // .load_addr_conflict_o(load_addr_conflict_o),
         // .pc_o()
-        .mem_addr_conflict_pkt_t(mem_addr_conflict_pkt_o),
-        .store_buffer_commit_pkt_o(store_buffer_commit_pkt_o)
+        .mem_addr_conflict_pkt_o(mem_addr_conflict_pkt_o),
+        .store_buffer_commit_pkt_o(store_buffer_commit_pkt_o),
         .exception_i(exception_ff)
     );
 
@@ -200,7 +200,7 @@ import instr_fetch_pkg::*;
                     mem_addr_buff[i].addr == mem_addr_buff[tail_ptr_lower].addr;
             end
             frwd_cnflct = mem_addr_pkt_i.wr_en &&
-                mem_addr_pkt_i.valid && 
+                // mem_addr_pkt_i.valid && 
                 !mem_addr_pkt_i.is_store &&
                 mem_addr_pkt_i.addr == mem_addr_buff[tail_ptr_lower].addr &&
                 mem_addr_buff[tail_ptr_lower].valid;
@@ -216,7 +216,7 @@ import instr_fetch_pkg::*;
     // setting store pkt when commiting
     always_comb begin
         if (commit_en_i && !exception_i && store_commit_en_i) begin
-            store_buffer_commit_pkt_o.en = 1b'1;
+            store_buffer_commit_pkt_o.en = 1'b1;
             store_buffer_commit_pkt_o.addr = mem_addr_buff[tail_ptr_lower].addr;
             store_buffer_commit_pkt_o.data = mem_addr_buff[tail_ptr_lower].store_data;
         end else begin
@@ -247,6 +247,19 @@ import instr_fetch_pkg::*;
 
     input logic exception_i
 );
+
+
+    function automatic shift_reg_pkt_t set_wb_shift_reg_pkt (
+        input spec_exec_answr_pkt_t spec_exec_answr_i
+    );
+        shift_reg_pkt_t out_pkt;
+        out_pkt.trgt_en = 1'b1;
+        out_pkt.trgt = spec_exec_answr_i.calc_pc;
+        out_pkt.branch_en = spec_exec_answr_i.branch_en;
+        out_pkt.branch_pred = spec_exec_answr_i.branch_taken;
+        return out_pkt;
+    endfunction
+
     logic empty;
     logic forward;
 

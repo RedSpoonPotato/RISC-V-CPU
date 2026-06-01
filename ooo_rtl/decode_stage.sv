@@ -276,13 +276,13 @@ module decode_stage
     
     always_ff @(posedge clk) begin
         if (rst) begin
-            rob_counter <= '{default:'0};
+            rob_head_counter <= '{default:'0};
             spec_exec_counter <= '{default:'0};
             pc_instr_counter <= '{default:'0};
             mem_buff_counter <= '{default:'0};
         end else begin
             if (master_instr_valid) begin
-                rob_counter <= rob_counter + 1;
+                rob_head_counter <= rob_head_counter + 1;
                 if (cntrl_instr) begin
                     spec_exec_counter <= spec_exec_counter + 1;
                 end
@@ -312,7 +312,7 @@ module decode_stage
             issue_queue_entry.src0_ptr = issue_queue_entry.src0_valid ? rename_table_prf_src0 : '{default:'0};
             issue_queue_entry.src1_pending = rename_table_src1_pending;
             issue_queue_entry.src1_ptr = issue_queue_entry.src1_valid ? rename_table_prf_src1 : '{default:'0};
-            issue_queue_entry.rob_ptr = rob_counter;
+            issue_queue_entry.rob_ptr = rob_head_counter;
             issue_queue_entry.spec_exec_ptr = cntrl_instr ? spec_exec_counter : '{default:'0};
             issue_queue_entry.pc_instr = pc_instr;
             issue_queue_entry.pc_buff_ptr = pc_instr ? pc_instr_counter : '{default:'0};
@@ -362,7 +362,8 @@ module decode_stage
             mem_buff_wr_en_o = mem_instr;
         end else begin
             rob_instance_pkt_o = '{default:'0};
-            spec_exec_answer_buffer_pkt_o.wr_en = '0;
+            // spec_exec_answer_buffer_pkt_o.wr_en = '0;
+            spec_exec_buffer_instance_pkt_o.wr_en = '0;
             pc_buff_inst_o = '{default:'0};
             is_spec_instr_o = '0;
             mem_buff_wr_en_o = '0;

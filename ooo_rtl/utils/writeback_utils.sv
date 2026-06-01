@@ -3,6 +3,9 @@ package writeback_pkg;
     import general_pkg::*;
     export general_pkg::*;
 
+    // import exec_mem_pkg::spec_exec_answr_pkt_t;
+    // import instr_fetch_pkg::shift_reg_pkt_t;
+
 
 
     // localparam IQ_SIZE = 16;
@@ -106,15 +109,5 @@ package writeback_pkg;
         return commit_pkt;
     endfunction
         
-    function automatic shift_reg_pkt_t set_wb_shift_reg_pkt (
-        input spec_exec_answr_pkt_t spec_exec_answr_i
-    );
-        shift_reg_pkt_t out_pkt;
-        out_pkt.trgt_en = 1'b1;
-        out_pkt.trgt = spec_exec_answr_i.calc_pc;
-        out_pkt.branch_en = spec_exec_answr_i.branch_en;
-        out_pkt.branch_pred = spec_exec_answr_i.branch_taken;
-        return out_pkt;
-    endfunction
 
 endpackage

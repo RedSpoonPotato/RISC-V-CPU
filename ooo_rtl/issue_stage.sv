@@ -107,7 +107,7 @@ import issue_pkg::*;
         instr_op_ff = instr_ff.op[6:0];
         is_imm_ff = instr_ff.imm_valid;
         if (exception_ff) begin
-            fetch_pkt_o = '{default: '0};
+            fetch_pkt_o = '{funct_unit: NOOP, default: '0};
         end else begin
             fetch_pkt_o.valid           = instr_ff.valid;
             fetch_pkt_o.funct_code  = get_funct_comb(instr_ff.op);
@@ -168,7 +168,7 @@ import issue_pkg::*;
         end
     end
     
-    assign full_o = counter == ($clog2(MAX_PC_INSTRS)-1:0);
+    assign full_o = counter == MAX_PC_INSTRS-1;
 
     logic empty;
     always_comb begin

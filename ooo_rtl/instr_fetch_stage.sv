@@ -31,7 +31,7 @@
 
 module instr_fetch_stage 
 import instr_fetch_pkg::*;
-
+import writeback_pkg::mem_addr_conflict_pkt_t;
 (
     input clk,
     input rst,
@@ -55,7 +55,7 @@ import instr_fetch_pkg::*;
     input logic stall_i,
     // input logic load_addr_conflict_i,
     // input logic [DATA_WIDTH-1:0] mem_buff_pc_i
-    input mem_addr_conflict_pkt_t mem_addr_conflict_pkt_i,
+    input mem_addr_conflict_pkt_t mem_addr_conflict_pkt_i
 );
 
     // shift_reg_pkt_t spec_exec_answr_pkt_ff;
@@ -249,8 +249,6 @@ import general_pkg::DATA_WIDTH;
             predicted_trgt_and_pred_pkt_ff <= predicted_trgt_and_pred_pkt;
         end
     end
-
-    logic
 
     fifo_modded #(
         .DEPTH(MAX_SPEC_EXEC_INSTRS),

@@ -13,6 +13,9 @@ package core_pkg;
     import issue_pkg::wb_phys_reg_pkt_t;
     import writeback_pkg::ex_mem_stage_pkt_t;
     import exec_mem_pkg::spec_exec_answr_pkt_t;
+    import writeback_pkg::mem_addr_conflict_pkt_t;
+    import exec_mem_pkg::mem_addr_pkt_t;
+    import writeback_pkg::store_buffer_commit_pkt_t;
 
     export instr_fetch_pkg::instr_fetch_ctrl_pkt_t;
     export instr_fetch_pkg::if_output_pkt_t;
@@ -27,5 +30,8 @@ package core_pkg;
     export issue_pkg::wb_phys_reg_pkt_t;
     export writeback_pkg::ex_mem_stage_pkt_t;
     export exec_mem_pkg::spec_exec_answr_pkt_t;
+    export writeback_pkg::mem_addr_conflict_pkt_t;
+    export exec_mem_pkg::mem_addr_pkt_t;
+    export writeback_pkg::store_buffer_commit_pkt_t;
 
 endpackage

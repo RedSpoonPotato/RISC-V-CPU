@@ -91,8 +91,8 @@ import issue_pkg::*;
         // .rst(rst),
         .en_i(fetch_pkt_ff.funct_unit_one_hot[MEM]),
         .store_i(fetch_pkt_ff.store),
-        .pc(fetch_pkt_ff.pc),
-        .mem_buff_ptr(fetch_pkt_ff.mem_buff_ptr),
+        .pc_i(fetch_pkt_ff.pc),
+        .mem_buff_ptr_i(fetch_pkt_ff.mem_buff_ptr),
         // .funct_code_i(fetch_pkt_ff.funct_code),
         .base_addr_i(fetch_pkt_ff.src0_data),
         .offset_i(fetch_pkt_ff.mem_offset_or_brnch_imm), // for now, just using imm_compr as offset, will change later
@@ -405,13 +405,14 @@ import decode_pkg::*;
 import general_pkg::*;
 import issue_pkg::*;
 import exec_mem_pkg::*;
+import writeback_pkg::*;
 (
     input clk,
     // input rst,
     input logic en_i,
     input logic store_i,
-    input logic [DATA_WIDTH-1:0] pc,
-    input logic [$clog2(MEM_BUFF_SIZE):0] mem_buff_ptr,
+    input logic [DATA_WIDTH-1:0] pc_i,
+    input logic [$clog2(MEM_BUFF_SIZE):0] mem_buff_ptr_i,
     // input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
     input logic [DATA_WIDTH-1:0] base_addr_i,
     input logic [DATA_WIDTH-1:0] offset_i,
@@ -431,10 +432,12 @@ import exec_mem_pkg::*;
             base_addr = base_addr_i;
             offset = offset_i;
             store_data = store_data_i;
+            pc = pc_i;
         end else begin
             base_addr = '{default:'0};
             offset = '{default:'0};
             store_data = '{default:'0};
+            pc = '{default:'0};
         end
     end
 
@@ -443,7 +446,7 @@ import exec_mem_pkg::*;
             mem_addr_pkt_o = '{default:'0};
         end else begin
             mem_addr_pkt_o.wr_en = en_i;
-            mem_addr_pkt_o.buff_ptr = mem_buff_ptr;
+            mem_addr_pkt_o.buff_ptr = mem_buff_ptr_i;
             mem_addr_pkt_o.is_store = store_i;
             mem_addr_pkt_o.addr = addr;
             mem_addr_pkt_o.pc = pc;
