@@ -65,6 +65,8 @@ package exec_mem_pkg;
         logic is_store;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] pc;
+        // can technically optimize away "store_data" by resuing data_o in mem stage
+        logic [DATA_WIDTH-1:0] store_data;
     } mem_addr_pkt_t;
 
     // typedef struct packed 
@@ -74,6 +76,7 @@ package exec_mem_pkg;
         logic is_store;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] pc;
+        logic [DATA_WIDTH-1:0] store_data;
     } mem_addr_entry_t;
 
     function automatic ex_mem_scoreboard_data_t set_ex_mem_scoreboard_data (

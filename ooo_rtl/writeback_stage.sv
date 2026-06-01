@@ -39,7 +39,9 @@ import instr_fetch_pkg::*;
     output logic stall_o,
     input logic mem_buff_wr_en_i,
     input mem_addr_pkt_t mem_addr_pkt_i,
-    output logic load_addr_conflict_o
+    // output logic load_addr_conflict_o
+    output mem_addr_conflict_pkt_t mem_addr_conflict_pkt_o,
+    output store_buffer_commit_pkt_t store_buffer_commit_pkt_o
 );
     // rob_instance_pkt_t rob_instance_pkt_ff; not gonna use b/c can save on flipflops while still functional
     ex_mem_stage_pkt_t ex_mem_stage_pkt_ff;
@@ -82,6 +84,7 @@ import instr_fetch_pkg::*;
         .spec_exec_buffer_instance_pkt_i(spec_exec_buffer_instance_pkt_i),
         // comitting
         .commit_en_i(commit_stage_pkt_o.wr_en),
+        .commit_spec_instr_en_i(commit_stage_pkt_o.speculative)
         .spec_exec_answr_pkt_o(spec_exec_answr_pkt_o),
         .exception_i(exception_ff)
     );
@@ -97,7 +100,12 @@ import instr_fetch_pkg::*;
         .mem_buff_instance_wr_en_i(mem_buff_instance_wr_en_i),
         // comitting
         .commit_en_i(commit_stage_pkt_o.wr_en),
-        .load_addr_conflict_o(load_addr_conflict_o),
+        .store_commit_en_i(commit_stage_pkt_o.store),
+        .mem_commit_en_i(commit_stage_pkt_o.mem_op),
+        // .load_addr_conflict_o(load_addr_conflict_o),
+        // .pc_o()
+        .mem_addr_conflict_pkt_t(mem_addr_conflict_pkt_o),
+        .store_buffer_commit_pkt_o(store_buffer_commit_pkt_o)
         .exception_i(exception_ff)
     );
 
@@ -124,10 +132,14 @@ import instr_fetch_pkg::*;
     input logic mem_buff_instance_wr_en_i,
     // comitting
     input logic commit_en_i,
+    input logic store_commit_en_i,
+    input logic mem_commit_en_i,
     // output shift_reg_pkt_t spec_exec_answr_pkt_o,
     // combinational output
-    output logic load_addr_conflict_o,
-    output logic [DATA_WIDTH-1:0] pc_o,
+    // output logic load_addr_conflict_o,
+    // output logic [DATA_WIDTH-1:0] pc_o,
+    output mem_addr_conflict_pkt_t mem_addr_conflict_pkt_o,
+    output store_buffer_commit_pkt_t store_buffer_commit_pkt_o,
     input logic exception_i
 );
 
@@ -143,9 +155,12 @@ import instr_fetch_pkg::*;
         tail_ptr_lower == head_ptr_lower
          && tail_ptr[$clog2(MAX_MEM_INSTRS)] != head_ptr[$clog2(MAX_MEM_INSTRS)];
 
+    // logic empty;
+    // assign empty = tail_ptr == head_ptr;
+
     // buffer management
     always_ff @(posedge clk) begin
-        if (rst || exception_i || load_addr_conflict_o) begin
+        if (rst || exception_i || mem_addr_conflict_pkt_o.en) begin
             mem_addr_buff <= '{default:'0};
             head_ptr <= '{default:'0};
             tail_ptr <= '{default:'0};
@@ -161,22 +176,23 @@ import instr_fetch_pkg::*;
                 mem_addr_buff[mem_addr_pkt_i.buff_ptr].is_store <= mem_addr_pkt_i.is_store;
                 mem_addr_buff[mem_addr_pkt_i.buff_ptr].addr <= mem_addr_pkt_i.addr;
                 mem_addr_buff[mem_addr_pkt_i.buff_ptr].pc <= mem_addr_pkt_i.pc;
+                mem_addr_buff[mem_addr_pkt_i.buff_ptr].store_data <= mem_addr_pkt_i.store_data;
             end
             // committing
-            if (commit_en_i) begin
+            if (commit_en_i && mem_commit_en_i) begin
                 mem_addr_buff[tail_ptr_lower].valid <= 1'b0;
                 tail_ptr <= tail_ptr + 1;
             end
         end
     end
 
-    // committing
+    // determining memory conflict
     logic [MAX_MEM_INSTRS-1:0] cnflct_arry;
     logic frwd_cnflct;
     always_comb begin
         cnflct_arry = '0;
         frwd_cnflct = '0;
-        if (commit_en_i && !exception_i) begin
+        if (commit_en_i && !exception_i && store_commit_en_i) begin
             for (int i = 0; i < MAX_MEM_INSTRS; i++) begin
                 cnflct_arry[i] = mem_addr_buff[i].valid &&
                     i != tail_ptr_lower &&
@@ -189,12 +205,23 @@ import instr_fetch_pkg::*;
                 mem_addr_pkt_i.addr == mem_addr_buff[tail_ptr_lower].addr &&
                 mem_addr_buff[tail_ptr_lower].valid;
 
-            load_addr_conflict_o = |cnflct_arry || frwd_cnflct;
+            mem_addr_conflict_pkt_o.en = |cnflct_arry || frwd_cnflct;
         end else begin
-            load_addr_conflict_o = '0;
+            mem_addr_conflict_pkt_o.en = '0;
         end
+        
+        mem_addr_conflict_pkt_o.pc = mem_addr_buff[tail_ptr_lower].pc;
+    end
 
-        pc_o = mem_addr_buff[tail_ptr_lower].pc;
+    // setting store pkt when commiting
+    always_comb begin
+        if (commit_en_i && !exception_i && store_commit_en_i) begin
+            store_buffer_commit_pkt_o.en = 1b'1;
+            store_buffer_commit_pkt_o.addr = mem_addr_buff[tail_ptr_lower].addr;
+            store_buffer_commit_pkt_o.data = mem_addr_buff[tail_ptr_lower].store_data;
+        end else begin
+            store_buffer_commit_pkt_o = '{default:'0};
+        end
     end
 
 endmodule
@@ -215,6 +242,7 @@ import instr_fetch_pkg::*;
     input spec_exec_buffer_instance_pkt_t spec_exec_buffer_instance_pkt_i,
     // comitting
     input logic commit_en_i,
+    input logic commit_spec_instr_en_i,
     output shift_reg_pkt_t spec_exec_answr_pkt_o,
 
     input logic exception_i
@@ -252,7 +280,7 @@ import instr_fetch_pkg::*;
                 sea_buff[spec_exec_answr_i.spec_exec_ptr] <= set_wb_shift_reg_pkt(spec_exec_buffer_instance_pkt_i);
             end
             // committing
-            if (commit_en_i || forward) begin
+            if ((commit_en_i && commit_spec_instr_en_i) || forward) begin
                 tail_ptr <= tail_ptr + 1;
             end
         end
@@ -262,7 +290,7 @@ import instr_fetch_pkg::*;
 
     // committing
     always_comb begin
-        if (commit_en_i && !exception_i) begin
+        if (commit_en_i && commit_spec_instr_en_i && !exception_i) begin
             if (forward) begin: Forwarding
                 // spec_exec_answr_pkt_o = spec_exec_answr_i;
                 spec_exec_answr_pkt_o = set_wb_shift_reg_pkt(spec_exec_buffer_instance_pkt_i);

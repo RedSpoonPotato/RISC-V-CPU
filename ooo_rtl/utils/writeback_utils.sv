@@ -16,6 +16,7 @@ package writeback_pkg;
         logic wr_en;
         logic speculative;
         logic store;
+        logic mem_op;
         logic dest_valid;
         logic [$clog2(PRF_COUNT)-1:0] phys_reg_addr;
         logic [4:0] arch_reg_addr;
@@ -39,6 +40,7 @@ package writeback_pkg;
         rob_state_t state;
         logic speculative;
         logic store;
+        logic mem_op;
         logic dest_valid;
         logic [$clog2(PRF_COUNT)-1:0] phys_reg_addr;
         logic [4:0] arch_reg_addr;
@@ -57,12 +59,23 @@ package writeback_pkg;
         logic wr_en;
         logic speculative;
         logic store;
+        logic mem_op;
         logic dest_valid;
         logic [$clog2(PRF_COUNT)-1:0] phys_reg_addr;
         logic [4:0] arch_reg_addr;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
     } commit_stage_pkt_t;
 
+    typedef struct packed {
+        logic en;
+        logic [DATA_WIDTH-1:0] pc;
+    } mem_addr_conflict_pkt_t;
+
+    typedef struct packed {
+        logic en;
+        logic [DATA_WIDTH-1:0] addr;
+        logic [DATA_WIDTH-1:0] data;
+    } store_buffer_commit_pkt_t;
     
     function automatic rob_entry_t rob_instantiation (
         input rob_instance_pkt_t rob_instance_pkt_i
@@ -70,6 +83,7 @@ package writeback_pkg;
         rob_entry_t rob_entry;
         rob_entry.speculative = rob_instance_pkt_i.speculative;
         rob_entry.store = rob_instance_pkt_i.store;
+        rob_entry.mem_op = rob_instance_pkt_i.mem_op;
         rob_entry.dest_valid = rob_instance_pkt_i.dest_valid;
         rob_entry.phys_reg_addr = rob_instance_pkt_i.phys_reg_addr;
         rob_entry.arch_reg_addr = rob_instance_pkt_i.arch_reg_addr;
@@ -84,6 +98,7 @@ package writeback_pkg;
         commit_pkt.wr_en = 1;
         commit_pkt.speculative = rob_entry_i.speculative;
         commit_pkt.store = rob_entry_i.store;
+        commit_pkt.mem_op = rob_entry_i.mem_op;
         commit_pkt.dest_valid = rob_entry_i.dest_valid;
         commit_pkt.phys_reg_addr = rob_entry_i.phys_reg_addr;
         commit_pkt.arch_reg_addr = rob_entry_i.arch_reg_addr;

@@ -345,6 +345,7 @@ module decode_stage
             rob_instance_pkt_o.wr_en = 1;
             rob_instance_pkt_o.speculative = issue_queue_entry.speculative;
             rob_instance_pkt_o.store = issue_queue_entry.store;
+            rob_instance_pkt_o.mem_op = mem_instr;
             rob_instance_pkt_o.dest_valid = issue_queue_entry.dest_valid;
             rob_instance_pkt_o.phys_reg_addr = issue_queue_entry.dest_ptr;
             rob_instance_pkt_o.arch_reg_addr = instr_ff[11:7];

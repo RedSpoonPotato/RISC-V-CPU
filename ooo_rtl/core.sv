@@ -30,6 +30,7 @@ import core_pkg::*;
     if_output_pkt_t instr_fetch_output_pkt;
     shift_reg_pkt_t commit_spec_exec_answr_pkt;
     logic instr_fetch_exception;
+    mem_addr_conflict_pkt_t writeback_mem_addr_conflict_pkt;
     instr_fetch_stage instr_fetch_stage_inst (
         .clk(clk),
         .rst(rst),
@@ -38,7 +39,8 @@ import core_pkg::*;
         .if_output_pkt_o(instr_fetch_output_pkt),
         .spec_exec_answr_pkt_i(commit_spec_exec_answr_pkt),
         .exception_o(instr_fetch_exception),
-        .stall_i(stall)
+        .stall_i(stall),
+        .mem_addr_conflict_pkt_i(writeback_mem_addr_conflict_pkt)
     );
 
     // commit_stage_pkt_t commit_decode_pkt; // RESTORE LATER
@@ -47,6 +49,7 @@ import core_pkg::*;
     rob_instance_pkt_t decode_rob_instance_pkt;
     spec_exec_buffer_instance_pkt_t decode_spec_exec_buffer_instance_pkt;
     pc_buff_instance_pkt_t decode_pc_buff_inst;
+    logic decode_mem_buff_wr_en;
     decode_stage decode_stage_inst (
         .clk(clk),
         .rst(rst),
@@ -58,6 +61,7 @@ import core_pkg::*;
         .is_spec_instr_o(decode_is_spec_instr),
         .spec_exec_buffer_instance_pkt_o(decode_spec_exec_buffer_instance_pkt),
         .pc_buff_inst_o(decode_pc_buff_inst),
+        .mem_buff_wr_en_o(decode_mem_buff_wr_en),
         .exception_i(instr_fetch_exception),
         .stall_o(decode_stall)
     );
@@ -77,19 +81,23 @@ import core_pkg::*;
 
     ex_mem_stage_pkt_t exec_mem_stage_pkt;
     spec_exec_answr_pkt_t exec_mem_spec_exec_answr;
+    mem_addr_pkt_t mem_op_addr_pkt;
+    store_buffer_commit_pkt_t store_buffer_commit_pkt;
     execute_memory_stage execute_memory_stage_inst (
         .clk(clk),
         .rst(rst),
         .fetch_pkt_i(issue_fetch_pkt),
         .ex_mem_stage_pkt_o(exec_mem_stage_pkt),
         .spec_exec_answr_o(exec_mem_spec_exec_answr),
-        .exception_i(instr_fetch_exception)
+        .exception_i(instr_fetch_exception),
+        .mem_addr_pkt_o(mem_op_addr_pkt),
+        .store_buffer_commit_pkt_i(store_buffer_commit_pkt)
     );
+
 
     writeback_stage writeback_stage_inst (
         .clk(clk),
         .rst(rst),
-        .flush_i(),
         .rob_instance_pkt_i(decode_rob_instance_pkt),
         .ex_mem_stage_pkt_i(exec_mem_stage_pkt),
         .commit_stage_pkt_o(commit_decode_pkt),
@@ -99,7 +107,11 @@ import core_pkg::*;
         .spec_exec_answr_i(exec_mem_spec_exec_answr),
         .spec_exec_answr_pkt_o(commit_spec_exec_answr_pkt),
         .exception_i(instr_fetch_exception),
-        .stall_o(wb_stall)
+        .stall_o(wb_stall),
+        .mem_buff_wr_en_i(decode_mem_buff_wr_en),
+        .mem_addr_pkt_i(mem_op_addr_pkt),
+        .mem_addr_conflict_pkt_o(writeback_mem_addr_conflict_pkt),
+        .store_buffer_commit_pkt_o(store_buffer_commit_pkt)
     );
 
 endmodule

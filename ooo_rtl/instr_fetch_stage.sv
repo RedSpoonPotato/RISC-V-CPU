@@ -53,8 +53,9 @@ import instr_fetch_pkg::*;
 
     output logic exception_o,
     input logic stall_i,
-    input logic load_addr_conflict_i,
-    input logic [DATA_WIDTH-1:0] mem_buff_pc_i
+    // input logic load_addr_conflict_i,
+    // input logic [DATA_WIDTH-1:0] mem_buff_pc_i
+    input mem_addr_conflict_pkt_t mem_addr_conflict_pkt_i,
 );
 
     // shift_reg_pkt_t spec_exec_answr_pkt_ff;
@@ -164,7 +165,7 @@ import instr_fetch_pkg::*;
         jump_mispredict = trgt_mispredict && ~branch_mispredict;
     end
 
-    assign exception_internal = jump_mispredict || branch_mispredict || load_addr_conflict_i;
+    assign exception_internal = jump_mispredict || branch_mispredict || mem_addr_conflict_pkt_i.en;
 
     // branch prediction
     // cases: branch, jalr, and jal
@@ -195,8 +196,8 @@ import instr_fetch_pkg::*;
                 pc <= (spec_exec_answr_pkt_i.branch_pred) ? 
                     spec_exec_answr_pkt_i.trgt : 
                     shift_reg_pkt_2.pc + 4;
-            end else if (load_addr_conflict_i) begin: MemoryAddrConflict
-                pc <= mem_buff_pc_i;
+            end else if (mem_addr_conflict_pkt_i.en) begin: MemoryAddrConflict
+                pc <= mem_addr_conflict_pkt_i.pc;
             end else if (stall_i) begin: Stall
                 pc <= pc;
                 // instr_valid <= 1'b0;

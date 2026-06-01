@@ -38,13 +38,13 @@ import issue_pkg::*;
     // output to wb stage
     output spec_exec_answr_pkt_t spec_exec_answr_o,
 
-    input logic mem_buff_wr_en_i,
-
     // for updating pending bits in decode stage
     // output rename_table_and_issue_queue_update_pkt_t rt_iq_update_pkt_o
     input logic exception_i,
 
-    output mem_addr_pkt_t mem_addr_pkt_o
+    // input logic mem_buff_wr_en_i,
+    output mem_addr_pkt_t mem_addr_pkt_o,
+    input store_buffer_commit_pkt_t store_buffer_commit_pkt_i
 );
 
     fetch_packet_t fetch_pkt_ff;
@@ -97,8 +97,10 @@ import issue_pkg::*;
         .base_addr_i(fetch_pkt_ff.src0_data),
         .offset_i(fetch_pkt_ff.mem_offset_or_brnch_imm), // for now, just using imm_compr as offset, will change later
         .store_data_i(fetch_pkt_ff.src1_data), // for store instructions
-        .load_data_o(result_arry[1]), // will connect this to writeback stage later
-        .mem_addr_pkt_o(mem_addr_pkt_o)
+        .data_o(result_arry[1]), // will connect this to writeback stage later
+        .mem_addr_pkt_o(mem_addr_pkt_o),
+        .store_buffer_commit_pkt_i(store_buffer_commit_pkt_i),
+        .exception_i(exception_ff)
     );
 
     // branch path (1 cycle for now): if(rs1 == rs2) PC += imm
@@ -156,7 +158,8 @@ import issue_pkg::*;
         ex_mem_stage_pkt_o.dest_valid = ex_mem_scoreboard_data_o.dest_valid;
         if (funct_unit_one_hot_o[ALU]) begin
             ex_mem_stage_pkt_o.dest_data = result_arry[0];
-        end else if (funct_unit_one_hot_o[MEM] && !store_o) begin
+        // end else if (funct_unit_one_hot_o[MEM] && !store_o) begin
+        end else if (funct_unit_one_hot_o[MEM]) begin
             ex_mem_stage_pkt_o.dest_data = result_arry[1];
         end else if (funct_unit_one_hot_o[JALR]) begin
             ex_mem_stage_pkt_o.dest_data = result_arry[2];
@@ -413,8 +416,10 @@ import exec_mem_pkg::*;
     input logic [DATA_WIDTH-1:0] base_addr_i,
     input logic [DATA_WIDTH-1:0] offset_i,
     input logic [DATA_WIDTH-1:0] store_data_i,
-    output logic [DATA_WIDTH-1:0] load_data_o,
-    output mem_addr_pkt_t mem_addr_pkt_o
+    output logic [DATA_WIDTH-1:0] data_o,
+    output mem_addr_pkt_t mem_addr_pkt_o,
+    input store_buffer_commit_pkt_t store_buffer_commit_pkt_i,
+    input logic exception_i
 );
 
     logic [DATA_WIDTH-1:0] base_addr, offset, store_data, addr, pc;
@@ -434,23 +439,42 @@ import exec_mem_pkg::*;
     end
 
     always_comb begin
-        mem_addr_pkt_o.wr_en = en_i;
-        mem_addr_pkt_o.buff_ptr = mem_buff_ptr;
-        mem_addr_pkt_o.is_store = store_i;
-        mem_addr_pkt_o.addr = addr;
-        mem_addr_pkt_o.pc = pc;
+        if (exception_i) begin
+            mem_addr_pkt_o = '{default:'0};
+        end else begin
+            mem_addr_pkt_o.wr_en = en_i;
+            mem_addr_pkt_o.buff_ptr = mem_buff_ptr;
+            mem_addr_pkt_o.is_store = store_i;
+            mem_addr_pkt_o.addr = addr;
+            mem_addr_pkt_o.pc = pc;
+            mem_addr_pkt_o.store_data = store_data;
+        end
     end    
 
-    sram_sync_read #(
-        .DATA_WIDTH(DATA_WIDTH),
-        .ADDR_WIDTH(MEM_INDEX_WIDTH) // for now, hardcoding to 10 bits (1024 entries)
+    sram_sync_read_dual_port #(
+    .ADDR_WIDTH(MEM_INDEX_WIDTH),
+    .DATA_WIDTH(DATA_WIDTH)
     ) data_memory (
         .clk(clk),
-        .we(en_i && store_i),
-        .addr(addr[MEM_INDEX_WIDTH-1:0]),
-        .din(store_data),
-        .dout(load_data_o)
+        // .we(en_i && store_i),
+        .we(store_buffer_commit_pkt_i.en),
+        .rd_addr(addr[MEM_INDEX_WIDTH-1:0]),
+        .wr_addr(store_buffer_commit_pkt_i.addr[MEM_INDEX_WIDTH-1:0]),
+        .din(store_buffer_commit_pkt_i.data),
+        .dout(data_o)
     );
+
+    // sram_sync_read #(
+    //     .DATA_WIDTH(DATA_WIDTH),
+    //     .ADDR_WIDTH(MEM_INDEX_WIDTH) // for now, hardcoding to 10 bits (1024 entries)
+    // ) data_memory (
+    //     .clk(clk),
+    //     .we(en_i && store_i),
+    //     .addr(addr[MEM_INDEX_WIDTH-1:0]),
+    //     .din(store_data),
+    //     .dout(load_data_o)
+    // );
+
 endmodule
 
 module alu 
