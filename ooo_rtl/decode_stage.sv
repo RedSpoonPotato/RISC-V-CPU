@@ -11,7 +11,7 @@
         make sure for the case of load, and seperately for the case of store,
             we are sending setting the outputs properly
         Need to add logic that checks new incoming instruciton into iq to make sure no strucutral
-            hazards
+            hazards 
     
     Check every signal to make sure they are driven or beign driven
 
