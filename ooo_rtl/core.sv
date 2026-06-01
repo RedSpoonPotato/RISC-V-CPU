@@ -11,7 +11,7 @@ import core_pkg::*;
     input rst,
     // input instr_fetch_ctrl_pkt_t instr_fetch_ctrl_pkt_i
     // for getting proper synth results without moudles getting optmized away
-    output commit_stage_pkt_t commit_decode_pkt
+    output commit_stage_pkt_t commit_decode_pkt 
 );
 
     // temp, remove later when wanting to implement proper memmory acccesses, or if you decide to have it entirely made of brams
