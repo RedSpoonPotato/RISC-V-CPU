@@ -272,7 +272,7 @@ module decode_stage
     logic [$clog2(ROB_COUNT):0] rob_head_counter;
     logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] spec_exec_counter;
     logic [$clog2(MAX_PC_INSTRS)-1:0] pc_instr_counter;
-    logic [$clog2(MEM_BUFF_SIZE):0] mem_buff_counter;
+    logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_counter;
     
     always_ff @(posedge clk) begin
         if (rst) begin
@@ -316,6 +316,7 @@ module decode_stage
             issue_queue_entry.spec_exec_ptr = cntrl_instr ? spec_exec_counter : '{default:'0};
             issue_queue_entry.pc_instr = pc_instr;
             issue_queue_entry.pc_buff_ptr = pc_instr ? pc_instr_counter : '{default:'0};
+            issue_queue_entry.mem_buff_ptr = mem_instr ? mem_buff_counter : '{default:'0};
         end else begin
             issue_queue_entry = '{default: '0};
         end

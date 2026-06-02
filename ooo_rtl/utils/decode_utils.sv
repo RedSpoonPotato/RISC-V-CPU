@@ -83,7 +83,7 @@ package decode_pkg;
         logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] spec_exec_ptr;
         logic pc_instr;
         logic [$clog2(MAX_PC_INSTRS)-1:0] pc_buff_ptr;
-        logic [$clog2(MEM_BUFF_SIZE):0] mem_buff_ptr;
+        logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_ptr;
     } iq_entry_t;
     
     typedef struct packed {
@@ -104,7 +104,7 @@ package decode_pkg;
         logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] spec_exec_ptr;
         logic pc_instr;
         logic [$clog2(MAX_PC_INSTRS)-1:0] pc_buff_ptr;
-        logic [$clog2(MEM_BUFF_SIZE):0] mem_buff_ptr;
+        logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_ptr;
     } iq_output_t;
 
     // SUBJECT TO CHANGE

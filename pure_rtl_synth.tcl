@@ -19,10 +19,10 @@ set_msg_config -id {Synth 8-7129} -limit 10000
 # synth_design -top core -part $target_part
 # NOTE: remove out of context flag once we implement xdc file
 synth_design -top core -part $target_part -mode out_of_context
-    # file mkdir ./reports
-    # report_utilization -file ./reports/ooc_synth_utilization.txt
-    # report_timing_summary -file ./reports/ooc_synth_timing_summary.txt
-    # report_timing -file ./reports/ooc_synth_timing_detailed.txt
+file mkdir ./reports
+report_utilization -file ./reports/ooc_synth_utilization.txt
+report_timing_summary -file ./reports/ooc_synth_timing_summary.txt
+report_timing -file ./reports/ooc_synth_timing_detailed.txt
 puts "========================================================="
 puts "Synthesis Complete! Reports Generated"
 puts "========================================================="

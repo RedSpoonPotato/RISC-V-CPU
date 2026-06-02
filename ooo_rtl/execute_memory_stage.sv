@@ -412,7 +412,7 @@ import writeback_pkg::*;
     input logic en_i,
     input logic store_i,
     input logic [DATA_WIDTH-1:0] pc_i,
-    input logic [$clog2(MEM_BUFF_SIZE):0] mem_buff_ptr_i,
+    input logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_ptr_i,
     // input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
     input logic [DATA_WIDTH-1:0] base_addr_i,
     input logic [DATA_WIDTH-1:0] offset_i,

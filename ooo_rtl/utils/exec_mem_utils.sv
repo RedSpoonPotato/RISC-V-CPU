@@ -61,7 +61,7 @@ package exec_mem_pkg;
 
     typedef struct packed {
         logic wr_en;
-        logic [$clog2(MAX_MEM_INSTRS)-1:0] buff_ptr;
+        logic [$clog2(MAX_MEM_INSTRS):0] buff_ptr;
         logic is_store;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] pc;

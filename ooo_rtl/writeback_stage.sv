@@ -118,6 +118,7 @@ module mem_addr_buffer
 import writeback_pkg::*;
 import exec_mem_pkg::*;
 import instr_fetch_pkg::*;
+import general_pkg::*;
 (
     input clk,
     input rst,
@@ -290,7 +291,7 @@ import instr_fetch_pkg::*;
             end
             // updating state
             if (spec_exec_answr_i.trgt_en && !forward) begin
-                sea_buff[spec_exec_answr_i.spec_exec_ptr] <= set_wb_shift_reg_pkt(spec_exec_buffer_instance_pkt_i);
+                sea_buff[spec_exec_answr_i.spec_exec_ptr] <= set_wb_shift_reg_pkt(spec_exec_answr_i);
             end
             // committing
             if ((commit_en_i && commit_spec_instr_en_i) || forward) begin
@@ -306,7 +307,7 @@ import instr_fetch_pkg::*;
         if (commit_en_i && commit_spec_instr_en_i && !exception_i) begin
             if (forward) begin: Forwarding
                 // spec_exec_answr_pkt_o = spec_exec_answr_i;
-                spec_exec_answr_pkt_o = set_wb_shift_reg_pkt(spec_exec_buffer_instance_pkt_i);
+                spec_exec_answr_pkt_o = set_wb_shift_reg_pkt(spec_exec_answr_i);
             end else begin
                 spec_exec_answr_pkt_o = sea_buff[tail_ptr_lower];
             end

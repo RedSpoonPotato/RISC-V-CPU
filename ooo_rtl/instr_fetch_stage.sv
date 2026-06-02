@@ -74,7 +74,7 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
 
     // logic bp_rd_en;
     logic bp_hit;
-    // logic bp_pred_o;
+    logic bp_pred;
 
     branch_predictor branch_predictor_inst
     (
@@ -84,7 +84,7 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
         // .rd_en_i(grab_new_pc),
         .curr_addr_i(pc),
         .hit_o(bp_hit),
-        .pred_o(if_output_pkt_o.bp_pred),
+        .pred_o(bp_pred),
         // updating state
         .write_en_i(spec_exec_answr_pkt_i.branch_en),
         .correct_result_i(spec_exec_answr_pkt_i.branch_pred),
@@ -138,7 +138,7 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
         .rst(rst),
         // making predictions
         .predict_trgt_i(tb_predict_trgt),
-        .brnch_pred_i(if_output_pkt_o.bp_pred),
+        .brnch_pred_i(bp_pred),
         .old_pc_i(pc),
         // outputs
         .is_spec_instr_i(is_spec_instr_i),
@@ -201,7 +201,7 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
             end else if (stall_i) begin: Stall
                 pc <= pc;
                 // instr_valid <= 1'b0;
-            end else if (tb_hit && bp_hit && if_output_pkt_o.bp_pred) begin: SpecBranch
+            end else if (tb_hit && bp_hit && bp_pred) begin: SpecBranch
                 pc <= tb_predict_trgt;
             end else if (tb_hit && !bp_hit) begin: SpecJump
                 pc <= tb_predict_trgt;
