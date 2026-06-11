@@ -88,12 +88,12 @@ import issue_pkg::*;
     // logic [DATA_WIDTH-1:0] mem_load_data;
     mem_stage mem_stage_inst (
         .clk(clk),
-        // .rst(rst),
+        .rst(rst),
         .en_i(fetch_pkt_ff.funct_unit_one_hot[MEM]),
         .store_i(fetch_pkt_ff.store),
         .pc_i(fetch_pkt_ff.pc),
         .mem_buff_ptr_i(fetch_pkt_ff.mem_buff_ptr),
-        // .funct_code_i(fetch_pkt_ff.funct_code),
+        .funct_code_i(fetch_pkt_ff.funct_code),
         .base_addr_i(fetch_pkt_ff.src0_data),
         .offset_i(fetch_pkt_ff.mem_offset_or_brnch_imm), // for now, just using imm_compr as offset, will change later
         .store_data_i(fetch_pkt_ff.src1_data), // for store instructions
@@ -216,7 +216,10 @@ import issue_pkg::*;
     ex_mem_scoreboard_data_t ex_mem_scoreboard_data_slots [MAX_EXEC_CYCLE_DELAY-1:0];
 
     // COME BACK TO THIS FUNCTION AND SIZING, NOT PROPERLY SET YET
-    logic [$clog2(MAX_EXEC_CYCLE_V2)-1:0] new_op_delay = get_exec_stage_delays_v3(funct_unit_i);
+    logic [$clog2(MAX_EXEC_CYCLE_V2)-1:0] new_op_delay = get_exec_stage_delays_v3(
+        funct_unit_i, 
+        sb_data_pkt_i.store
+        );
 
     always_ff @(posedge clk) begin
         if (rst || exception_i) begin
@@ -408,12 +411,12 @@ import exec_mem_pkg::*;
 import writeback_pkg::*;
 (
     input clk,
-    // input rst,
+    input rst,
     input logic en_i,
     input logic store_i,
     input logic [DATA_WIDTH-1:0] pc_i,
     input logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_ptr_i,
-    // input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
+    input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
     input logic [DATA_WIDTH-1:0] base_addr_i,
     input logic [DATA_WIDTH-1:0] offset_i,
     input logic [DATA_WIDTH-1:0] store_data_i,
@@ -423,7 +426,11 @@ import writeback_pkg::*;
     input logic exception_i
 );
 
-    logic [DATA_WIDTH-1:0] base_addr, offset, store_data, addr, pc;
+    logic [DATA_WIDTH-1:0] base_addr, offset, store_data, addr, pc, loaded_data;
+    // for loading
+    logic [FUNCT_COMB_WIDTH-1:0] funct_code_ff;
+    logic load_ff;
+    logic [1:0] lower_addr_bits_ff;
 
     assign addr = base_addr + offset;
 
@@ -446,37 +453,49 @@ import writeback_pkg::*;
             mem_addr_pkt_o = '{default:'0};
         end else begin
             mem_addr_pkt_o.wr_en = en_i;
+            mem_addr_pkt_o.vec_wr_en = store_funct3_to_en_vector(funct_code_i[2:0], addr[1:0]);
             mem_addr_pkt_o.buff_ptr = mem_buff_ptr_i;
             mem_addr_pkt_o.is_store = store_i;
             mem_addr_pkt_o.addr = addr;
             mem_addr_pkt_o.pc = pc;
             mem_addr_pkt_o.store_data = store_data;
+            mem_addr_pkt_o.store_width_type = funct_code_i[1:0];
         end
     end    
 
-    sram_sync_read_dual_port #(
+    sram_sync_read_dual_port_vari_width_write #(
     .ADDR_WIDTH(MEM_INDEX_WIDTH),
     .DATA_WIDTH(DATA_WIDTH)
     ) data_memory (
         .clk(clk),
         // .we(en_i && store_i),
-        .we(store_buffer_commit_pkt_i.en),
-        .rd_addr(addr[MEM_INDEX_WIDTH-1:0]),
-        .wr_addr(store_buffer_commit_pkt_i.addr[MEM_INDEX_WIDTH-1:0]),
+        .vec_wr_en(store_buffer_commit_pkt_i.vec_wr_en),
+        .rd_addr(addr[MEM_INDEX_WIDTH-1+2:2]),
+        .wr_addr(store_buffer_commit_pkt_i.addr[MEM_INDEX_WIDTH-1+2:2]),
         .din(store_buffer_commit_pkt_i.data),
-        .dout(data_o)
+        .dout(loaded_data)
     );
 
-    // sram_sync_read #(
-    //     .DATA_WIDTH(DATA_WIDTH),
-    //     .ADDR_WIDTH(MEM_INDEX_WIDTH) // for now, hardcoding to 10 bits (1024 entries)
-    // ) data_memory (
-    //     .clk(clk),
-    //     .we(en_i && store_i),
-    //     .addr(addr[MEM_INDEX_WIDTH-1:0]),
-    //     .din(store_data),
-    //     .dout(load_data_o)
-    // );
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            funct_code_ff <= '0;
+            load_ff <= '0;
+            lower_addr_bits_ff <= '0;
+        end else begin
+            funct_code_ff <= funct_code_i;
+            load_ff <= !store_i;
+            lower_addr_bits_ff <= addr[1:0];
+        end
+    end
+
+    always_comb begin
+        data_o = process_loaded_data(
+            loaded_data,
+            funct_code_ff[2:0],
+            lower_addr_bits_ff
+        );
+    end
+
 
 endmodule
 

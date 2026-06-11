@@ -21,11 +21,17 @@ package exec_mem_pkg;
 
     // function automatic logic [$clog2(MAX_EXEC_CYCLE_DELAY)-1:0] get_exec_stage_delays_v3(
     function automatic logic [$clog2(MAX_EXEC_CYCLE_V2)-1:0] get_exec_stage_delays_v3(
-        input EX_MEM_TYPE funct_unit_type
+        input EX_MEM_TYPE funct_unit_type,
+        input logic store
     );
         case (funct_unit_type)
             ALU: return 0;
-            MEM: return 1;
+            MEM: begin
+                if (store) 
+                    return 0;
+                else // load
+                    return 1;
+            end
             BRANCH: return 0;
             JALR: return 0;
             AUIPC: return 0;
@@ -61,12 +67,14 @@ package exec_mem_pkg;
 
     typedef struct packed {
         logic wr_en;
+        logic [(DATA_WIDTH/4)-1:0] vec_wr_en;
         logic [$clog2(MAX_MEM_INSTRS):0] buff_ptr;
         logic is_store;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] pc;
         // can technically optimize away "store_data" by resuing data_o in mem stage
         logic [DATA_WIDTH-1:0] store_data;
+        logic [1:0] store_width_type;
     } mem_addr_pkt_t;
 
     // typedef struct packed 
@@ -74,6 +82,7 @@ package exec_mem_pkg;
     typedef struct packed {
         logic valid;
         logic is_store;
+        logic [(DATA_WIDTH/4)-1:0] vec_wr_en;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] pc;
         logic [DATA_WIDTH-1:0] store_data;
@@ -98,5 +107,56 @@ package exec_mem_pkg;
         return ex_mem_scoreboard_data;
     endfunction
 
+    function automatic logic [(DATA_WIDTH/8)-1:0] store_funct3_to_en_vector (
+        input logic [2:0] funct3,
+        input logic [1:0] lower_addr_bits
+    );
+        case (funct3)
+            3'b000: return (4'b0001) << lower_addr_bits;
+            3'b001: return (4'b0011) << lower_addr_bits[1];
+            3'b010: return 4'b1111;
+            default:
+                return 4'b0000;
+        endcase
+    endfunction
+
+    function automatic logic [DATA_WIDTH-1:0] process_load (
+        input logic [DATA_WIDTH-1:0] load_data,
+        input logic [2:0] funct3,
+        input logic [1:0] lower_addr_bits
+    );
+        logic [DATA_WIDTH-1:0] result_data;
+        case (funct3)
+            3'b000:
+                result_data = ...
+            ...
+        endcase
+        return result_data;
+    endfunction
+
+function automatic logic [DATA_WIDTH-1:0] process_loaded_data (
+    input logic [DATA_WIDTH-1:0] load_data,
+    input logic [2:0] funct3,
+    input logic [1:0] lower_addr_bits
+);
+    logic [DATA_WIDTH-1:0] shifted_data;
+    logic [DATA_WIDTH-1:0] result_data;
+    shifted_data = load_data >> {lower_addr_bits, 3'b000}; 
+    case (funct3)
+        3'b000:
+            result_data = {{(DATA_WIDTH-8){shifted_data[7]}}, shifted_data[7:0]};
+        3'b001:
+            result_data = {{(DATA_WIDTH-16){shifted_data[15]}}, shifted_data[15:0]};
+        3'b010:
+            result_data = shifted_data;
+        3'b100:
+            result_data = {{(DATA_WIDTH-8){1'b0}}, shifted_data[7:0]};
+        3'b101:
+            result_data = {{(DATA_WIDTH-16){1'b0}}, shifted_data[15:0]};
+        default:
+            result_data = '0;
+    endcase
+    return result_data;
+endfunction
 
 endpackage

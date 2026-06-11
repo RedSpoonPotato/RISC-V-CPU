@@ -220,6 +220,33 @@ module register_file_async_read #(
 
 endmodule
 
+module sram_sync_read_dual_port_vari_width_write #(
+    parameter ADDR_WIDTH = 10,
+    parameter DATA_WIDTH = 32
+)(
+    input  logic                        clk,
+    input  logic [(DATA_WIDTH/8)-1:0]   vec_wr_en,
+    input  logic [ADDR_WIDTH-1:0]       rd_addr,
+    input  logic [ADDR_WIDTH-1:0]       wr_addr,
+    input  logic [DATA_WIDTH-1:0]       din,
+    output logic [DATA_WIDTH-1:0]       dout
+);
+    localparam NUM_BYTES = DATA_WIDTH / 8;
+
+    // explicitly tell the synthesizer to use Block RAM
+    (* ram_style = "block" *) logic [DATA_WIDTH-1:0] mem [0:(1<<ADDR_WIDTH)-1];
+
+    always_ff @(posedge clk) begin
+        // Write operation with byte lane enables
+        for (int i = 0; i < NUM_BYTES; i++) begin
+            if (vec_wr_en[i]) begin
+                mem[wr_addr][i*8 +: 8] <= din[i*8 +: 8];
+            end
+        end
+        dout <= mem[rd_addr]; 
+    end
+endmodule
+
 module sram_sync_read_dual_port #(
     parameter ADDR_WIDTH = 10,  // depth = 2^ADDR_WIDTH
     parameter DATA_WIDTH = 32

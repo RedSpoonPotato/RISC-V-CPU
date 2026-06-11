@@ -112,7 +112,8 @@ package decode_pkg;
     function automatic logic [$clog2(MAX_EXEC_CYCLE)-1:0] get_exec_stage_delays_sb (
         input [INSTR_COMPRESS_WIDTH-1:0] op
     );
-        if (op[6:0] == 7'b0000011 || op[6:0] == 7'b010001) begin
+        // if (op[6:0] == 7'b0000011 || op[6:0] == 7'b010001) begin
+        if (op[6:0] == 7'b0000011) begin // load
             return 4;
         end else begin
             return 3;

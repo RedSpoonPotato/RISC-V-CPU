@@ -171,9 +171,10 @@ import general_pkg::*;
                 // mem_addr_buff[head_ptr_lower].valid = 1'b1;
                 head_ptr <= head_ptr + 1;
             end
-            // updating state
+            // updating stat
             if (mem_addr_pkt_i.wr_en) begin
                 mem_addr_buff[mem_addr_pkt_i.buff_ptr].valid <= 1'b1;
+                mem_addr_buff[mem_addr_pkt_i.buff_ptr].vec_wr_en = mem_addr_pkt_i.vec_wr_en;
                 mem_addr_buff[mem_addr_pkt_i.buff_ptr].is_store <= mem_addr_pkt_i.is_store;
                 mem_addr_buff[mem_addr_pkt_i.buff_ptr].addr <= mem_addr_pkt_i.addr;
                 mem_addr_buff[mem_addr_pkt_i.buff_ptr].pc <= mem_addr_pkt_i.pc;
@@ -217,7 +218,8 @@ import general_pkg::*;
     // setting store pkt when commiting
     always_comb begin
         if (commit_en_i && !exception_i && store_commit_en_i) begin
-            store_buffer_commit_pkt_o.en = 1'b1;
+            // store_buffer_commit_pkt_o.en = 1'b1;
+            store_buffer_commit_pkt_o.vec_wr_en = mem_addr_buff[tail_ptr_lower].vec_wr_en;
             store_buffer_commit_pkt_o.addr = mem_addr_buff[tail_ptr_lower].addr;
             store_buffer_commit_pkt_o.data = mem_addr_buff[tail_ptr_lower].store_data;
         end else begin

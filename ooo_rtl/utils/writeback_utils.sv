@@ -75,7 +75,8 @@ package writeback_pkg;
     } mem_addr_conflict_pkt_t;
 
     typedef struct packed {
-        logic en;
+        // logic en;
+        logic [(DATA_WIDTH/8)-1:0] vec_wr_en;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] data;
     } store_buffer_commit_pkt_t;

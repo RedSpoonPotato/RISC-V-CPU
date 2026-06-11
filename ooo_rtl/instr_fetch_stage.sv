@@ -119,11 +119,11 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
     sram_async_read #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(INSTR_MEM_INDEX_WIDTH), // for now, hardcoding to 10 bits (1024 entries)
-        .INIT_FILE("memory/instr_mem_simple.mem") // temporary for initilization for bram/distrbuted ram implemenetation
+        .INIT_FILE(INSTR_MEM_FILE) // temporary for initilization for bram/distrbuted ram implemenetation
     ) instr_memory (
         .clk(clk),
         .we(instr_fetch_ctrl_pkt_i.valid),
-        .addr(instr_mem_addr),
+        .addr(instr_mem_addr[DATA_WIDTH-1:2]),
         .din(instr_fetch_ctrl_pkt_i.instr_in),
         .dout(if_output_pkt_o.instr)
     );

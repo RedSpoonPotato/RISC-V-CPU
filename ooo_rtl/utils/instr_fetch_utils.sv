@@ -21,6 +21,8 @@ package instr_fetch_pkg;
     localparam INSTR_MEM_ENTRY_NUM = 1024;
     localparam INSTR_MEM_INDEX_WIDTH = $clog2(INSTR_MEM_ENTRY_NUM);
 
+    localparam INSTR_MEM_FILE = "memory/instr_mem_simple.mem";
+
     typedef struct packed {
         logic wr_en;
         // logic [$clog2(MAX_SPEC_EXEC_INSTRS)-1:0] buff_ptr;
