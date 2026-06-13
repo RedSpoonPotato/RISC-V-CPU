@@ -120,43 +120,29 @@ package exec_mem_pkg;
         endcase
     endfunction
 
-    function automatic logic [DATA_WIDTH-1:0] process_load (
+    function automatic logic [DATA_WIDTH-1:0] process_loaded_data (
         input logic [DATA_WIDTH-1:0] load_data,
         input logic [2:0] funct3,
         input logic [1:0] lower_addr_bits
     );
+        logic [DATA_WIDTH-1:0] shifted_data;
         logic [DATA_WIDTH-1:0] result_data;
+        shifted_data = load_data >> {lower_addr_bits, 3'b000}; 
         case (funct3)
             3'b000:
-                result_data = ...
-            ...
+                result_data = {{(DATA_WIDTH-8){shifted_data[7]}}, shifted_data[7:0]};
+            3'b001:
+                result_data = {{(DATA_WIDTH-16){shifted_data[15]}}, shifted_data[15:0]};
+            3'b010:
+                result_data = shifted_data;
+            3'b100:
+                result_data = {{(DATA_WIDTH-8){1'b0}}, shifted_data[7:0]};
+            3'b101:
+                result_data = {{(DATA_WIDTH-16){1'b0}}, shifted_data[15:0]};
+            default:
+                result_data = '0;
         endcase
         return result_data;
     endfunction
-
-function automatic logic [DATA_WIDTH-1:0] process_loaded_data (
-    input logic [DATA_WIDTH-1:0] load_data,
-    input logic [2:0] funct3,
-    input logic [1:0] lower_addr_bits
-);
-    logic [DATA_WIDTH-1:0] shifted_data;
-    logic [DATA_WIDTH-1:0] result_data;
-    shifted_data = load_data >> {lower_addr_bits, 3'b000}; 
-    case (funct3)
-        3'b000:
-            result_data = {{(DATA_WIDTH-8){shifted_data[7]}}, shifted_data[7:0]};
-        3'b001:
-            result_data = {{(DATA_WIDTH-16){shifted_data[15]}}, shifted_data[15:0]};
-        3'b010:
-            result_data = shifted_data;
-        3'b100:
-            result_data = {{(DATA_WIDTH-8){1'b0}}, shifted_data[7:0]};
-        3'b101:
-            result_data = {{(DATA_WIDTH-16){1'b0}}, shifted_data[15:0]};
-        default:
-            result_data = '0;
-    endcase
-    return result_data;
-endfunction
 
 endpackage
