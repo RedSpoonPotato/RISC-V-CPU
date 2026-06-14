@@ -2,8 +2,6 @@ import random as rand
 from enum import Enum, auto
 
 # General Utils
-Types = [ "R-Type", "I-Type", "S-Type", "B-Type", "U-Type", "J-Type" ]
-Custom_Types = [ "ALU", "LOAD", "STORE", "BRANCH", "JAL", "JALR", "AUIPC"]
 InstrType = [ "R-Type", "I-Type", "S-Type", "B-Type", "U-Type", "J-Type"]
 InstrType2 = [ "ALU", "LOAD", "STORE", "BRANCH", "JAL", "JALR", "LUI", "AUIPC"]
 def get_op_code(type: str, type2: str):
@@ -153,6 +151,7 @@ class Register:
     def __init__(self, value: int = 0):
         self.value = value
         self.committed = False
+
     def write(self, value: int):
         self.value = value
         self.committed = True
@@ -162,10 +161,12 @@ class Register_File:
         self.regs = [Register() for _ in range(num_regs)] 
         self.num_regs = num_regs
         self.committed_regs = set()
+
     def commit_reg(self, reg_index: int, value: int):
         assert 0 <= reg_index < self.num_regs
         self.regs[reg_index].write(value)
         self.committed_regs.add(reg_index)
+
     def get_committed_reg_file(self):
         commit_reg_file = []
         for i in range(self.num_regs):
@@ -173,9 +174,93 @@ class Register_File:
                 commit_reg_file.append((i, self.regs[i].value))
         return commit_reg_file
 
+class MemoryByte:
+    def __init__(self, value: int = 0):
+        self.value = value
+        # self.written = False
+
+    def write(self, value: int):
+        self.value = value
+        # self.written = True
+
+    def read(self) -> int:
+        # assert self.written, "Memory byte not written to"
+        return self.value
+
+class Memory:
+    def __init__(self, size: int = 1024):
+        self.data = [MemoryByte() for _ in range(size)]
+        self.size = size
+        self.valid_address_ranges = []
+
+    def read(self, addr: int) -> int:
+        assert 0 <= addr < self.size, "Address out of bounds"
+        return self.data[addr].read()
+    
+    def write(self, addr: int, value: int):
+        assert 0 <= addr < self.size, "Address out of bounds"
+        self.data[addr].write(value)
+        # insert/conjoin valid address ranges
+        if not self.valid_address_ranges:
+            self.valid_address_ranges.append((addr, addr))
+        else:
+            for i, (start, end) in enumerate(self.valid_address_ranges):
+                if addr < start:
+                    prev_start = -2
+                    prev_end = -2
+                    if i > 0:
+                        prev_start = self.valid_address_ranges[i-1][0]
+                        prev_end   = self.valid_address_ranges[i-1][1]
+                    if prev_end == addr - 1 and start == addr + 1:
+                        self.valid_address_ranges.insert(
+                            i-1, 
+                            (prev_start, end)
+                        )
+                        self.valid_address_ranges.pop(i)
+                        self.valid_address_ranges.pop(i+1)
+                        break
+                    elif prev_end == addr - 1:
+                        self.valid_address_ranges.insert(
+                            i-1, 
+                            (prev_start, addr)
+                        )
+                        self.valid_address_ranges.pop(i) 
+                        break
+                    elif start == addr + 1:
+                        self.valid_address_ranges.insert(
+                            i, 
+                            (addr, end)
+                        )
+                        self.valid_address_ranges.pop(i+1) 
+                        break
+                if start <= addr <= end:
+                    break
+                elif i == len(self.valid_address_ranges)-1:
+                    if addr == end + 1:
+                        self.valid_address_ranges.insert(
+                            i,
+                            (start, addr)
+                        )
+                        self.valid_address_ranges.pop(i+1)
+                        break
+                    else:
+                        self.valid_address_ranges.insert(
+                            i,
+                            (addr, addr)
+                        )
+                        break
+    
+    def check_addr_written(self, addr: int):
+        for start, end in self.valid_address_ranges:
+            if start <= addr <= end:
+                return True
+        return False
+
 class Instr:
-    def __init__(self, type=None):
+    def __init__(self, type=None, type2=None):
         self.type = None
+        self.type2 = None
+
     def randomize_type(self):
         self.type = rand.choice(InstrType)
         self.type2 = random_type2_on_type(self.type)
@@ -215,7 +300,7 @@ class Instr:
     def randomize_load_instr(
             self, 
             register_file: Register_File,
-            valid_address_ranges: list[tuple[int, int]], 
+            valid_address_ranges: list[tuple[int, int]],
             max_attempts: int
         ):
         commited_register_file = register_file.get_committed_reg_file()
@@ -288,11 +373,11 @@ class Instr:
             # guarantee mem_alignment
             addr_trgt = addr_trgt - (addr_trgt % store_width)
             # check if entire store width is within address range
-            load_within_range = False
+            store_within_range = False
             if address_range[0] <= addr_trgt <= address_range[1]:
                 if (addr_trgt + store_width - 1) <= address_range[1]:
-                    load_within_range = True
-            if not load_within_range: continue
+                    store_within_range = True
+            if not store_within_range: continue
             # check if a valid register can be used as the base for the store
             reachable_reg = None
             for reg_entry in rand.sample(commited_register_file, k=len(commited_register_file)):
@@ -341,11 +426,11 @@ class Instr:
             # guarantee mem_alignment
             addr_trgt = addr_trgt - (addr_trgt % branch_addr_width)
             # check if entire branch address width is within instr address range
-            load_within_range = False
+            trgt_within_range = False
             if instr_address_range[0] <= addr_trgt <= instr_address_range[1]:
                 if (addr_trgt + branch_addr_width - 1) <= instr_address_range[1]:
-                    load_within_range = True
-            if not load_within_range: continue
+                    trgt_within_range = True
+            if not trgt_within_range: continue
             # check if a pc can be used as the base for the branch
             reachable = False
             diff = addr_trgt - pc
@@ -360,7 +445,7 @@ class Instr:
         self.funct3 = BRANCH_funct3_map[self.branch_op]
         self.rs1 = rand.choice(list(register_file.committed_regs))
         self.rs2 = rand.choice(list(register_file.committed_regs))
-        self.imm = (addr_trgt - pc) & 0xFFF
+        self.imm = (addr_trgt - pc) & 0x1FFF
         self.opcode = get_op_code(self.type, self.type2)
 
         imm_12 = (self.imm >> 12) & 1
@@ -378,7 +463,128 @@ class Instr:
             f"{self.opcode:07b}"
         )
 
+    def randomize_jal_instr(
+            self, 
+            register_file: Register_File, 
+            instr_address_range: tuple[int, int], 
+            pc: int, 
+            max_attempts: int
+            ):
+        assert self.type == "J_TYPE", "Invalid instruction type"
+        assert self.type2 == "JAL", "Invalid instruction type2"
+        
+        found_valid_addr = False
+        attempts = 0
+        while not found_valid_addr and attempts < max_attempts:
+            attempts += 1
+            addr_trgt = rand.randint(instr_address_range[0], instr_address_range[1])
+            jump_addr_width = 4
+            # guarantee mem_alignment
+            addr_trgt = addr_trgt - (addr_trgt % jump_addr_width)
+            # check if entire jump address width is within instr address range
+            jump_within_range = False
+            if instr_address_range[0] <= addr_trgt <= instr_address_range[1]:
+                if (addr_trgt + jump_addr_width - 1) <= instr_address_range[1]:
+                    jump_within_range = True
+            if not jump_within_range: continue
+            # check if a pc can be used as the base for the jump
+            reachable = False
+            diff = addr_trgt - pc
+            imm_valid = diff >= -1048576 and diff < 1048576
+            if imm_valid:
+                reachable = True
+                break
+            if not reachable: continue
+            found_valid_addr = True
+
+        self.rd = rand.randint(0, register_file.num_regs - 1)
+        self.imm = (addr_trgt - pc) & 0x1FFFFF
+        self.opcode = get_op_code(self.type, self.type2)
+
+        imm_20 = (self.imm >> 20) & 1
+        imm_19_12 = (self.imm >> 12) & 0xFF
+        imm_11 = (self.imm >> 11) & 0x1
+        imm_10_1 = (self.imm >> 1) & 0x3FF
+        self.bits = f"{imm_20:01b}{imm_10_1:010b}{imm_11:01b}{imm_19_12:08b}{self.rd:05b}{self.opcode:07b}"
+
+    def randomize_jalr_instr(
+            self, 
+            register_file: Register_File, 
+            instr_address_range: tuple[int, int],
+            max_attempts: int
+            ):
+        commited_register_file = register_file.get_committed_reg_file()
+        assert len(commited_register_file) > 0, "No committed registers available"
+        assert self.type == "I_TYPE", "Invalid instruction type"
+        assert self.type2 == "JALR", "Invalid instruction type2"
     
+        found_valid_addr = False
+        attempts = 0
+        while not found_valid_addr and attempts < max_attempts:
+            attempts += 1
+            addr_trgt = rand.choice([addr for start, end in instr_address_range for addr in range(start, end + 1)])
+            jump_addr_width = 4
+            # guarantee mem_alignment
+            addr_trgt = addr_trgt - (addr_trgt % jump_addr_width)
+            # check if entire jump address width is within a valid address range
+            jump_within_range = False
+            if instr_address_range[0] <= addr_trgt <= instr_address_range[1]:
+                if (addr_trgt + jump_addr_width - 1) <= instr_address_range[1]:
+                    jump_within_range = True
+            if not jump_within_range: continue
+            # check if a valid register can be used as the base for the jump
+            reachable_reg = None
+            for reg_entry in rand.sample(commited_register_file, k=len(commited_register_file)):
+                diff = addr_trgt - reg_entry[1]
+                imm_valid = diff >= -2048 and diff < 2048
+                if imm_valid:
+                    reachable_reg = reg_entry[0]
+                    break
+            if reachable_reg is None: continue
+            found_valid_addr = True
+        
+        if (attempts >= max_attempts):
+            raise ValueError("Failed to generate a valid load instruction after maximum attempts")
+        
+        self.addr_trgt = addr_trgt
+        self.funct3 = 0b000
+        self.rs1 = reachable_reg
+        self.imm = (addr_trgt - register_file.regs[reachable_reg].value) & 0xFFF
+        self.rd = rand.randint(0, register_file.num_regs-1)
+        self.opcode = get_op_code(self.type, self.type2)
+        self.bits = f"{self.imm:012b}{self.rs1:05b}{self.funct3:03b}{self.rd:05b}{self.opcode:07b}"
+
+    def randomize_lui_instr(self):
+        assert self.type == "U_TYPE", "Invalid instruction type"
+        assert self.type2 == "LUI", "Invalid instruction type2"
+        self.imm = (rand.randint(0, (2 ** 32) - 1) >> 12) << 12
+        self.rd = rand.randint(0, 31)
+        self.opcode = get_op_code(self.type, self.type2)
+        imm_31_12 = self.imm >> 12 & 0xFFFFF
+        self.bits = f"{imm_31_12:020b}{self.rd:05b}{self.opcode:07b}"
+
+    def randomize_auipc_instr(self):
+        assert self.type == "U_TYPE", "Invalid instruction type"
+        assert self.type2 == "AUIPC", "Invalid instruction type2"
+        self.imm = (rand.randint(0, (2 ** 32) - 1) >> 12) << 12
+        self.rd = rand.randint(0, 31)
+        self.opcode = get_op_code(self.type, self.type2)
+        imm_31_12 = self.imm >> 12 & 0xFFFFF
+        self.bits = f"{imm_31_12:020b}{self.rd:05b}{self.opcode:07b}"
+
+class Program:
+    def __init__(
+            self,
+            data_mem_size: int = 1024,
+            instr_mem_size: int = 1024
+        ):
+        self.register_file = Register_File()
+        self.memory = Memory(data_mem_size)
+        self.instructions = []
+        self.pc = 0
+        self.instr_addr_range = (0, instr_mem_size-1)
+
+
 
 
 
