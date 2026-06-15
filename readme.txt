@@ -1,31 +1,23 @@
-Brief Guide to Processor
+Out-of-Order 5-Stage Pipelined RISC-V CPU
 
-- Tip: after making this in SystemVerilog, try recreating in HLS to see if the performance/results are better
+Stages:
+    Instruction Fetch [IF]
+    Decode [D]
+    Issue [I] (aka Register Fetch)
+    Execute/Mem [EX_MEM] (Variable Cycle)
+    Writeback [WB] (Contains commit modules aswell)
 
-Features
-- 5 Stage Pipelining (maybe more if needed)
-- Branch Prediction
-    - global and local accessing
-    - BTB to
-- Forwarding
-    - 
+Main Features:
+    Speculative Execution
+    Register Renaming
+    Memory Disambiguation
 
-Branch Delay Cases
-(1) Normal:
-    - Fetch Instruction, Decode Instruction, Execute, Mem, Writeback
-Fetch a Branch or Jump
-- "mini"-decode within the IF stage to determine if instruction is a branch or jump
-    - if jump, determine target address within the IF stage
-        - requires an adder // in IF stage to not have stalls
-    - if branch, decide whether or not to branch
-        - if yes, then is target contained within buffer?
-            - if yes, no, then compute the target
-                - requires an adder
+ISA:
+    RISC-V "Bare-metal ISA" (i.e. RV32I without "ecall" and "ebreak")
 
-
-Targetted Features:
-    those such that a small linux instance can run
-    - needs to have out-of-order execution
-    - dual core
-    - hardware prefetchers
+Verification (In progess):
+    UVM testbench 
+    Python-based random instruction generator
     
+Synthesis:
+    Using Vivado TCL for Kria KV260 FPGA Starter Kit
