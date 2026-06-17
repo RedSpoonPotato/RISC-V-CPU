@@ -52,6 +52,32 @@ ALU_R_funct7_map = {
     "SLT":  0b0000000,
     "SLTU": 0b0000000
 }
+def get_alu_r_op_from_bin_32(bin_32: str) -> str:
+    funct3 = int(bin_32[17:20], 2)
+    funct7 = int(bin_32[0:7], 2)
+    if funct3 == 0b000:
+        if funct7 == 0b0000000:
+            return "ADD"
+        elif funct7 == 0b0100000:
+            return "SUB"
+    elif funct3 == 0b100:
+        return "XOR"
+    elif funct3 == 0b110:
+        return "OR"
+    elif funct3 == 0b111:
+        return "AND"
+    elif funct3 == 0b001:
+        return "SLL"
+    elif funct3 == 0b101:
+        if funct7 == 0b0000000:
+            return "SRL"
+        elif funct7 == 0b0100000:
+            return "SRA"
+    elif funct3 == 0b010:
+        return "SLT"
+    elif funct3 == 0b011:
+        return "SLTU"
+    raise ValueError("Invalid ALU R-type instruction")
 
 # ALU I-Type Utils
 ALU_I_ops = [ "ADDI", "XORI", "ORI", "ANDI", "SLLI", "SRLI", "SRAI", "SLTI", "SLTUI" ]
@@ -66,6 +92,31 @@ ALU_I_funct3_map = {
     "SLTI":  0b010,
     "SLTUI": 0b011
 }
+def get_alu_i_op_from_bin_32(bin_32: str) -> str:
+    funct3 = int(bin_32[17:20], 2)
+    imm_str = bin_32[0:12]
+    if funct3 == 0b000:
+        return "ADDI"
+    elif funct3 == 0b100:
+        return "XORI"
+    elif funct3 == 0b110:
+        return "ORI"
+    elif funct3 == 0b111:
+        return "ANDI"
+    elif funct3 == 0b001:
+        return "SLLI"
+    elif funct3 == 0b101:
+        if int(imm_str[0:8], 2) == 0x00:
+            return "SRLI"
+        elif int(imm_str[0:8], 2) == 0x20:
+            return "SRAI"
+        else:
+            raise ValueError("Invalid SR ALU I-type instruction")
+    elif funct3 == 0b010:
+        return "SLTI"
+    elif funct3 == 0b011:
+        return "SLTUI"
+    raise ValueError("Invalid ALU I-type instruction")
 
 # LOAD Utils 
 LOAD_ops = ["LB", "LH", "LW", "LBU", "LHU"]
@@ -83,6 +134,9 @@ LOAD_ops_byte_read_sizing_map = {
     "LBU": 1,
     "LHU": 2
 }
+def get_load_op_from_bin_32(bin_32: str) -> str:
+    ...
+
 
 # STORE Utils
 STORE_ops = ["SB", "SH", "SW"]
@@ -367,7 +421,6 @@ class Instr:
     def randomize_type2(self):
         self.type2 = rand.choice(InstrType2)
         self.type = random_type_on_type2(self.type2)
-
 
     def randomize_alu_r_instr(self, commited_regs: set[int]):
         assert len(commited_regs) > 0, "No committed registers available"
@@ -679,7 +732,34 @@ class Instr:
         imm_31_12 = self.imm >> 12 & 0xFFFFF
         self.bits = f"{imm_31_12:020b}{self.rd:05b}{self.opcode:07b}"
         self.complete = True
-    
+
+    def randomize(self, 
+                register_file: Register_File,
+                memory: Memory,
+                pc: int,
+                instr_address_range: tuple[int, int],
+                max_attempts: int
+        ):
+        self.randomize_type2()
+        if self.type2 == "ALU" and self.type == "R_TYPE":
+            self.randomize_alu_r_instr(register_file.committed_regs)
+        elif self.type2 == "ALU" and self.type == "I_TYPE":
+            self.randomize_alu_i_instr(register_file.committed_regs)
+        elif self.type2 == "LOAD":
+            self.randomize_load_instr(register_file, memory.valid_address_ranges, max_attempts)
+        elif self.type2 == "STORE":
+            self.randomize_store_instr(register_file, memory.valid_address_ranges, max_attempts)
+        elif self.type2 == "BRANCH":
+            self.randomize_branch_instr(register_file, instr_address_range, pc, max_attempts)
+        elif self.type2 == "JAL":
+            self.randomize_jal_instr(register_file, instr_address_range, pc, max_attempts)
+        elif self.type2 == "JALR":
+            self.randomize_jalr_instr(register_file, instr_address_range, max_attempts)
+        elif self.type2 == "LUI":
+            self.randomize_lui_instr()
+        elif self.type2 == "AUIPC":
+            self.randomize_auipc_instr()
+
     def gen_assembly_str(self) -> str:
         instr_name = None
         operand_1 = None
@@ -931,6 +1011,11 @@ def create_auipc_instr(
     instr.complete = True
     return instr
 
+def create_alu_r_instr_from_bin(bin_str: str) -> Instr:
+    alu_r_op = 
+    instr = create_alu_r_instr(0, 0, 0)
+    return instr
+
 class Program:
     def __init__(
             self,
@@ -1064,21 +1149,21 @@ class Program:
         else:
             raise ValueError("Invalid instruction type or type2")
     
-    def generate_program(self, num_instr: int):
-        # set appropriate initial values for the program
-        self.pc = 0
-        self.register_file.reset()
-        self.memory.reset()
-
+    def gen_rand_program_seq(self, num_instr: int, max_attempts: int):
         for _ in range(num_instr):
-            instr = self.generate_valid_instruction()
+            instr = Instr()
+            instr.randomize(
+                self.register_file,
+                self.memory,
+                self.pc,
+                self.instr_address_range,
+                max_attempts
+            )
             self.register_instr(instr)
-        
+            self.instructions.append(instr)
 
-"""
-    Need to generate a sequence of instrs
-    start with generating a valid instr
-        valid Type (R, I, ...) or based on custom typing
-        valid 
 
-"""
+if __name__ == "__main__":
+    program = Program()
+
+
