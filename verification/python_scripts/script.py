@@ -135,8 +135,9 @@ LOAD_ops_byte_read_sizing_map = {
     "LHU": 2
 }
 def get_load_op_from_bin_32(bin_32: str) -> str:
-    ...
-
+    rev_load_funct3 = {value: key for key, value in LOAD_funct3_map.items()}
+    funct3 = int(bin_32[17:20], 2)
+    return rev_load_funct3[funct3]
 
 # STORE Utils
 STORE_ops = ["SB", "SH", "SW"]
@@ -150,6 +151,10 @@ STORE_ops_byte_write_sizing_map = {
     "SH":  2,
     "SW":  4
 }
+def get_store_op_from_bin_32(bin_32: str) -> str:
+    rev_store_funct3 = {value: key for key, value in STORE_funct3_map.items()}
+    funct3 = int(bin_32[17:20], 2)
+    return rev_store_funct3[funct3]
 
 # BRANCH Utils
 BRANCH_ops = ["BEQ", "BNE", "BLT", "BGE", "BLTU", "BGEU"]
@@ -161,6 +166,10 @@ BRANCH_funct3_map = {
     "BLTU": 0b110,
     "BGEU": 0b111
 }
+def get_branch_op_from_bin_32(bin_32: str) -> str:
+    rev_branch_funct3 = {value: key for key, value in BRANCH_funct3_map.items()}
+    funct3 = int(bin_32[17:20], 2)
+    return rev_branch_funct3[funct3]
 
 
 def random_type2_on_type(instr_type: str):
@@ -201,61 +210,101 @@ def random_type_on_type2(type2: str):
             type = "U_TYPE"
     return type
 
+# used for bit-shift operations and comparison
+def comp32_to_signed_int(val: int) -> int:
+    val = val & 0xFFFFFFFF
+    return val - 0x100000000 if (val & 0x80000000) else val
+
+# simulates overflow for 32-bit addition
+def comp32_add(a: int, b: int) -> int:
+    a &= 0xFFFFFFFF
+    b &= 0xFFFFFFFF
+    return (a + b) & 0xFFFFFFFF
+
+def sign_extend_12_to_32(imm: int) -> int:
+    if imm & 0x800:
+        return imm | 0xFFFFF000
+    else:
+        return imm & 0x00000FFF
+
+def sign_extend_13_to_32(imm: int) -> int:
+    if imm & 0x1000:
+        return imm | 0xFFFFE000
+    else:
+        return imm & 0x00001FFF
+
+def sign_extend_21_to_32(imm: int) -> int:
+    if imm & 0x100000:
+        return imm | 0xFFE00000
+    else:
+        return imm & 0x001FFFFF
+
+# returns simulated 32-bit value
 def compute_alu_r_op(op: str, rs1: int, rs2: int) -> int:
+    rs1 &= 0xFFFFFFFF
+    rs2 &= 0xFFFFFFFF
+
     if op == "ADD":
-        return rs1 + rs2
+        return comp32_add(rs1, rs2)
     elif op == "SUB":
-        return rs1 - rs2
+        return (rs1 - rs2) & 0xFFFFFFFF
     elif op == "XOR":
-        return rs1 ^ rs2
+        return (rs1 ^ rs2) & 0xFFFFFFFF
     elif op == "OR":
-        return rs1 | rs2
+        return (rs1 | rs2) & 0xFFFFFFFF
     elif op == "AND":
-        return rs1 & rs2
+        return (rs1 & rs2) & 0xFFFFFFFF
     elif op == "SLL":
-        return rs1 << (rs2 & 0x1F)
+        return (rs1 << (rs2 & 0x1F)) & 0xFFFFFFFF
     elif op == "SRL":
         return rs1 >> (rs2 & 0x1F)
     elif op == "SRA":
-        return rs1 >> (rs2 & 0x1F)
+        return (comp32_to_signed_int(rs1) >> (rs2 & 0x1F)) & 0xFFFFFFFF
     elif op == "SLT":
-        return 1 if rs1 < rs2 else 0
+        return 1 if comp32_to_signed_int(rs1) < comp32_to_signed_int(rs2) else 0
     elif op == "SLTU":
         return 1 if rs1 < rs2 else 0
     else:
-        raise ValueError("Invalid ALU R-type operation")
+        raise ValueError(f"Invalid ALU R-type operation: {op}")
+
+# returns simulated 32-bit value
+def compute_alu_i_op(op: str, rs1: int, imm_comp32: int) -> int:
+    rs1 &= 0xFFFFFFFF
+    imm_comp32 &= 0xFFFFFFFF
     
-def compute_alu_i_op(op: str, rs1: int, imm: int) -> int:
     if op == "ADDI":
-        return rs1 + imm
+        return comp32_add(rs1, imm_comp32)
     elif op == "SLTI":
-        return 1 if rs1 < imm else 0
+        return 1 if comp32_to_signed_int(rs1) < comp32_to_signed_int(imm_comp32) else 0
     elif op == "SLTUI":
-        return 1 if rs1 < imm else 0
+        return 1 if rs1 < imm_comp32 else 0
     elif op == "XORI":
-        return rs1 ^ imm
+        return (rs1 ^ imm_comp32) & 0xFFFFFFFF
     elif op == "ORI":
-        return rs1 | imm
+        return (rs1 | imm_comp32) & 0xFFFFFFFF
     elif op == "ANDI":
-        return rs1 & imm
+        return (rs1 & imm_comp32) & 0xFFFFFFFF
     elif op == "SLLI":
-        return rs1 << (imm & 0x1F)
+        return (rs1 << (imm_comp32 & 0x1F)) & 0xFFFFFFFF
     elif op == "SRLI":
-        return rs1 >> (imm & 0x1F)
+        return rs1 >> (imm_comp32 & 0x1F)
     elif op == "SRAI":
-        return rs1 >> (imm & 0x1F)
+        return (comp32_to_signed_int(rs1) >> (imm_comp32 & 0x1F)) & 0xFFFFFFFF
     else:
-        raise ValueError("Invalid ALU I-type operation")
+        raise ValueError(f"Invalid ALU I-type operation: {op}")
 
 def compute_branch_op(op: str, rs1: int, rs2: int) -> bool:
+    rs1 &= 0xFFFFFFFF
+    rs2 &= 0xFFFFFFFF
+
     if op == "BEQ":
-        return rs1 == rs2
+        return comp32_to_signed_int(rs1) == comp32_to_signed_int(rs2)
     elif op == "BNE":
-        return rs1 != rs2
+        return comp32_to_signed_int(rs1) != comp32_to_signed_int(rs2)
     elif op == "BLT":
-        return rs1 < rs2
+        return comp32_to_signed_int(rs1) < comp32_to_signed_int(rs2)
     elif op == "BGE":
-        return rs1 >= rs2
+        return comp32_to_signed_int(rs1) >= comp32_to_signed_int(rs2)
     elif op == "BLTU":
         return rs1 < rs2
     elif op == "BGEU":
@@ -338,7 +387,8 @@ class Memory:
         value = 0
         # little endian
         for i in range(byte_size):
-            value |= (self.data[addr + i].read() << (i * 8))
+            byte_data = self.data[addr + i].read() & 0xFF
+            value |= (byte_data << (i * 8))
         return value
 
     def write_byte(self, addr: int, value: int):
@@ -443,10 +493,10 @@ class Instr:
         self.alu_i_op = rand.choice(ALU_I_ops)
         self.funct3 = ALU_I_funct3_map[self.alu_i_op]
         self.rs1 = rand.choice(list(commited_regs))
-        self.imm = rand.randint(0, 2**12 - 1)
+        self.imm_comp32 = rand.randint(-2048, 2047) & 0xFFFFFFFF
         self.rd = rand.randint(0, 31)
         self.opcode = get_op_code(self.type, self.type2)
-        self.bits = f"{self.imm:012b}{self.rs1:05b}{self.funct3:03b}{self.rd:05b}{self.opcode:07b}"
+        self.bits = f"{self.imm_comp32:012b}{self.rs1:05b}{self.funct3:03b}{self.rd:05b}{self.opcode:07b}"
         self.complete = True
 
     # needs to be aligned accesses
@@ -485,7 +535,8 @@ class Instr:
             # check if a valid register can be used as the base for the load
             reachable_reg = None
             for reg_entry in rand.sample(commited_register_file, k=len(commited_register_file)):
-                diff = addr_trgt - reg_entry[1]
+                reg_value_signed_int = comp32_to_signed_int(reg_entry[1])
+                diff = addr_trgt - reg_value_signed_int
                 imm_valid = diff >= -2048 and diff < 2048
                 if imm_valid:
                     reachable_reg = reg_entry[0]
@@ -501,10 +552,10 @@ class Instr:
         self.funct3 = LOAD_funct3_map[self.load_type]
         self.load_width = load_width
         self.rs1 = reachable_reg
-        self.imm = (addr_trgt - register_file.regs[reachable_reg].value) & 0xFFF
+        self.imm_comp32 = (addr_trgt - comp32_to_signed_int(register_file.regs[reachable_reg].value)) & 0xFFFFFFFF
         self.rd = rand.randint(0, register_file.num_regs-1)
         self.opcode = get_op_code(self.type, self.type2)
-        self.bits = f"{self.imm:012b}{self.rs1:05b}{self.funct3:03b}{self.rd:05b}{self.opcode:07b}"
+        self.bits = f"{self.imm_comp32:012b}{self.rs1:05b}{self.funct3:03b}{self.rd:05b}{self.opcode:07b}"
         self.complete = True
 
     def randomize_store_instr(
@@ -536,7 +587,8 @@ class Instr:
             # check if a valid register can be used as the base for the store
             reachable_reg = None
             for reg_entry in rand.sample(commited_register_file, k=len(commited_register_file)):
-                diff = addr_trgt - reg_entry[1]
+                reg_value_signed_int = comp32_to_signed_int(reg_entry[1])
+                diff = addr_trgt - reg_value_signed_int
                 imm_valid = diff >= -2048 and diff < 2048
                 if imm_valid:
                     reachable_reg = reg_entry[0]
@@ -552,11 +604,11 @@ class Instr:
         self.funct3 = STORE_funct3_map[self.store_type]
         self.store_width = store_width
         self.rs1 = reachable_reg
-        self.imm = (addr_trgt - register_file.regs[reachable_reg].value) & 0xFFF
+        self.imm_comp32 = (addr_trgt - comp32_to_signed_int(register_file.regs[reachable_reg].value)) & 0xFFFFFFFF
         self.rs2 = rand.randint(0, register_file.num_regs-1)
         self.opcode = get_op_code(self.type, self.type2)
-        imm_11_5 = (self.imm >> 5) & 0x7F
-        imm_4_0 = self.imm & 0x1F
+        imm_11_5 = (self.imm_comp32 >> 5) & 0x7F
+        imm_4_0 = self.imm_comp32 & 0x1F
         self.bits = f"{imm_11_5:07b}{self.rs2:05b}{self.rs1:05b}{self.funct3:03b}{imm_4_0:05b}{self.opcode:07b}"
         self.complete = True
 
@@ -601,13 +653,13 @@ class Instr:
         self.funct3 = BRANCH_funct3_map[self.branch_op]
         self.rs1 = rand.choice(list(register_file.committed_regs))
         self.rs2 = rand.choice(list(register_file.committed_regs))
-        self.imm = (addr_trgt - pc) & 0x1FFF
+        self.imm_comp32 = (addr_trgt - pc) & 0xFFFFFFFF
         self.opcode = get_op_code(self.type, self.type2)
 
-        imm_12 = (self.imm >> 12) & 1
-        imm_11 = (self.imm >> 11) & 1
-        imm_10_5 = (self.imm >> 5) & 0x3F
-        imm_4_1 = (self.imm >> 1) & 0xF
+        imm_12 = (self.imm_comp32 >> 12) & 1
+        imm_11 = (self.imm_comp32 >> 11) & 1
+        imm_10_5 = (self.imm_comp32 >> 5) & 0x3F
+        imm_4_1 = (self.imm_comp32 >> 1) & 0xF
         self.bits = (
             f"{imm_12:01b}"
             f"{imm_10_5:06b}"
@@ -655,13 +707,13 @@ class Instr:
             found_valid_addr = True
 
         self.rd = rand.randint(0, register_file.num_regs - 1)
-        self.imm = (addr_trgt - pc) & 0x1FFFFF
+        self.imm_comp32 = (addr_trgt - pc) & 0xFFFFFFFF
         self.opcode = get_op_code(self.type, self.type2)
 
-        imm_20 = (self.imm >> 20) & 1
-        imm_19_12 = (self.imm >> 12) & 0xFF
-        imm_11 = (self.imm >> 11) & 0x1
-        imm_10_1 = (self.imm >> 1) & 0x3FF
+        imm_20 = (self.imm_comp32 >> 20) & 1
+        imm_19_12 = (self.imm_comp32 >> 12) & 0xFF
+        imm_11 = (self.imm_comp32 >> 11) & 0x1
+        imm_10_1 = (self.imm_comp32 >> 1) & 0x3FF
         self.bits = f"{imm_20:01b}{imm_10_1:010b}{imm_11:01b}{imm_19_12:08b}{self.rd:05b}{self.opcode:07b}"
         self.complete = True
 
@@ -693,7 +745,8 @@ class Instr:
             # check if a valid register can be used as the base for the jump
             reachable_reg = None
             for reg_entry in rand.sample(commited_register_file, k=len(commited_register_file)):
-                diff = addr_trgt - reg_entry[1]
+                reg_value_signed_int = comp32_to_signed_int(reg_entry[1])
+                diff = addr_trgt - reg_value_signed_int
                 imm_valid = diff >= -2048 and diff < 2048
                 if imm_valid:
                     reachable_reg = reg_entry[0]
@@ -707,29 +760,29 @@ class Instr:
         # self.addr_trgt = addr_trgt
         self.funct3 = 0b000
         self.rs1 = reachable_reg
-        self.imm = (addr_trgt - register_file.regs[reachable_reg].value) & 0xFFF
+        self.imm_comp32 = (addr_trgt - comp32_to_signed_int(register_file.regs[reachable_reg].value)) & 0xFFFFFFFF
         self.rd = rand.randint(0, register_file.num_regs-1)
         self.opcode = get_op_code(self.type, self.type2)
-        self.bits = f"{self.imm:012b}{self.rs1:05b}{self.funct3:03b}{self.rd:05b}{self.opcode:07b}"
+        self.bits = f"{self.imm_comp32:012b}{self.rs1:05b}{self.funct3:03b}{self.rd:05b}{self.opcode:07b}"
         self.complete = True
 
     def randomize_lui_instr(self):
         assert self.type == "U_TYPE", "Invalid instruction type"
         assert self.type2 == "LUI", "Invalid instruction type2"
-        self.imm = (rand.randint(0, (2 ** 32) - 1) >> 12) << 12
+        self.imm_comp32 = ((rand.randint(-1 * (2 ** 31), (2 ** 31) - 1) >> 12) << 12) & 0xFFFFFFFF
         self.rd = rand.randint(0, 31)
         self.opcode = get_op_code(self.type, self.type2)
-        imm_31_12 = self.imm >> 12 & 0xFFFFF
+        imm_31_12 = self.imm_comp32 >> 12 & 0xFFFFF
         self.bits = f"{imm_31_12:020b}{self.rd:05b}{self.opcode:07b}"
         self.complete = True
 
     def randomize_auipc_instr(self):
         assert self.type == "U_TYPE", "Invalid instruction type"
         assert self.type2 == "AUIPC", "Invalid instruction type2"
-        self.imm = (rand.randint(0, (2 ** 32) - 1) >> 12) << 12
+        self.imm_comp32 = ((rand.randint(-1 * (2 ** 31), (2 ** 31) - 1) >> 12) << 12) & 0xFFFFFFFF
         self.rd = rand.randint(0, 31)
         self.opcode = get_op_code(self.type, self.type2)
-        imm_31_12 = self.imm >> 12 & 0xFFFFF
+        imm_31_12 = self.imm_comp32 >> 12 & 0xFFFFF
         self.bits = f"{imm_31_12:020b}{self.rd:05b}{self.opcode:07b}"
         self.complete = True
 
@@ -775,15 +828,15 @@ class Instr:
             instr_name = self.alu_i_op
             operand_1 = self.rd
             operand_2 = self.rs1
-            operand_3 = self.imm
+            operand_3 = self.imm_comp32
         elif self.type2 == "LOAD":
             instr_name = self.load_type
             operand_1 = self.rd
-            operand_2 = f"{self.imm}({self.rs1})"
+            operand_2 = f"{self.imm_comp32}({self.rs1})"
         elif self.type2 == "STORE":
             instr_name = self.store_type
             operand_1 = self.rs2
-            operand_2 = f"{self.imm}({self.rs1})"
+            operand_2 = f"{self.imm_comp32}({self.rs1})"
         elif self.type2 == "BRANCH":
             instr_name = self.branch_type
             operand_1 = self.rs1
@@ -791,26 +844,26 @@ class Instr:
             if hasattr(self, "label"):
                 operand_3 = self.label
             else:
-                operand_3 = self.imm
+                operand_3 = self.imm_comp32
         elif self.type2 == "JAL":
             instr_name = "JAL"
             operand_1 = self.rd
             if hasattr(self, "label"):
                 operand_2 = self.label
             else:
-                operand_2 = self.imm
+                operand_2 = self.imm_comp32
         elif self.type2 == "JALR":
             instr_name = "JALR"
             operand_1 = self.rd
-            operand_2 = f"{self.imm}({self.rs1})"
+            operand_2 = f"{self.imm_comp32}({self.rs1})"
         elif self.type2 == "LUI":
             instr_name = "LUI"
             operand_1 = self.rd
-            operand_2 = f"{self.imm} (note: this is full value)"
+            operand_2 = f"{self.imm_comp32} (note: this is full value)"
         elif self.type2 == "AUIPC":
             instr_name = "AUIPC"
             operand_1 = self.rd
-            operand_2 = f"{self.imm} (note: this is full value)"
+            operand_2 = f"{self.imm_comp32} (note: this is full value)"
 
         result = ""
         assert instr_name is not None, "Instruction name is None"
@@ -848,7 +901,7 @@ def create_alu_i_instr(
         alu_i_op: str,
         rd: int,
         rs1: int,
-        imm: int
+        imm_comp32: int
 ) -> Instr:
     instr = Instr()
     instr.type2 = "ALU"
@@ -856,10 +909,10 @@ def create_alu_i_instr(
     instr.alu_i_op = alu_i_op
     instr.funct3 = ALU_I_funct3_map[alu_i_op]
     instr.rs1 = rs1
-    instr.imm = imm
+    instr.imm_comp32 = imm_comp32
     instr.rd = rd
     instr.opcode = get_op_code(instr.type, instr.type2)
-    instr.bits = f"{instr.imm:012b}{instr.rs1:05b}{instr.funct3:03b}{instr.rd:05b}{instr.opcode:07b}"
+    instr.bits = f"{instr.imm_comp32:012b}{instr.rs1:05b}{instr.funct3:03b}{instr.rd:05b}{instr.opcode:07b}"
     instr.complete = True
     return instr
 
@@ -867,7 +920,7 @@ def create_load_instr(
         load_type: str,
         rd: int,
         rs1: int,
-        imm: int
+        imm_comp32: int
 ) -> Instr:
     instr = Instr()
     instr.type2 = "LOAD"
@@ -876,10 +929,10 @@ def create_load_instr(
     instr.funct3 = LOAD_funct3_map[load_type]
     instr.load_width = LOAD_ops_byte_read_sizing_map[load_type]
     instr.rs1 = rs1
-    instr.imm = imm
+    instr.imm_comp32 = imm_comp32
     instr.rd = rd
     instr.opcode = get_op_code(instr.type, instr.type2)
-    instr.bits = f"{instr.imm:012b}{instr.rs1:05b}{instr.funct3:03b}{instr.rd:05b}{instr.opcode:07b}"
+    instr.bits = f"{instr.imm_comp32:012b}{instr.rs1:05b}{instr.funct3:03b}{instr.rd:05b}{instr.opcode:07b}"
     instr.complete = True
     return instr
 
@@ -887,7 +940,7 @@ def create_store_instr(
         store_type: str,
         rs1: int,
         rs2: int,
-        imm: int
+        imm_comp32: int
 ) -> Instr:
     instr = Instr()
     instr.type2 = "STORE"
@@ -896,11 +949,11 @@ def create_store_instr(
     instr.funct3 = STORE_funct3_map[store_type]
     instr.store_width = STORE_ops_byte_write_sizing_map[store_type]
     instr.rs1 = rs1
-    instr.imm = imm
+    instr.imm_comp32 = imm_comp32
     instr.rs2 = rs2
     instr.opcode = get_op_code(instr.type, instr.type2)
-    imm_11_5 = (instr.imm >> 5) & 0x7F
-    imm_4_0 = instr.imm & 0x1F
+    imm_11_5 = (instr.imm_comp32 >> 5) & 0x7F
+    imm_4_0 = instr.imm_comp32 & 0x1F
     instr.bits = f"{imm_11_5:07b}{instr.rs2:05b}{instr.rs1:05b}{instr.funct3:03b}{imm_4_0:05b}{instr.opcode:07b}"
     instr.complete = True
     return instr
@@ -909,22 +962,22 @@ def create_branch_instr(
         branch_type: str,
         rs1: int,
         rs2: int,
-        imm: int,
+        imm_comp32: int,
         label: str = None
 ) -> Instr:
     instr = Instr()
     instr.type2 = "BRANCH"
     instr.type = "B_TYPE"
-    instr.branch_type = branch_type
+    instr.branch_op = branch_type
     instr.funct3 = BRANCH_funct3_map[branch_type]
     instr.rs1 = rs1
     instr.rs2 = rs2
-    instr.imm = imm
+    instr.imm_comp32 = imm_comp32
     instr.opcode = get_op_code(instr.type, instr.type2)
-    imm_12 = (instr.imm >> 12) & 0x1
-    imm_11 = (instr.imm >> 11) & 0x1
-    imm_10_5 = (instr.imm >> 5) & 0x3F
-    imm_4_1 = (instr.imm >> 1) & 0xF
+    imm_12 = (instr.imm_comp32 >> 12) & 0x1
+    imm_11 = (instr.imm_comp32 >> 11) & 0x1
+    imm_10_5 = (instr.imm_comp32 >> 5) & 0x3F
+    imm_4_1 = (instr.imm_comp32 >> 1) & 0xF
     instr.bits = (
         f"{imm_12:01b}"
         f"{imm_10_5:06b}"
@@ -942,19 +995,19 @@ def create_branch_instr(
 
 def create_jal_instr(
         rd: int,
-        imm: int,
+        imm_comp32: int,
         label: str = None
 ) -> Instr:
     instr = Instr()
     instr.type2 = "JAL"
     instr.type = "J_TYPE"
     instr.rd = rd
-    instr.imm = imm
+    instr.imm_comp32 = imm_comp32
     instr.opcode = get_op_code(instr.type, instr.type2)
-    imm_20 = (instr.imm >> 20) & 1
-    imm_19_12 = (instr.imm >> 12) & 0xFF
-    imm_11 = (instr.imm >> 11) & 0x1
-    imm_10_1 = (instr.imm >> 1) & 0x3FF
+    imm_20 = (instr.imm_comp32 >> 20) & 1
+    imm_19_12 = (instr.imm_comp32 >> 12) & 0xFF
+    imm_11 = (instr.imm_comp32 >> 11) & 0x1
+    imm_10_1 = (instr.imm_comp32 >> 1) & 0x3FF
     instr.bits = f"{imm_20:01b}{imm_10_1:010b}{imm_11:01b}{imm_19_12:08b}{instr.rd:05b}{instr.opcode:07b}"
     if label is not None:
         instr.label = label
@@ -964,7 +1017,7 @@ def create_jal_instr(
 def create_jalr_instr(
         rd: int,
         rs1: int,
-        imm: int,
+        imm_comp32: int,
         label: str = None
 ) -> Instr:
     instr = Instr()
@@ -972,10 +1025,10 @@ def create_jalr_instr(
     instr.type = "I_TYPE"
     instr.funct3 = 0b000
     instr.rs1 = rs1
-    instr.imm = imm
+    instr.imm_comp32 = imm_comp32
     instr.rd = rd
     instr.opcode = get_op_code(instr.type, instr.type2)
-    instr.bits = f"{instr.imm:012b}{instr.rs1:05b}{instr.funct3:03b}{instr.rd:05b}{instr.opcode:07b}"
+    instr.bits = f"{instr.imm_comp32:012b}{instr.rs1:05b}{instr.funct3:03b}{instr.rd:05b}{instr.opcode:07b}"
     if label is not None:
         instr.label = label
     instr.complete = True
@@ -983,37 +1036,115 @@ def create_jalr_instr(
 
 def create_lui_instr(
         rd: int,
-        imm: int
+        imm_comp32: int
 ) -> Instr:
     instr = Instr()
     instr.type2 = "LUI"
     instr.type = "U_TYPE"
     instr.rd = rd
-    instr.imm = imm
+    instr.imm_comp32 = imm_comp32
     instr.opcode = get_op_code(instr.type, instr.type2)
-    imm_31_12 = instr.imm >> 12 & 0xFFFFF
+    imm_31_12 = instr.imm_comp32 >> 12 & 0xFFFFF
     instr.bits = f"{imm_31_12:020b}{instr.rd:05b}{instr.opcode:07b}"
     instr.complete = True
     return instr
 
 def create_auipc_instr(
         rd: int,
-        imm: int
+        imm_comp32: int
 ) -> Instr:
     instr = Instr()
     instr.type2 = "AUIPC"
     instr.type = "U_TYPE"
     instr.rd = rd
-    instr.imm = imm
+    instr.imm_comp32 = imm_comp32
     instr.opcode = get_op_code(instr.type, instr.type2)
-    imm_31_12 = instr.imm >> 12 & 0xFFFFF
+    imm_31_12 = instr.imm_comp32 >> 12 & 0xFFFFF
     instr.bits = f"{imm_31_12:020b}{instr.rd:05b}{instr.opcode:07b}"
     instr.complete = True
     return instr
 
 def create_alu_r_instr_from_bin(bin_str: str) -> Instr:
-    alu_r_op = 
-    instr = create_alu_r_instr(0, 0, 0)
+    alu_r_op = get_alu_r_op_from_bin_32(bin_str)
+    rd = int(bin_str[20:25], 2)
+    rs1 = int(bin_str[12:17], 2)
+    rs2 = int(bin_str[7:12], 2)
+    instr = create_alu_r_instr(alu_r_op, rd, rs1, rs2)
+    return instr
+
+def create_alu_i_instr_from_bin(bin_str: str) -> Instr:
+    alu_i_op = get_alu_i_op_from_bin_32(bin_str)
+    rd = int(bin_str[20:25], 2)
+    rs1 = int(bin_str[12:17], 2)
+    imm = int(bin_str[0:12], 2)
+    imm_comp32 = sign_extend_12_to_32(imm)
+    instr = create_alu_i_instr(alu_i_op, rd, rs1, imm_comp32)
+    return instr
+
+def create_load_instr_from_bin(bin_str: str) -> Instr:
+    load_op = get_load_op_from_bin_32(bin_str)
+    rd = int(bin_str[20:25], 2)
+    rs1 = int(bin_str[12:17], 2)
+    imm = int(bin_str[0:12], 2)
+    imm_comp32 = sign_extend_12_to_32(imm)
+    instr = create_load_instr(load_op, rd, rs1, imm_comp32)
+    return instr
+
+def create_store_instr_from_bin(bin_str: str) -> Instr:
+    store_op = get_store_op_from_bin_32(bin_str)
+    rs1 = int(bin_str[12:17], 2)
+    rs2 = int(bin_str[7:12], 2)
+    imm_11_5_str = bin_str[0:7]
+    imm_4_0_str = bin_str[20:25]
+    imm = int(imm_11_5_str + imm_4_0_str, 2)
+    imm_comp32 = sign_extend_12_to_32(imm)
+    instr = create_store_instr(store_op, rs1, rs2, imm_comp32)
+    return instr
+
+def create_branch_instr_from_bin(bin_str: str, label:str = None) -> Instr:
+    branch_op = get_branch_op_from_bin_32(bin_str)
+    rs1 = int(bin_str[12:17], 2)
+    rs2 = int(bin_str[7:12], 2)
+    # imm = int(bin_str[0:13], 2)
+    imm_12_str = bin_str[0]
+    imm_10_5_str = bin_str[1:7]
+    imm_4_1_str = bin_str[20:24]
+    imm_11_str = bin_str[24]
+    imm = int(imm_12_str + imm_11_str + imm_10_5_str + imm_4_1_str + "0", 2)
+    imm_comp32 = sign_extend_13_to_32(imm)
+    instr = create_branch_instr(branch_op, rs1, rs2, imm_comp32, label)
+    return instr
+
+def create_jal_instr_from_bin(bin_str: str, label:str = None) -> Instr:
+    rd = int(bin_str[20:25], 2)
+    # imm_str = int(bin_str[0:20], 2)
+    imm_20_str = bin_str[0]
+    imm_10_1_str = bin_str[1:11]
+    imm_11_str = bin_str[11]
+    imm_19_12_str = bin_str[12:20]
+    imm = int(imm_20_str + imm_19_12_str + imm_11_str + imm_10_1_str + "0", 2)
+    imm_comp32 = sign_extend_21_to_32(imm)
+    instr = create_jal_instr(rd, imm_comp32, label)
+    return instr
+
+def create_jalr_instr_from_bin(bin_str: str, label:str = None) -> Instr:
+    rd = int(bin_str[20:25], 2)
+    rs1 = int(bin_str[12:17], 2)
+    imm = int(bin_str[0:12], 2)
+    imm_comp32 = sign_extend_12_to_32(imm)
+    instr = create_jalr_instr(rd, rs1, imm_comp32, label)
+    return instr
+
+def create_lui_instr_from_bin(bin_str: str) -> Instr:
+    rd = int(bin_str[20:25], 2)
+    imm_comp32 = int(bin_str[0:20] + "0" * 12, 2) & 0xFFFFFFFF
+    instr = create_lui_instr(rd, imm_comp32)
+    return instr
+
+def create_auipc_instr_from_bin(bin_str: str) -> Instr:
+    rd = int(bin_str[20:25], 2) 
+    imm_comp32 = int(bin_str[0:20] + "0" * 12, 2) & 0xFFFFFFFF
+    instr = create_auipc_instr(rd, imm_comp32)
     return instr
 
 class Program:
@@ -1085,56 +1216,57 @@ class Program:
         rs2_value = self.register_file.get_reg_value(instr.rs2)
         rd_value = compute_alu_r_op(instr.alu_r_op, rs1_value, rs2_value)
         self.register_file.commit_reg(instr.rd, rd_value)
-        self.pc += 4
+        self.pc = comp32_add(self.pc, 4)
     
     def register_i_op(self, instr: Instr):
         rs1_value = self.register_file.get_reg_value(instr.rs1)
-        imm_value = instr.imm
+        imm_value = instr.imm_comp32
         rd_value = compute_alu_i_op(instr.alu_i_op, rs1_value, imm_value)
         self.register_file.commit_reg(instr.rd, rd_value)
-        self.pc += 4
+        self.pc = comp32_add(self.pc, 4)
 
     def register_load_instr(self, instr: Instr):
         rs1_value = self.register_file.get_reg_value(instr.rs1)
-        imm_value = instr.imm
-        addr = rs1_value + imm_value
+        imm_value = instr.imm_comp32
+        # addr = rs1_value + imm_value
+        addr = comp32_add(rs1_value, imm_value)
         data = self.memory.read(addr, self.load_width)
         data = sign_extend_load(data, self.load_type, 32)
         self.register_file.commit_reg(instr.rd, data)
-        self.pc += 4
+        self.pc = comp32_add(self.pc, 4)
 
     def register_store_instr(self, instr: Instr):
         rs1_value = self.register_file.get_reg_value(instr.rs1)
-        imm_value = instr.imm
-        addr = rs1_value + imm_value
+        imm_value = instr.imm_comp32
+        addr = comp32_add(rs1_value, imm_value)
         data = self.register_file.get_reg_value(instr.rs2)
         self.memory.write(addr, data, self.store_width)
-        self.pc += 4
-    
+        self.pc = comp32_add(self.pc, 4)
+
     def register_branch_instr(self, instr: Instr):
         rs1_value = self.register_file.get_reg_value(instr.rs1)
         rs2_value = self.register_file.get_reg_value(instr.rs2)
         branch_taken = compute_branch_op(instr.branch_op, rs1_value, rs2_value)
         if branch_taken:
-            self.pc += instr.imm
+            self.pc = comp32_add(self.pc, instr.imm_comp32)
         else:
-            self.pc += 4
+            self.pc = comp32_add(self.pc, 4)
 
     def register_jal_instr(self, instr: Instr):
-        self.register_file.commit_reg(instr.rd, self.pc + 4)
-        self.pc += instr.imm
+        self.register_file.commit_reg(instr.rd, comp32_add(self.pc, 4))
+        self.pc = comp32_add(self.pc, instr.imm_comp32)
     
     def register_jalr_instr(self, instr: Instr):
-        self.register_file.commit_reg(instr.rd, self.pc + 4)
-        self.pc = self.register_file.get_reg_value(instr.rs1) + instr.imm
+        self.register_file.commit_reg(instr.rd, comp32_add(self.pc, 4))
+        self.pc = comp32_add(self.pc, instr.imm_comp32)
     
     def register_lui_instr(self, instr: Instr):
-        self.register_file.commit_reg(instr.rd, instr.imm)
-        self.pc += 4
+        self.register_file.commit_reg(instr.rd, instr.imm_comp32)
+        self.pc = comp32_add(self.pc, 4)
 
     def register_auipc_instr(self, instr: Instr):
-        self.register_file.commit_reg(instr.rd, self.pc + instr.imm)
-        self.pc += 4
+        self.register_file.commit_reg(instr.rd, comp32_add(self.pc, instr.imm_comp32))
+        self.pc = comp32_add(self.pc, 4)
 
     def register_instr(self, instr: Instr):
         if instr.type2 == "ALU" and instr.type == "R_TYPE":   self.register_r_op(instr)
@@ -1156,7 +1288,7 @@ class Program:
                 self.register_file,
                 self.memory,
                 self.pc,
-                self.instr_address_range,
+                self.instr_addr_range,
                 max_attempts
             )
             self.register_instr(instr)
