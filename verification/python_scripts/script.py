@@ -2,13 +2,13 @@ import random as rand
 from enum import Enum, auto
 
 # General Utils
-InstrType = [ "R-Type", "I-Type", "S-Type", "B-Type", "U-Type", "J-Type"]
+InstrType = [ "R-TYPE", "I-TYPE", "S-TYPE", "B-TYPE", "U-TYPE", "J-TYPE"]
 InstrType2 = [ "ALU", "LOAD", "STORE", "BRANCH", "JAL", "JALR", "LUI", "AUIPC"]
 def get_op_code(type: str, type2: str):
     opcode = "-Invalid_Opcode-"
-    if (type == "R-Type"):
+    if (type == "R-TYPE"):
         opcode = 0b0110011
-    elif (type == "I-Type" and type2 == "ALU"):
+    elif (type == "I-TYPE" and type2 == "ALU"):
         opcode = 0b0010011
     elif (type2 == "LOAD"):
         opcode = 0b0000011
@@ -25,8 +25,39 @@ def get_op_code(type: str, type2: str):
     elif (type2 == "AUIPC"):
         opcode = 0b0010111
     return opcode
+def get_types_from_opcode(opcode: str) -> tuple[str, str]:
+    type = "-Invalid_Type-"
+    type2 = "-Invalid_Type2-"
+    if opcode == 0b0110011:
+        type = "R-TYPE"
+        type2 = "ALU"
+    elif opcode == 0b0010011:
+        type = "I-TYPE"
+        type2 = "ALU"
+    elif opcode == 0b0000011:
+        type = "I-TYPE"
+        type2 = "LOAD"
+    elif opcode == 0b0100011:
+        type = "S-TYPE"
+        type2 = "STORE"
+    elif opcode == 0b1100011:
+        type = "B-TYPE"
+        type2 = "BRANCH"
+    elif opcode == 0b1101111:
+        type = "J-TYPE"
+        type2 = "JAL"
+    elif opcode == 0b1100111:
+        type = "I-TYPE"
+        type2 = "JALR"
+    elif opcode == 0b0110111:
+        type = "U-TYPE"
+        type2 = "LUI"
+    elif opcode == 0b0010111:
+        type = "U-TYPE"
+        type2 = "AUIPC"
+    return (type, type2)
 
-# ALU R-Type Utils
+# ALU R-TYPE Utils
 ALU_R_ops = ["ADD", "SUB", "XOR", "OR", "AND", "SLL", "SRL", "SRA", "SLT", "SLTU"]
 ALU_R_funct3_map = {
     "ADD":  0b000,
@@ -79,7 +110,7 @@ def get_alu_r_op_from_bin_32(bin_32: str) -> str:
         return "SLTU"
     raise ValueError("Invalid ALU R-type instruction")
 
-# ALU I-Type Utils
+# ALU I-TYPE Utils
 ALU_I_ops = [ "ADDI", "XORI", "ORI", "ANDI", "SLLI", "SRLI", "SRAI", "SLTI", "SLTUI" ]
 ALU_I_funct3_map = {
     "ADDI":  0b000,
@@ -175,17 +206,17 @@ def get_branch_op_from_bin_32(bin_32: str) -> str:
 def random_type2_on_type(instr_type: str):
     type2 = None
     match instr_type:
-        case "R_TYPE":
+        case "R-TYPE":
             type2 = "ALU"
-        case "I_TYPE":
+        case "I-TYPE":
             type2 = rand.choice(["ALU", "LOAD", "JALR"])
-        case "S_TYPE":
+        case "S-TYPE":
             type2 = "STORE"
-        case "B_TYPE":
+        case "B-TYPE":
             type2 = "BRANCH"
-        case "U_TYPE":
+        case "U-TYPE":
             type2 = rand.choice(["LUI", "AUIPC"])
-        case "J_TYPE":
+        case "J-TYPE":
             type2 = "JAL"
     return type2
 
@@ -193,21 +224,21 @@ def random_type_on_type2(type2: str):
     type = None
     match type2:
         case "ALU":
-            type = rand.choice(["R_TYPE", "I_TYPE"])
+            type = rand.choice(["R-TYPE", "I-TYPE"])
         case "LOAD":
-            type = "I_TYPE"
+            type = "I-TYPE"
         case "STORE":
-            type = "S_TYPE"
+            type = "S-TYPE"
         case "BRANCH":
-            type = "B_TYPE"
+            type = "B-TYPE"
         case "JAL":
-            type = "J_TYPE"
+            type = "J-TYPE"
         case "JALR":
-            type = "I_TYPE"
+            type = "I-TYPE"
         case "LUI":
-            type = "U_TYPE"
+            type = "U-TYPE"
         case "AUIPC":
-            type = "U_TYPE"
+            type = "U-TYPE"
     return type
 
 # used for bit-shift operations and comparison
@@ -343,11 +374,15 @@ class Register_File:
         self.regs = [Register() for _ in range(num_regs)] 
         self.num_regs = num_regs
         self.committed_regs = set()
+        # set R0 to be 0
+        self.committed_regs.add(0)
+        self.regs[0].write(0)
 
     def commit_reg(self, reg_index: int, value: int):
         assert 0 <= reg_index < self.num_regs
-        self.regs[reg_index].write(value)
-        self.committed_regs.add(reg_index)
+        if reg_index > 0:
+            self.regs[reg_index].write(value)
+            self.committed_regs.add(reg_index)
 
     def get_committed_reg_file(self) -> list[tuple[int, int]]:
         commit_reg_file = []
@@ -360,6 +395,22 @@ class Register_File:
         assert 0 <= reg_index < self.num_regs, "Register index out of bounds"
         assert self.regs[reg_index].committed, "Register not committed"
         return self.regs[reg_index].value
+        
+    def print_register_state(self, cols: int = 4, rows: int = 8):
+        assert cols * rows == self.num_regs, f"Not enough cells to display all registers, cols: {cols}, rows: {rows}"
+        for row in range(rows):
+            row_entries = []
+            for col in range(cols):
+                reg_idx = row * cols + col
+                if reg_idx >= self.num_regs:
+                    break
+                reg = self.regs[reg_idx]
+                commit_state = "C" if reg.committed else "U"
+                value = reg.value if reg.committed else "----"
+                row_entries.append(
+                    f"x{reg_idx:02}: {str(value):>10} [{commit_state}]"
+                )
+            print(" | ".join(row_entries))
 
 class MemoryByte:
     def __init__(self, value: int = 0):
@@ -474,7 +525,7 @@ class Instr:
 
     def randomize_alu_r_instr(self, commited_regs: set[int]):
         assert len(commited_regs) > 0, "No committed registers available"
-        assert self.type == "R_TYPE", "Invalid instruction type"
+        assert self.type == "R-TYPE", "Invalid instruction type"
         assert self.type2 == "ALU", "Invalid instruction type2"
         self.alu_r_op = rand.choice(ALU_R_ops)
         self.funct3 = ALU_R_funct3_map[self.alu_r_op]
@@ -488,7 +539,7 @@ class Instr:
 
     def randomize_alu_i_instr(self, commited_regs: set[int]):
         assert len(commited_regs) > 0, "No committed registers available"
-        assert self.type == "I_TYPE", "Invalid instruction type"
+        assert self.type == "I-TYPE", "Invalid instruction type"
         assert self.type2 == "ALU", "Invalid instruction type2"
         self.alu_i_op = rand.choice(ALU_I_ops)
         self.funct3 = ALU_I_funct3_map[self.alu_i_op]
@@ -511,7 +562,7 @@ class Instr:
         commited_register_file = register_file.get_committed_reg_file()
         assert len(commited_register_file) > 0, "No committed registers available"
         assert len(valid_address_ranges) > 0, "No valid address ranges available"
-        assert self.type == "I_TYPE", "Invalid instruction type"
+        assert self.type == "I-TYPE", "Invalid instruction type"
         assert self.type2 == "LOAD", "Invalid instruction type2"
     
         found_valid_addr = False
@@ -566,7 +617,7 @@ class Instr:
         ):
         commited_register_file = register_file.get_committed_reg_file()
         assert len(commited_register_file) > 0, "No committed registers available"
-        assert self.type == "S_TYPE", "Invalid instruction type"
+        assert self.type == "S-TYPE", "Invalid instruction type"
         assert self.type2 == "STORE", "Invalid instruction type2"
         
         found_valid_addr = False
@@ -622,7 +673,7 @@ class Instr:
         commited_register_file = register_file.get_committed_reg_file()
         # assert len(register_file.committed_regs) > 0, "No committed registers available"
         assert len(commited_register_file) > 0, "No committed registers available"
-        assert self.type == "B_TYPE", "Invalid instruction type"
+        assert self.type == "B-TYPE", "Invalid instruction type"
         assert self.type2 == "BRANCH", "Invalid instruction type2"
         
         found_valid_addr = False
@@ -679,7 +730,7 @@ class Instr:
             pc: int, 
             max_attempts: int
             ):
-        assert self.type == "J_TYPE", "Invalid instruction type"
+        assert self.type == "J-TYPE", "Invalid instruction type"
         assert self.type2 == "JAL", "Invalid instruction type2"
         
         found_valid_addr = False
@@ -725,7 +776,7 @@ class Instr:
             ):
         commited_register_file = register_file.get_committed_reg_file()
         assert len(commited_register_file) > 0, "No committed registers available"
-        assert self.type == "I_TYPE", "Invalid instruction type"
+        assert self.type == "I-TYPE", "Invalid instruction type"
         assert self.type2 == "JALR", "Invalid instruction type2"
     
         found_valid_addr = False
@@ -767,7 +818,7 @@ class Instr:
         self.complete = True
 
     def randomize_lui_instr(self):
-        assert self.type == "U_TYPE", "Invalid instruction type"
+        assert self.type == "U-TYPE", "Invalid instruction type"
         assert self.type2 == "LUI", "Invalid instruction type2"
         self.imm_comp32 = ((rand.randint(-1 * (2 ** 31), (2 ** 31) - 1) >> 12) << 12) & 0xFFFFFFFF
         self.rd = rand.randint(0, 31)
@@ -777,7 +828,7 @@ class Instr:
         self.complete = True
 
     def randomize_auipc_instr(self):
-        assert self.type == "U_TYPE", "Invalid instruction type"
+        assert self.type == "U-TYPE", "Invalid instruction type"
         assert self.type2 == "AUIPC", "Invalid instruction type2"
         self.imm_comp32 = ((rand.randint(-1 * (2 ** 31), (2 ** 31) - 1) >> 12) << 12) & 0xFFFFFFFF
         self.rd = rand.randint(0, 31)
@@ -794,9 +845,9 @@ class Instr:
                 max_attempts: int
         ):
         self.randomize_type2()
-        if self.type2 == "ALU" and self.type == "R_TYPE":
+        if self.type2 == "ALU" and self.type == "R-TYPE":
             self.randomize_alu_r_instr(register_file.committed_regs)
-        elif self.type2 == "ALU" and self.type == "I_TYPE":
+        elif self.type2 == "ALU" and self.type == "I-TYPE":
             self.randomize_alu_i_instr(register_file.committed_regs)
         elif self.type2 == "LOAD":
             self.randomize_load_instr(register_file, memory.valid_address_ranges, max_attempts)
@@ -819,50 +870,50 @@ class Instr:
         operand_2 = None
         operand_3 = None
 
-        if self.type2 == "ALU" and self.type == "R_TYPE":
+        if self.type2 == "ALU" and self.type == "R-TYPE":
             instr_name = self.alu_r_op
-            operand_1 = self.rd
-            operand_2 = self.rs1
-            operand_3 = self.rs2
-        elif self.type2 == "ALU" and self.type == "I_TYPE":
+            operand_1 = f"x{self.rd}"
+            operand_2 = f"x{self.rs1}"
+            operand_3 = f"x{self.rs2}"
+        elif self.type2 == "ALU" and self.type == "I-TYPE":
             instr_name = self.alu_i_op
-            operand_1 = self.rd
-            operand_2 = self.rs1
+            operand_1 = f"x{self.rd}"
+            operand_2 = f"x{self.rs1}"
             operand_3 = self.imm_comp32
         elif self.type2 == "LOAD":
             instr_name = self.load_type
-            operand_1 = self.rd
-            operand_2 = f"{self.imm_comp32}({self.rs1})"
+            operand_1 = f"x{self.rd}"
+            operand_2 = f"{self.imm_comp32}(x{self.rs1})"
         elif self.type2 == "STORE":
             instr_name = self.store_type
-            operand_1 = self.rs2
-            operand_2 = f"{self.imm_comp32}({self.rs1})"
+            operand_1 = f"x{self.rs2}"
+            operand_2 = f"{self.imm_comp32}(x{self.rs1})"
         elif self.type2 == "BRANCH":
-            instr_name = self.branch_type
-            operand_1 = self.rs1
-            operand_2 = self.rs2
+            instr_name = self.branch_op
+            operand_1 = f"x{self.rs1}"
+            operand_2 = f"x{self.rs2}"
             if hasattr(self, "label"):
                 operand_3 = self.label
             else:
                 operand_3 = self.imm_comp32
         elif self.type2 == "JAL":
             instr_name = "JAL"
-            operand_1 = self.rd
+            operand_1 = f"x{self.rd}"
             if hasattr(self, "label"):
                 operand_2 = self.label
             else:
                 operand_2 = self.imm_comp32
         elif self.type2 == "JALR":
             instr_name = "JALR"
-            operand_1 = self.rd
-            operand_2 = f"{self.imm_comp32}({self.rs1})"
+            operand_1 = f"x{self.rd}"
+            operand_2 = f"{self.imm_comp32}(x{self.rs1})"
         elif self.type2 == "LUI":
             instr_name = "LUI"
-            operand_1 = self.rd
+            operand_1 = f"x{self.rd}"
             operand_2 = f"{self.imm_comp32} (note: this is full value)"
         elif self.type2 == "AUIPC":
             instr_name = "AUIPC"
-            operand_1 = self.rd
+            operand_1 = f"x{self.rd}"
             operand_2 = f"{self.imm_comp32} (note: this is full value)"
 
         result = ""
@@ -885,7 +936,7 @@ def create_alu_r_instr(
 ) -> Instr:
     instr = Instr()
     instr.type2 = "ALU"
-    instr.type = "R_TYPE"
+    instr.type = "R-TYPE"
     instr.alu_r_op = alu_r_op
     instr.funct3 = ALU_R_funct3_map[alu_r_op]
     instr.funct7 = ALU_R_funct7_map[alu_r_op]
@@ -905,7 +956,7 @@ def create_alu_i_instr(
 ) -> Instr:
     instr = Instr()
     instr.type2 = "ALU"
-    instr.type = "I_TYPE"
+    instr.type = "I-TYPE"
     instr.alu_i_op = alu_i_op
     instr.funct3 = ALU_I_funct3_map[alu_i_op]
     instr.rs1 = rs1
@@ -924,7 +975,7 @@ def create_load_instr(
 ) -> Instr:
     instr = Instr()
     instr.type2 = "LOAD"
-    instr.type = "I_TYPE"
+    instr.type = "I-TYPE"
     instr.load_type = load_type
     instr.funct3 = LOAD_funct3_map[load_type]
     instr.load_width = LOAD_ops_byte_read_sizing_map[load_type]
@@ -944,7 +995,7 @@ def create_store_instr(
 ) -> Instr:
     instr = Instr()
     instr.type2 = "STORE"
-    instr.type = "S_TYPE"
+    instr.type = "S-TYPE"
     instr.store_type = store_type
     instr.funct3 = STORE_funct3_map[store_type]
     instr.store_width = STORE_ops_byte_write_sizing_map[store_type]
@@ -967,7 +1018,7 @@ def create_branch_instr(
 ) -> Instr:
     instr = Instr()
     instr.type2 = "BRANCH"
-    instr.type = "B_TYPE"
+    instr.type = "B-TYPE"
     instr.branch_op = branch_type
     instr.funct3 = BRANCH_funct3_map[branch_type]
     instr.rs1 = rs1
@@ -1000,7 +1051,7 @@ def create_jal_instr(
 ) -> Instr:
     instr = Instr()
     instr.type2 = "JAL"
-    instr.type = "J_TYPE"
+    instr.type = "J-TYPE"
     instr.rd = rd
     instr.imm_comp32 = imm_comp32
     instr.opcode = get_op_code(instr.type, instr.type2)
@@ -1022,7 +1073,7 @@ def create_jalr_instr(
 ) -> Instr:
     instr = Instr()
     instr.type2 = "JALR"
-    instr.type = "I_TYPE"
+    instr.type = "I-TYPE"
     instr.funct3 = 0b000
     instr.rs1 = rs1
     instr.imm_comp32 = imm_comp32
@@ -1040,7 +1091,7 @@ def create_lui_instr(
 ) -> Instr:
     instr = Instr()
     instr.type2 = "LUI"
-    instr.type = "U_TYPE"
+    instr.type = "U-TYPE"
     instr.rd = rd
     instr.imm_comp32 = imm_comp32
     instr.opcode = get_op_code(instr.type, instr.type2)
@@ -1055,7 +1106,7 @@ def create_auipc_instr(
 ) -> Instr:
     instr = Instr()
     instr.type2 = "AUIPC"
-    instr.type = "U_TYPE"
+    instr.type = "U-TYPE"
     instr.rd = rd
     instr.imm_comp32 = imm_comp32
     instr.opcode = get_op_code(instr.type, instr.type2)
@@ -1147,26 +1198,61 @@ def create_auipc_instr_from_bin(bin_str: str) -> Instr:
     instr = create_auipc_instr(rd, imm_comp32)
     return instr
 
+def create_instr_from_bin(bin_str: str, label:str = None, debug: bool = False) -> Instr:
+    if debug:
+        print(f"Creating instruction from binary string: {bin_str}")
+        print(f"Opcode bits: {bin_str[25:32]}")
+        if label is not None:
+            print(f"With label: {label}")
+
+    opcode = int(bin_str[25:32], 2)
+    type, type2 = get_types_from_opcode(opcode)
+    if type2 == "ALU" and type == "R-TYPE":
+        return create_alu_r_instr_from_bin(bin_str)
+    elif type2 == "ALU" and type == "I-TYPE":
+        return create_alu_i_instr_from_bin(bin_str)
+    elif type2 == "LOAD":
+        return create_load_instr_from_bin(bin_str)
+    elif type2 == "STORE":
+        return create_store_instr_from_bin(bin_str)
+    elif type2 == "BRANCH":
+        return create_branch_instr_from_bin(bin_str, label)
+    elif type2 == "JAL":
+        return create_jal_instr_from_bin(bin_str, label)
+    elif type2 == "JALR":
+        return create_jalr_instr_from_bin(bin_str, label)
+    elif type2 == "LUI":
+        return create_lui_instr_from_bin(bin_str)
+    elif type2 == "AUIPC":
+        return create_auipc_instr_from_bin(bin_str)
+    else:
+        raise ValueError(f"Invalid instruction binary string: {bin_str}, "
+                         f"opcode_int: {opcode}, opcode_7_bit_bin: {opcode:07b}, "
+                         f"type: {type}, type2: {type2}"
+                         )
+
 class Program:
     def __init__(
             self,
             data_mem_size: int = 1024,
-            instr_mem_size: int = 1024
+            instr_mem_space_byte_size: int = 1024, # in bytes
+            instr_mem_base_addr: int = 0
         ):
         self.register_file = Register_File()
         self.memory = Memory(data_mem_size)
         self.instructions = []
         self.pc = 0
-        self.instr_addr_range = (0, instr_mem_size-1)
+        self.instr_addr_range = (instr_mem_base_addr, 
+                                 instr_mem_base_addr + instr_mem_space_byte_size - 1)
 
     def gen_random_instr(self, max_attempts: int = 100) -> Instr:
         instr = Instr()
         instr.randomize_type2()
-        if instr.type2 == "ALU" and instr.type == "R_TYPE":
+        if instr.type2 == "ALU" and instr.type == "R-TYPE":
             instr.randomize_alu_r_instr(
                 self.register_file.committed_regs
             )
-        elif instr.type2 == "ALU" and instr.type == "I_TYPE":
+        elif instr.type2 == "ALU" and instr.type == "I-TYPE":
             instr.randomize_alu_i_instr(
                 self.register_file.committed_regs
             )
@@ -1230,8 +1316,8 @@ class Program:
         imm_value = instr.imm_comp32
         # addr = rs1_value + imm_value
         addr = comp32_add(rs1_value, imm_value)
-        data = self.memory.read(addr, self.load_width)
-        data = sign_extend_load(data, self.load_type, 32)
+        data = self.memory.read(addr, instr.load_width)
+        data = sign_extend_load(data, instr.load_type, 32)
         self.register_file.commit_reg(instr.rd, data)
         self.pc = comp32_add(self.pc, 4)
 
@@ -1240,7 +1326,7 @@ class Program:
         imm_value = instr.imm_comp32
         addr = comp32_add(rs1_value, imm_value)
         data = self.register_file.get_reg_value(instr.rs2)
-        self.memory.write(addr, data, self.store_width)
+        self.memory.write(addr, data, instr.store_width)
         self.pc = comp32_add(self.pc, 4)
 
     def register_branch_instr(self, instr: Instr):
@@ -1268,9 +1354,16 @@ class Program:
         self.register_file.commit_reg(instr.rd, comp32_add(self.pc, instr.imm_comp32))
         self.pc = comp32_add(self.pc, 4)
 
-    def register_instr(self, instr: Instr):
-        if instr.type2 == "ALU" and instr.type == "R_TYPE":   self.register_r_op(instr)
-        elif instr.type2 == "ALU" and instr.type == "I_TYPE": self.register_i_op(instr)
+    def register_instr(self, instr: Instr, debug: bool = True):
+        if debug:
+            print("----------------------------------------")
+            print(f"Executing instruction: {instr.gen_assembly_str()}")
+            print(f"PC before execution: {self.pc}")
+            print(f"Register file before execution: {self.register_file.print_register_state()}")
+            print(f"Memory valid range before execution: {self.memory.valid_address_ranges}")
+
+        if instr.type2 == "ALU" and instr.type == "R-TYPE":   self.register_r_op(instr)
+        elif instr.type2 == "ALU" and instr.type == "I-TYPE": self.register_i_op(instr)
         elif instr.type2 == "LOAD":     self.register_load_instr(instr)
         elif instr.type2 == "STORE":    self.register_store_instr(instr)
         elif instr.type2 == "BRANCH":   self.register_branch_instr(instr)
@@ -1281,7 +1374,7 @@ class Program:
         else:
             raise ValueError("Invalid instruction type or type2")
     
-    def gen_rand_program_seq(self, num_instr: int, max_attempts: int):
+    def gen_and_exec_rand_program_seq(self, num_instr: int, max_attempts: int):
         for _ in range(num_instr):
             instr = Instr()
             instr.randomize(
@@ -1293,9 +1386,37 @@ class Program:
             )
             self.register_instr(instr)
             self.instructions.append(instr)
+    
+    def exec(self):
+        for instr in self.instructions:
+            self.register_instr(instr)
 
+def grab_instrs_from_bin(path: str, max_num: int) -> list[str]:
+    instrs = []
+    with open(path, "rb") as f:
+        while len(instrs) < max_num:
+            instr_bytes = f.read(4)
+            if len(instr_bytes) < 4:
+                break
+            instr = int.from_bytes(instr_bytes, byteorder="little")
+            instr_str = f"{instr:032b}"
+            instrs.append(instr_str)
+    if len(instrs) == max_num:
+        print(f"Grabbed maximum number of instructions ({max_num}) from binary file ({path})")
+    return instrs
 
 if __name__ == "__main__":
     program = Program()
 
+    # load initial instructions and execute them
+    init_instr_str_seq = grab_instrs_from_bin("init.bin", 100)
+    init_instr_seq = [create_instr_from_bin(instr_str) for instr_str in init_instr_str_seq]
+    program.instructions.append(init_instr_seq)
+    program.exec()
 
+    NEED TO SEE IF SIMULATION MATCHES EXPECTED BEHAVIOR
+
+
+
+
+    
