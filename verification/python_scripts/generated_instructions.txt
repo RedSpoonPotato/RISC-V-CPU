@@ -1,0 +1,7 @@
+Generated random instruction sequence:
+
+AUIPC x22, 0 (note: this is full value)
+ADDI x22, x7, 200
+AND x27, x16, x0
+ORI x2, x20, 200
+AND x22, x15, x0
