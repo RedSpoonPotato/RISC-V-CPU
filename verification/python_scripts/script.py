@@ -1008,11 +1008,11 @@ class Instr:
         elif self.type2 == "LUI":
             instr_name = "LUI"
             operand_1 = f"x{self.rd}"
-            operand_2 = f"{comp32_to_signed_int(self.imm_comp32)} (note: this is full value)"
+            operand_2 = f"{comp32_to_signed_int(self.imm_comp32)}"
         elif self.type2 == "AUIPC":
             instr_name = "AUIPC"
             operand_1 = f"x{self.rd}"
-            operand_2 = f"{comp32_to_signed_int(self.imm_comp32)} (note: this is full value)"
+            operand_2 = f"{comp32_to_signed_int(self.imm_comp32)}"
 
         result = ""
         assert instr_name is not None, "Instruction name is None"
@@ -1477,14 +1477,15 @@ class Program:
                              num_instr: int, 
                              max_attempts: int, 
                              debug: int = 0, 
+                             append: bool = True,
                              frwd_instr_range_offset: int = 0,
                              prob_dict = None,
-                             imm_bounds: tuple[int, int] = (-1e10, 1e10)
+                             imm_bounds: tuple[int, int] = (-1e10, 1e10),
+                             max_cntrl_flow_gap: int = 0
                             ):
         assert (num_instr == 1 or prob_dict is not None, 
             "ENSURE num_instr > 1, cant generate unsafe (register based) accesses (load, store, jalr)")
         instr_list = []
-
         for instr_num in range(num_instr):
             if instr_num + frwd_instr_range_offset < num_instr:
                 working_instr_range = (
@@ -1498,10 +1499,10 @@ class Program:
 
         if debug >= 1:
             print(f"Generated random instruction sequence:")
-            print_to_file("generated_instructions.txt", "Generated random instruction sequence:\n\n", append=False)
+            print_to_file("generated_instructions.txt", "\nGenerated random instruction sequence:\n", append)
             for instr in instr_list:
                 print(instr.gen_assembly_str())
-                print_to_file("generated_instructions.txt", instr.gen_assembly_str() + "\n", append=True)
+                print_to_file("generated_instructions.txt", instr.gen_assembly_str() + "\n", append)
 
         self.instructions.extend(instr_list)
 
@@ -1560,15 +1561,20 @@ if __name__ == "__main__":
 
     safe_set = set(InstrType3) - {"LOAD", "STORE", "JALR"}
 
+    # delete file
+    with open("generated_instructions.txt", "w") as f:
+        f.write("")
+
     print("\nNow generating and executing random instruction sequence...\n")
-    for _ in range(5):
+    for _ in range(1):
         program.gen_rand_program_seq(
-            num_instr=5, 
+            num_instr=50, 
             max_attempts=100, 
             debug=2,
+            append=True,
             frwd_instr_range_offset=4,
-            prob_dict={"ALU_R": 0.3, "ALU_I": 0.3, "BRANCH": 0.2, "JAL": 0.1, "LUI": 0.05, "AUIPC": 0.05},
-            imm_bounds=(200, 200)
+            prob_dict={"ALU_R": 0.3, "ALU_I": 0.5, "BRANCH": 0, "JAL": 0, "LUI": 0.05, "AUIPC": 0.05},
+            imm_bounds=(-200, 200)
             )
         print("\nNow executing the generated random instruction sequence...\n")
         program.exec(max_cycles=2000, debug=1)
@@ -1578,14 +1584,13 @@ if __name__ == "__main__":
             debug=2,
             frwd_instr_range_offset=0,
             prob_dict={"LOAD", "STORE", "JALR"},
-            imm_bounds=(200, 200)
-
+            imm_bounds=(-200, 200)
         )
-        program.exec(max_cycles=2000, debug=1)
-        print("\nNow executing the generated random instruction sequence...\n")
+        # program.exec(max_cycles=2000, debug=1)
+        # print("\nNow executing the generated random instruction sequence...\n")
 
         
-    program.exec(max_cycles=2000, debug=1)    
+    # program.exec(max_cycles=2000, debug=1)    
 
     # NOTE: Currently, our jumps/branches only go backwards
 

@@ -32,18 +32,18 @@ mem_init_loop:
     # Uncommitted Registers left alone for your generator: 
     # x1-x4, x8-x9, x22-x31 (16 registers left completely uninitialized)
 
-    li x10, 0x11111111
-    li x11, 0x22222222
-    li x12, 0x33333333
-    li x13, 0x44444444
-    li x14, 0x55555555
-    li x15, 0x66666666
-    li x16, 0x77777777
-    li x17, 0x88888888
-    li x18, 0x99999999
-    li x19, 0xAAAAAAAA
-    li x20, 0xBBBBBBBB
-    li x21, 0xCCCCCCCC
+    li x10, 0x11
+    li x11, 0x22
+    li x12, 0x33
+    li x13, 0x44
+    li x14, 0x55
+    li x15, 0x66
+    li x16, 0x77
+    li x17, 0x88
+    li x18, 0x99
+    li x19, 0xAA
+    li x20, 0xBB
+    li x21, 0xCC
 
     # ==========================================
     # 3. HANDOFF TO RANDOM INSTRUCTIONS
