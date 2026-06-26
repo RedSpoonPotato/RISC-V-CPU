@@ -460,9 +460,11 @@ class MemoryByte:
         return self.value
 
 class Memory:
-    def __init__(self, size: int = 1024):
+    def __init__(self, size: int = 1024, base_addr: int = 0x0):
         self.data = [MemoryByte() for _ in range(size)]
         self.size = size
+        self.base_addr = base_addr
+        self.full_addr_range = (base_addr, base_addr + size - 1)
         self.valid_address_ranges = []
 
     def read(self, addr: int, byte_size: int) -> int:
@@ -477,8 +479,8 @@ class Memory:
         return value
 
     def write_byte(self, addr: int, value: int):
-        assert 0 <= addr < self.size, "Address out of bounds"
-        self.data[addr].write(value)
+        assert self.base_addr <= addr < self.base_addr + self.size, "Address out of bounds"
+        self.data[addr - self.base_addr].write(value)
         # insert/conjoin valid address ranges
         if not self.valid_address_ranges:
             self.valid_address_ranges.append((addr, addr))
@@ -531,9 +533,9 @@ class Memory:
 
     # not very efficient with use of write_byte
     def write(self, addr: int, value: int, byte_size: int):
-        assert 0 <= addr < self.size, "Base address out of bounds"
+        assert self.base_addr <= addr < self.base_addr + self.size, "Base address out of bounds"
         assert byte_size > 0, "Byte size must be positive"
-        assert addr + byte_size <= self.size, "Write range out of bounds"
+        assert addr + byte_size <= self.base_addr + self.size, "Write range out of bounds"
         # little endian
         for i in range(byte_size):
             self.write_byte(addr + i, (value >> (i * 8)) & 0xFF)
@@ -948,7 +950,7 @@ class Instr:
             self.randomize_load_instr(register_file, memory.valid_address_ranges, max_attempts, imm_bounds)
         elif self.type3 == "STORE":
             # self.randomize_store_instr(register_file, memory.valid_address_ranges, max_attempts)
-            self.randomize_store_instr(register_file, (0, memory.size - 1), max_attempts, imm_bounds)
+            self.randomize_store_instr(register_file, memory.full_addr_range, max_attempts, imm_bounds)
         elif self.type3 == "BRANCH":
             self.randomize_branch_instr(register_file, instr_address_range, pc, max_attempts, imm_bounds)
         elif self.type3 == "JAL":
@@ -1332,14 +1334,15 @@ def create_instr_from_bin(bin_str: str, label:str = None, debug: bool = False) -
 class Program:
     def __init__(
             self,
-            data_mem_size: int = 1024,
             instr_mem_space_byte_size: int = 1024, # in bytes
-            instr_mem_base_addr: int = 0
+            instr_mem_base_addr: int = 0,
+            data_mem_size: int = 1024,
+            data_mem_base_addr: int = 0
         ):
         self.register_file = Register_File()
-        self.memory = Memory(data_mem_size)
+        self.memory = Memory(data_mem_size, data_mem_base_addr)
         self.instructions = []
-        self.pc = 0
+        self.pc = instr_mem_base_addr
         self.instr_addr_range = (instr_mem_base_addr, 
                                  instr_mem_base_addr + instr_mem_space_byte_size - 1)
 
@@ -1450,6 +1453,9 @@ class Program:
         if self.pc < self.instr_addr_range[0] or self.pc > self.instr_addr_range[1]:
             print(f"PC {self.pc} out of instruction memory range {self.instr_addr_range}, halting execution")
             return -1
+        if self.pc + 4 > self.instr_addr_range[1]:
+            print(f"PC {self.pc} points to instruction that would go out of instruction memory range {self.instr_addr_range}, halting execution")
+            return -1
         instr_index = (self.pc - self.instr_addr_range[0]) // 4
         if instr_index >= len(self.instructions):
             print(f"PC {self.pc} points to instruction index {instr_index} which is out of range of loaded instructions, halting execution")
@@ -1550,14 +1556,23 @@ def grab_instrs_from_bin(path: str, max_num: int) -> list[str]:
     return instrs
 
 if __name__ == "__main__":
-    program = Program()
+    program = Program(
+        instr_mem_space_byte_size=0x10000,
+        instr_mem_base_addr=0x80000000,
+        data_mem_size=0x10000,
+        data_mem_base_addr=0x80010000
+    )
 
     # load initial instructions and execute them
-    init_instr_str_seq = grab_instrs_from_bin("init.bin", 100)
+    init_instr_str_seq = grab_instrs_from_bin("bins/init_py.bin", 100)
     init_instr_seq = [create_instr_from_bin(instr_str) for instr_str in init_instr_str_seq]
     program.instructions.extend(init_instr_seq)
     print(f"Program instruction length: {len(program.instructions)}\n")
     program.exec(max_cycles=2000, debug=0)
+
+    # remove later
+    print("\nExiting after initalization, change later")
+    sys.exit()
 
     safe_set = set(InstrType3) - {"LOAD", "STORE", "JALR"}
 

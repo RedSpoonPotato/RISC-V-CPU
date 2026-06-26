@@ -1,6 +1,10 @@
 // package general_pkg;
 package general_pkg;
 
+    // !!! PLEASE CHANGE THESE AFTER DEBUGGING
+    localparam INSTR_ADDR_OFFSET = 32'h80000000;
+    localparam DATA_ADDR_OFFSET  = 32'h80010000;
+
     // CHECK ALL OF THEEEESE
     localparam DATA_WIDTH = 32;
     localparam IQ_SIZE = 16;

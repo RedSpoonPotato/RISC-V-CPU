@@ -1,0 +1,29 @@
+cases:
+
+unopitmized for/while:
+	branch forward
+	jump back
+
+guarded do while (optmized for/while)
+	branch forward (0-case)
+	branch back
+
+if statement
+	branch forward (if no)
+
+if-else if- else if
+	branch forward (to else if)
+	jump to end
+	branch forward (to 2nd else if)
+	jump to end
+	..
+	
+	
+For branch backwards, need a way to ensure that we will evntually get past it
+for jal backwards, need a jal to jump forward, or a branch to jump forward
+
+maybe for now, skip jalr
+need a way to ensure that branches (probably) branch one way, each result having atleast a 5% chance of branching. 
+How do I guarantee this?: I guess if we have a branch, we look at the variables of the branch, and put some
+	immediate instructions that write to it (suhc as an addi instr that makes 1 variable increment closer)
+	elimnate call instr between that write to the toher registers

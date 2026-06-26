@@ -158,6 +158,7 @@ class cpu_scoreboard extends uvm_scoreboard;
         // end
 
         // plan:
+        
         /*
             check spike trace
             extract pc value, possible destination register and value
@@ -171,7 +172,7 @@ class cpu_scoreboard extends uvm_scoreboard;
 
         string trace_line;
         int read_status;
-
+        
         read_status = $fgets(trace_line, file_descriptor);
         current_line_num++;
 

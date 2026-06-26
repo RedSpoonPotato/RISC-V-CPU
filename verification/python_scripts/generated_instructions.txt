@@ -1,55 +1,52 @@
 
 Generated random instruction sequence:
-XORI x25, x17, -194
-ANDI x13, x20, 27
-XORI x30, x5, -196
-SLL x5, x5, x20
-SLTUI x20, x14, 51
-AND x18, x10, x17
-XOR x28, x16, x13
-ORI x27, x12, 132
-ORI x10, x0, 138
-SRL x26, x15, x0
-XOR x6, x10, x15
-SLTU x15, x12, x20
-SLL x18, x14, x12
-AUIPC x15, -4096
-SLTUI x4, x11, 76
-ORI x23, x17, -110
-OR x18, x0, x14
-ADDI x18, x10, -91
-SLLI x22, x17, 189
-AUIPC x2, 0
-ADD x20, x19, x7
-XOR x22, x7, x19
-SRLI x13, x14, 117
-SLTI x0, x13, 169
-SRAI x11, x21, -103
-OR x18, x17, x14
-LUI x24, -4096
-AUIPC x4, -4096
-SLL x16, x7, x16
-SLTUI x19, x19, 108
-XORI x7, x5, 165
-SLLI x6, x11, 150
-SLTI x12, x5, -142
-SRAI x16, x14, 141
-SRAI x5, x17, 182
-ADD x10, x13, x11
-SRLI x31, x13, 70
-XORI x7, x17, 117
-SLT x19, x11, x7
-SLLI x18, x7, -103
-SRAI x27, x5, 30
-AUIPC x5, -4096
-AUIPC x1, 0
-SLT x27, x14, x18
-SRAI x8, x21, 1
-ANDI x26, x11, -23
-XORI x21, x18, 76
-SLTI x26, x17, 165
-ADD x25, x13, x19
-ANDI x23, x17, 64
-
-Generated random instruction sequence:
-JALR x3, 28(x13)
+SLT x29, x22, x15
+SLLI x17, x14, 115
+SLL x16, x0, x10
+SLL x28, x17, x5
+SLLI x9, x23, -98
+SRAI x4, x13, 134
+ORI x6, x13, 80
+SLT x0, x23, x15
+SLTUI x7, x20, -185
+SUB x5, x21, x15
+OR x0, x20, x22
+SRL x12, x6, x19
+SUB x16, x18, x22
+SLTI x16, x10, 195
+LUI x9, -4096
+SRAI x20, x17, -193
+LUI x13, 0
+AND x29, x12, x12
+SLL x24, x22, x16
+SLLI x1, x15, -36
+ORI x5, x13, -114
+ORI x6, x10, 25
+ADDI x25, x19, -14
+AND x5, x15, x21
+SRA x14, x5, x14
+SLT x25, x11, x15
+SRL x11, x11, x14
+AND x10, x5, x15
+SLTI x13, x0, -15
+ORI x10, x19, -128
+SLLI x18, x17, -94
+ADDI x5, x6, -23
+SUB x29, x11, x18
+AUIPC x10, 0
+SLTU x29, x12, x6
+SRL x10, x23, x5
+ADDI x26, x7, -110
+SRA x12, x16, x6
+ADD x13, x21, x23
+SLTUI x28, x22, 46
+ADDI x9, x15, 87
+SLTI x27, x16, 121
+ORI x27, x11, -71
+SRLI x13, x18, 190
+AND x5, x6, x5
+SLTU x19, x18, x0
+SUB x9, x18, x18
+XORI x11, x10, 31
+SRA x5, x15, x10
+ADDI x11, x13, -148

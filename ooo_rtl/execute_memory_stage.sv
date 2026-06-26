@@ -463,6 +463,11 @@ import writeback_pkg::*;
         end
     end    
 
+    logic [DATA_WIDTH-1:0] rd_addr_adj;
+    logic [DATA_WIDTH-1:0] wr_addr_adj;
+    assign rd_addr_adj = addr - DATA_ADDR_OFFSET;
+    assign wr_addr_adj = store_buffer_commit_pkt_i.addr - DATA_ADDR_OFFSET;
+
     sram_sync_read_dual_port_vari_width_write #(
     .ADDR_WIDTH(MEM_INDEX_WIDTH),
     .DATA_WIDTH(DATA_WIDTH)
@@ -470,8 +475,10 @@ import writeback_pkg::*;
         .clk(clk),
         // .we(en_i && store_i),
         .vec_wr_en(store_buffer_commit_pkt_i.vec_wr_en),
-        .rd_addr(addr[MEM_INDEX_WIDTH-1+2:2]),
-        .wr_addr(store_buffer_commit_pkt_i.addr[MEM_INDEX_WIDTH-1+2:2]),
+        .rd_addr(rd_addr_adj[MEM_INDEX_WIDTH-1+2:2]),
+        .wr_addr(wr_addr_adj[MEM_INDEX_WIDTH-1+2:2]),
+        // .rd_addr(addr[MEM_INDEX_WIDTH-1+2:2]),
+        // .wr_addr(store_buffer_commit_pkt_i.addr[MEM_INDEX_WIDTH-1+2:2]),
         .din(store_buffer_commit_pkt_i.data),
         .dout(loaded_data)
     );

@@ -2,6 +2,7 @@
     For now, will disable "instr_fetch_ctrl_pkt_i" port for easy synthesis.
     Later, will make a higher module containing core module that also is built for axi master interface to access DDR memory on soc.
 
+    Change addr offsets in general_utils.sv!!
 */
 
 module core 

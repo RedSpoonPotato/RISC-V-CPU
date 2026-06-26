@@ -114,6 +114,8 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
 
     logic [DATA_WIDTH-1:0] instr_mem_addr;
     assign instr_mem_addr = instr_fetch_ctrl_pkt_i.valid ? instr_fetch_ctrl_pkt_i.instr_addr : pc;
+    logic [DATA_WIDTH-1:0] instr_mem_addr_adj;
+    assign instr_mem_addr_adj = instr_mem_addr - INSTR_ADDR_OFFSET;
 
     // synthesizes to distrbuted ram
     sram_async_read #(
@@ -123,7 +125,8 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
     ) instr_memory (
         .clk(clk),
         .we(instr_fetch_ctrl_pkt_i.valid),
-        .addr(instr_mem_addr[DATA_WIDTH-1:2]),
+        // .addr(instr_mem_addr[DATA_WIDTH-1:2]),
+        .addr(instr_mem_addr_adj[DATA_WIDTH-1:2]),
         .din(instr_fetch_ctrl_pkt_i.instr_in),
         .dout(if_output_pkt_o.instr)
     );
