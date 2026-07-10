@@ -26,5 +26,6 @@ mem_init_loop:
     li x19, 0xAA
     li x20, 0xBB
     li x21, 0xCC
-    li x22, 0xFFFF
-    li x23, 0xF000
+    jal x22,  test_step
+    li x23, 0xFFFF      # Should skip
+test_step:

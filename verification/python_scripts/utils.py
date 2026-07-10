@@ -32,37 +32,47 @@ def get_op_code(type: str, type2: str):
     elif (type2 == "AUIPC"):
         opcode = 0b0010111
     return opcode
-def get_types_from_opcode(opcode: str) -> tuple[str, str]:
+def get_types_from_opcode(opcode: str) -> tuple[str, str, str]:
     type = "-Invalid_Type-"
     type2 = "-Invalid_Type2-"
+    type3 = "-Invalid_Type3-"
     if opcode == 0b0110011:
         type = "R-TYPE"
         type2 = "ALU"
+        type3 = "ALU_R"
     elif opcode == 0b0010011:
         type = "I-TYPE"
         type2 = "ALU"
+        type3 = "ALU_I"
     elif opcode == 0b0000011:
         type = "I-TYPE"
         type2 = "LOAD"
+        type3 = "LOAD"
     elif opcode == 0b0100011:
         type = "S-TYPE"
         type2 = "STORE"
+        type3 = "STORE"
     elif opcode == 0b1100011:
         type = "B-TYPE"
         type2 = "BRANCH"
+        type3 = "BRANCH"
     elif opcode == 0b1101111:
         type = "J-TYPE"
         type2 = "JAL"
+        type3 = "JAL"
     elif opcode == 0b1100111:
         type = "I-TYPE"
         type2 = "JALR"
+        type3 = "JALR"
     elif opcode == 0b0110111:
         type = "U-TYPE"
         type2 = "LUI"
+        type3 = "LUI"
     elif opcode == 0b0010111:
         type = "U-TYPE"
         type2 = "AUIPC"
-    return (type, type2)
+        type3 = "AUIPC"
+    return (type, type2, type3)
 
 # ALU R-TYPE Utils
 ALU_R_ops = ["ADD", "SUB", "XOR", "OR", "AND", "SLL", "SRL", "SRA", "SLT", "SLTU"]
@@ -1035,8 +1045,9 @@ def create_alu_r_instr(
         rs2: int
 ) -> Instr:
     instr = Instr()
-    instr.type2 = "ALU"
     instr.type = "R-TYPE"
+    instr.type2 = "ALU"
+    instr.type3 = "ALU_R"
     instr.alu_r_op = alu_r_op
     instr.funct3 = ALU_R_funct3_map[alu_r_op]
     instr.funct7 = ALU_R_funct7_map[alu_r_op]
@@ -1055,8 +1066,9 @@ def create_alu_i_instr(
         imm_comp32: int
 ) -> Instr:
     instr = Instr()
-    instr.type2 = "ALU"
     instr.type = "I-TYPE"
+    instr.type2 = "ALU"
+    instr.type3 = "ALU_I"
     instr.alu_i_op = alu_i_op
     instr.funct3 = ALU_I_funct3_map[alu_i_op]
     instr.rs1 = rs1
@@ -1074,8 +1086,9 @@ def create_load_instr(
         imm_comp32: int
 ) -> Instr:
     instr = Instr()
-    instr.type2 = "LOAD"
     instr.type = "I-TYPE"
+    instr.type2 = "LOAD"
+    instr.type3 = "LOAD"
     instr.load_type = load_type
     instr.funct3 = LOAD_funct3_map[load_type]
     instr.load_width = LOAD_ops_byte_read_sizing_map[load_type]
@@ -1094,8 +1107,9 @@ def create_store_instr(
         imm_comp32: int
 ) -> Instr:
     instr = Instr()
-    instr.type2 = "STORE"
     instr.type = "S-TYPE"
+    instr.type2 = "STORE"
+    instr.type3 = "STORE"
     instr.store_type = store_type
     instr.funct3 = STORE_funct3_map[store_type]
     instr.store_width = STORE_ops_byte_write_sizing_map[store_type]
@@ -1117,8 +1131,9 @@ def create_branch_instr(
         label: str = None
 ) -> Instr:
     instr = Instr()
-    instr.type2 = "BRANCH"
     instr.type = "B-TYPE"
+    instr.type2 = "BRANCH"
+    instr.type3 = "BRANCH"
     instr.branch_op = branch_type
     instr.funct3 = BRANCH_funct3_map[branch_type]
     instr.rs1 = rs1
@@ -1150,8 +1165,9 @@ def create_jal_instr(
         label: str = None
 ) -> Instr:
     instr = Instr()
-    instr.type2 = "JAL"
     instr.type = "J-TYPE"
+    instr.type2 = "JAL"
+    instr.type3 = "JAL"
     instr.rd = rd
     instr.imm_comp32 = imm_comp32
     instr.opcode = get_op_code(instr.type, instr.type2)
@@ -1172,8 +1188,9 @@ def create_jalr_instr(
         label: str = None
 ) -> Instr:
     instr = Instr()
-    instr.type2 = "JALR"
     instr.type = "I-TYPE"
+    instr.type2 = "JALR"
+    instr.type3 = "JALR"
     instr.funct3 = 0b000
     instr.rs1 = rs1
     instr.imm_comp32 = imm_comp32
@@ -1190,8 +1207,9 @@ def create_lui_instr(
         imm_comp32: int
 ) -> Instr:
     instr = Instr()
-    instr.type2 = "LUI"
     instr.type = "U-TYPE"
+    instr.type2 = "LUI"
+    instr.type3 = "LUI"
     instr.rd = rd
     instr.imm_comp32 = imm_comp32
     instr.opcode = get_op_code(instr.type, instr.type2)
@@ -1205,8 +1223,9 @@ def create_auipc_instr(
         imm_comp32: int
 ) -> Instr:
     instr = Instr()
-    instr.type2 = "AUIPC"
     instr.type = "U-TYPE"
+    instr.type2 = "AUIPC"
+    instr.type3 = "AUIPC"
     instr.rd = rd
     instr.imm_comp32 = imm_comp32
     instr.opcode = get_op_code(instr.type, instr.type2)
@@ -1306,7 +1325,7 @@ def create_instr_from_bin(bin_str: str, label:str = None, debug: bool = False) -
             print(f"With label: {label}")
 
     opcode = int(bin_str[25:32], 2)
-    type, type2 = get_types_from_opcode(opcode)
+    type, type2, type3 = get_types_from_opcode(opcode)
     if type2 == "ALU" and type == "R-TYPE":
         return create_alu_r_instr_from_bin(bin_str)
     elif type2 == "ALU" and type == "I-TYPE":
@@ -1328,7 +1347,7 @@ def create_instr_from_bin(bin_str: str, label:str = None, debug: bool = False) -
     else:
         raise ValueError(f"Invalid instruction binary string: {bin_str}, "
                          f"opcode_int: {opcode}, opcode_7_bit_bin: {opcode:07b}, "
-                         f"type: {type}, type2: {type2}"
+                         f"type: {type}, type2: {type2}, type3: {type3}"
                          )
 
 class Program:

@@ -24,8 +24,8 @@ class cpu_commit_pkt extends uvm_sequence_item;
     // bit [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
     // store_buffer_commit_pkt_t
     bit store_en;
-    bit [DATA_WIDTH-1:0] addr;
-    bit [DATA_WIDTH-1:0] data;
+    bit [DATA_WIDTH-1:0] store_addr;
+    bit [DATA_WIDTH-1:0] store_data;
     bit [DATA_WIDTH-1:0] pc;
 
     `uvm_object_utils_begin(cpu_commit_pkt)
@@ -33,8 +33,8 @@ class cpu_commit_pkt extends uvm_sequence_item;
         `uvm_field_int(dest_valid, UVM_ALL_ON)
         `uvm_field_int(arch_reg_addr, UVM_ALL_ON)
         `uvm_field_int(store_en, UVM_ALL_ON)
-        `uvm_field_int(addr, UVM_ALL_ON)
-        `uvm_field_int(data, UVM_ALL_ON)
+        `uvm_field_int(store_addr, UVM_ALL_ON)
+        `uvm_field_int(store_data, UVM_ALL_ON)
         `uvm_field_int(pc, UVM_ALL_ON)
     `uvm_object_utils_end
 
@@ -68,8 +68,8 @@ class cpu_commit_monitor extends uvm_monitor;
                 commit_pkt.dest_valid = vif.commit_decode_pkt.dest_valid;
                 commit_pkt.arch_reg_addr = vif.commit_decode_pkt.arch_reg_addr;
                 commit_pkt.store_en = vif.store_buffer_commit_pkt.en;
-                commit_pkt.addr = vif.store_buffer_commit_pkt.addr;
-                commit_pkt.data = vif.store_buffer_commit_pkt.data;
+                commit_pkt.store_addr = vif.store_buffer_commit_pkt.addr;
+                commit_pkt.store_data = vif.store_buffer_commit_pkt.data;
                 commit_pkt.pc = vif.pc;
                 ap.write(commit_pkt);
 
@@ -156,7 +156,7 @@ class cpu_scoreboard extends uvm_scoreboard;
         // else
         //     `uvm_error("FAIL", $sformatf("Mismatch! a=%0d b=%0d expected=%0d actual=%0d", exp_item.a, exp_item.b, (exp_item.a+exp_item.b), item.y))
         // end
-
+    
         // plan:
         
         /*
