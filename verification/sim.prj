@@ -1,0 +1,14 @@
+sv work ../ooo_rtl/utils/general_utils.sv
+sv work ../ooo_rtl/utils/instr_fetch_utils.sv
+sv work ../ooo_rtl/utils/writeback_utils.sv
+sv work ../ooo_rtl/utils/decode_utils.sv
+sv work ../ooo_rtl/utils/issue_utils.sv
+sv work ../ooo_rtl/utils/exec_mem_utils.sv
+sv work ../ooo_rtl/utils/core_utils.sv
+sv work ../ooo_rtl/instr_fetch_stage.sv
+sv work ../ooo_rtl/decode_stage.sv
+sv work ../ooo_rtl/issue_stage.sv
+sv work ../ooo_rtl/execute_memory_stage.sv
+sv work ../ooo_rtl/writeback_stage.sv
+sv work ../ooo_rtl/core.sv
+sv work ./uvm_files/tb_top.sv

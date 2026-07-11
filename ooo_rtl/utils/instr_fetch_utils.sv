@@ -21,7 +21,10 @@ package instr_fetch_pkg;
     localparam INSTR_MEM_ENTRY_NUM = 1024;
     localparam INSTR_MEM_INDEX_WIDTH = $clog2(INSTR_MEM_ENTRY_NUM);
 
-    localparam INSTR_MEM_FILE = "memory/instr_mem_simple.mem";
+    // may have to change back for synth
+    // localparam INSTR_MEM_FILE = "memory/instr_mem_simple.mem";
+    localparam INSTR_MEM_FILE = "../memory/instr_mem_simple.mem";
+    localparam INSTR_ADDR_OFFSET = 32'h80010100;
 
     typedef struct packed {
         logic wr_en;

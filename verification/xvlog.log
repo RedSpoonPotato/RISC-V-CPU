@@ -1,0 +1,47 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/utils/general_utils.sv" into library work
+INFO: [VRFC 10-311] analyzing module fifo_modded
+INFO: [VRFC 10-311] analyzing module register_file_sync_read
+INFO: [VRFC 10-311] analyzing module register_file_async_read
+INFO: [VRFC 10-311] analyzing module sram_sync_read_dual_port_vari_width_write
+INFO: [VRFC 10-311] analyzing module sram_sync_read_dual_port
+INFO: [VRFC 10-311] analyzing module sram_sync_read
+INFO: [VRFC 10-311] analyzing module sram_async_read
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/utils/instr_fetch_utils.sv" into library work
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/utils/writeback_utils.sv" into library work
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/utils/decode_utils.sv" into library work
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/utils/issue_utils.sv" into library work
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/utils/exec_mem_utils.sv" into library work
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/utils/core_utils.sv" into library work
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/instr_fetch_stage.sv" into library work
+INFO: [VRFC 10-311] analyzing module instr_fetch_stage
+INFO: [VRFC 10-311] analyzing module trgt_shift_register
+INFO: [VRFC 10-311] analyzing module branch_predictor
+INFO: [VRFC 10-311] analyzing module trgt_buffer
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/decode_stage.sv" into library work
+INFO: [VRFC 10-311] analyzing module decode_stage
+INFO: [VRFC 10-311] analyzing module free_list
+INFO: [VRFC 10-311] analyzing module rename_table_async_read
+INFO: [VRFC 10-311] analyzing module issue_queue
+INFO: [VRFC 10-311] analyzing module mini_scoreboard
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/issue_stage.sv" into library work
+INFO: [VRFC 10-311] analyzing module issue_stage
+INFO: [VRFC 10-311] analyzing module pc_buffer
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv" into library work
+INFO: [VRFC 10-311] analyzing module execute_memory_stage
+INFO: [VRFC 10-311] analyzing module funct_unit_scoreboard
+INFO: [VRFC 10-311] analyzing module auipc_stage
+INFO: [VRFC 10-311] analyzing module jalr_stage
+INFO: [VRFC 10-311] analyzing module branch_unit
+INFO: [VRFC 10-311] analyzing module branch_stage
+INFO: [VRFC 10-311] analyzing module mem_stage
+INFO: [VRFC 10-311] analyzing module alu
+INFO: [VRFC 10-311] analyzing module alu_stage
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/writeback_stage.sv" into library work
+INFO: [VRFC 10-311] analyzing module writeback_stage
+INFO: [VRFC 10-311] analyzing module mem_addr_buffer
+INFO: [VRFC 10-311] analyzing module spec_exec_answer_buffer
+INFO: [VRFC 10-311] analyzing module rob_buffer
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/ooo_rtl/core.sv" into library work
+INFO: [VRFC 10-311] analyzing module core
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv" into library work
+INFO: [VRFC 10-311] analyzing module tb_top

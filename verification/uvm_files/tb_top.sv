@@ -16,7 +16,7 @@ class cpu_commit_pkt extends uvm_sequence_item;
     bit wr_en;
     bit dest_valid;
     bit [4:0] arch_reg_addr;
-    bit store_en;
+    bit [(DATA_WIDTH/8)-1:0] store_en;
     bit [DATA_WIDTH-1:0] store_addr;
     bit [DATA_WIDTH-1:0] store_data;
     bit [DATA_WIDTH-1:0] next_pc;
@@ -66,7 +66,7 @@ class cpu_commit_monitor extends uvm_monitor;
                 commit_pkt.wr_en = 1;
                 commit_pkt.dest_valid = vif.commit_decode_pkt.dest_valid;
                 commit_pkt.arch_reg_addr = vif.commit_decode_pkt.arch_reg_addr;
-                commit_pkt.store_en = vif.store_buffer_commit_pkt.en;
+                commit_pkt.store_en = vif.store_buffer_commit_pkt.vec_wr_en;
                 commit_pkt.store_addr = vif.store_buffer_commit_pkt.addr;
                 commit_pkt.store_data = vif.store_buffer_commit_pkt.data;
                 commit_pkt.next_pc = vif.pc;
@@ -122,7 +122,7 @@ class cpu_scoreboard extends uvm_scoreboard;
     // in_export  = new("in_export", this);
     // out_export = new("out_export", this);
         commit_pkt_export = new("commit_pkt_export", this);
-        file_h = $fopen("verification/python_scripts/trace_readable.log", "r");
+        file_h = $fopen("python_scripts/trace_readable.log", "r");
         if (file_h == 0) begin
             `uvm_fatal("FILE_ERR", "Failed to open file")
         end
@@ -130,6 +130,9 @@ class cpu_scoreboard extends uvm_scoreboard;
 
   // Called when Input Monitor sees an instruction entering the pipeline
     virtual function void write(cpu_commit_pkt pkt);
+        cpu_commit_pkt exp_pkt;
+        string trace_line;
+        int parsing_code;
         if (!pkt.wr_en) begin
             return;
         end
@@ -137,10 +140,7 @@ class cpu_scoreboard extends uvm_scoreboard;
             `uvm_error("TRACE_ERR", $sformatf("RTL committed an instruction, but trace file is empty at line %0d", current_line_num))
             return;
         end
-        cpu_commit_pkt exp_pkt;
         exp_pkt = cpu_commit_pkt::type_id::create("exp_pkt");
-        string trace_line;
-        int parsing_code;
         void'($fgets(trace_line, file_h)); // skip every other line
         void'($fgets(trace_line, file_h));
         current_line_num += 2;
@@ -173,7 +173,8 @@ class cpu_scoreboard extends uvm_scoreboard;
         super.check_phase(phase);
         if (!$feof(file_h)) begin
             `uvm_info("SCOREBOARD", 
-                        $sformatf("Test ended, but trace file still has unread instructions! Stopped at line %0d.", current_line_num))
+                        $sformatf("Test ended, but trace file still has unread instructions! Stopped at line %0d.", current_line_num),
+                        UVM_LOW)
             end else begin
             `uvm_info("SCOREBOARD", "Successfully verified all lines in the trace file.", UVM_LOW)
         end    
@@ -184,7 +185,7 @@ endclass
 class riscv_env extends uvm_env;
     `uvm_component_utils(riscv_env)
     cpu_commit_agent cpu_agent;
-    cpu_scoreboard cpu_scoreboard;
+    cpu_scoreboard scoreboard;
 
     function new(string name, uvm_component parent);
         super.new(name, parent);
@@ -194,12 +195,12 @@ class riscv_env extends uvm_env;
         super.build_phase(phase);
         uvm_config_db#(uvm_active_passive_enum)::set(this, "cpu_agent", "is_active", UVM_PASSIVE);
         cpu_agent = cpu_commit_agent::type_id::create("cpu_agent", this);
-        cpu_scoreboard = cpu_scoreboard::type_id::create("cpu_scoreboard", this);
+        scoreboard = cpu_scoreboard::type_id::create("cpu_scoreboard", this);
     endfunction
 
     function void connect_phase(uvm_phase phase);
         super.connect_phase(phase);
-        cpu_agent.monitor.ap.connect(cpu_scoreboard.commit_pkt_export); 
+        cpu_agent.monitor.ap.connect(scoreboard.commit_pkt_export); 
     endfunction
 
 endclass

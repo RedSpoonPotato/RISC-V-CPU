@@ -34,4 +34,8 @@ package core_pkg;
     export exec_mem_pkg::mem_addr_pkt_t;
     export writeback_pkg::store_buffer_commit_pkt_t;
 
+    // for tb_top
+    import general_pkg::DATA_WIDTH;
+    export general_pkg::DATA_WIDTH;
+
 endpackage

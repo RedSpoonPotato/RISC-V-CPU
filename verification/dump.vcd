@@ -1,0 +1,839 @@
+$date
+   Sat Jul 11 18:06:12 2026
+$end
+
+$version
+  2025.1.0
+  $dumpfile ("dump.vcd") 
+$end
+
+$timescale
+  1ps
+$end
+
+$scope module tb_top $end
+$var reg 1 ! clk $end
+$var reg 1 " rst $end
+$scope module commit_if $end
+$var wire 1 # clk $end
+$var wire 1 $ rst $end
+$var reg 20 % commit_decode_pkt $end
+$var reg 68 & store_buffer_commit_pkt $end
+$var reg 32 ' pc [31:0] $end
+$upscope $end
+$scope module dut $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var reg 20 * commit_decode_pkt $end
+$var reg 65 + instr_fetch_ctrl_pkt_i $end
+$var reg 1 , decode_stall $end
+$var reg 1 - issue_stall $end
+$var reg 1 . wb_stall $end
+$var reg 1 / stall $end
+$var reg 1 0 decode_is_spec_instr $end
+$var reg 65 1 instr_fetch_output_pkt $end
+$var reg 35 2 commit_spec_exec_answr_pkt $end
+$var reg 1 3 instr_fetch_exception $end
+$var reg 33 4 writeback_mem_addr_conflict_pkt $end
+$var reg 11 5 commit_rt_iq_update_pkt $end
+$var reg 74 6 decode_instr $end
+$var reg 20 7 decode_rob_instance_pkt $end
+$var reg 1 8 decode_spec_exec_buffer_instance_pkt $end
+$var reg 36 9 decode_pc_buff_inst $end
+$var reg 1 : decode_mem_buff_wr_en $end
+$var reg 163 ; issue_fetch_pkt $end
+$var reg 38 < writeback_phys_reg_pkt $end
+$var reg 39 = exec_mem_stage_pkt $end
+$var reg 38 > exec_mem_spec_exec_answr $end
+$var reg 114 ? mem_op_addr_pkt $end
+$var reg 68 @ store_buffer_commit_pkt $end
+$scope module instr_fetch_stage_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var reg 65 + instr_fetch_ctrl_pkt_i $end
+$var wire 1 A is_spec_instr_i $end
+$var reg 65 1 if_output_pkt_o $end
+$var reg 35 2 spec_exec_answr_pkt_i $end
+$var reg 1 3 exception_o $end
+$var wire 1 B stall_i $end
+$var reg 33 4 mem_addr_conflict_pkt_i $end
+$var reg 32 C pc [31:0] $end
+$var reg 1 D crrct_trgt_en $end
+$var reg 1 E bp_hit $end
+$var reg 1 F bp_pred $end
+$var reg 1 G tb_hit $end
+$var reg 32 H tb_predict_trgt [31:0] $end
+$var reg 32 I instr_mem_addr [31:0] $end
+$var reg 32 J instr_mem_addr_adj [31:0] $end
+$var reg 65 K shift_reg_pkt_2 $end
+$var reg 1 L trgt_shift_buff_full $end
+$var reg 1 M branch_mispredict $end
+$var reg 1 N trgt_mispredict $end
+$var reg 1 O jump_mispredict $end
+$var reg 1 P exception_internal $end
+$var reg 1 Q master_stall $end
+$scope module branch_predictor_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var wire 32 R curr_addr_i [31:0] $end
+$var reg 1 E hit_o $end
+$var reg 1 F pred_o $end
+$var wire 1 S write_en_i $end
+$var wire 1 T correct_result_i $end
+$var wire 32 U old_pc_i [31:0] $end
+$var reg 24 V curr_tag [23:0] $end
+$var reg 6 W curr_index [5:0] $end
+$var reg 1 X \DirectMapped.miss_condition  $end
+$scope begin DirectMapped.CheckingAPrediction $end
+$scope begin Block355_300 $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module trgt_buffer_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var wire 32 Y curr_addr_i [31:0] $end
+$var reg 1 G hit_o $end
+$var reg 32 H predict_trgt_o [31:0] $end
+$var wire 1 Z write_en_i $end
+$var wire 32 [ correct_trgt_i [31:0] $end
+$var wire 32 U old_pc_i [31:0] $end
+$var reg 24 \ curr_tag [23:0] $end
+$var reg 6 ] curr_index [5:0] $end
+$var reg 1 ^ \DirectMapped.miss_condition  $end
+$scope begin DirectMapped.CheckingAPrediction $end
+$upscope $end
+$upscope $end
+$scope module instr_memory $end
+$var wire 1 ( clk $end
+$var wire 1 _ we $end
+$var wire 10 ` addr [9:0] $end
+$var wire 32 a din [31:0] $end
+$var reg 32 b dout [31:0] $end
+$upscope $end
+$scope module trgt_shift_register_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var wire 32 c predict_trgt_i [31:0] $end
+$var wire 1 d brnch_pred_i $end
+$var wire 32 e old_pc_i [31:0] $end
+$var wire 1 A is_spec_instr_i $end
+$var wire 1 f rd_en_i $end
+$var reg 65 K shift_reg_pkt_2_o $end
+$var reg 1 L full_o $end
+$var reg 65 g predicted_trgt_and_pred_pkt $end
+$var reg 65 h predicted_trgt_and_pred_pkt_ff $end
+$var reg 65 i xilinx_isim_temp_307_ln239_blkAssignCaching $end
+$scope module shift_reg_fifo $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var wire 65 j data_i [64:0] $end
+$var wire 1 f rd_en_i $end
+$var wire 1 A wr_en_i $end
+$var reg 65 K data_o [64:0] $end
+$var reg 1 L full_o $end
+$var reg 1 k empty_o $end
+$var reg 3 l wr_ptr [2:0] $end
+$var reg 3 m rd_ptr [2:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module decode_stage_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var reg 65 1 if_input_i $end
+$var reg 20 * decode_commit_pkt_i $end
+$var reg 11 5 rt_iq_update_pkt_i $end
+$var reg 74 6 decode_instr_o $end
+$var reg 20 7 rob_instance_pkt_o $end
+$var reg 1 0 is_spec_instr_o $end
+$var reg 1 8 spec_exec_buffer_instance_pkt_o $end
+$var reg 36 9 pc_buff_inst_o $end
+$var reg 1 : mem_buff_wr_en_o $end
+$var wire 1 n exception_i $end
+$var reg 1 , stall_o $end
+$var reg 65 o if_input_ff $end
+$var reg 11 p rt_iq_update_pkt_ff $end
+$var reg 1 q exception_ff $end
+$var reg 1 r free_list_rd_en $end
+$var reg 5 s free_list_free_ptr [4:0] $end
+$var reg 1 t free_list_empty $end
+$var reg 5 u rename_table_prf_dest_ptr [4:0] $end
+$var reg 5 v rename_table_arf_ptr [4:0] $end
+$var reg 1 w rename_table_decode_en $end
+$var reg 5 x rename_table_arf_src0 [4:0] $end
+$var reg 5 y rename_table_arf_src1 [4:0] $end
+$var reg 5 z rename_table_prf_src0 [4:0] $end
+$var reg 5 { rename_table_prf_src1 [4:0] $end
+$var reg 1 | rename_table_src0_pending $end
+$var reg 1 } rename_table_src1_pending $end
+$var reg 5 ~ rename_table_rob_dest_arf [4:0] $end
+$var reg 5 !! rename_table_rob_dest_prf [4:0] $end
+$var reg 80 "! issue_queue_entry $end
+$var reg 74 #! issue_queue_instr_out $end
+$var reg 1 $! issue_queue_empty $end
+$var reg 1 %! issue_queue_full $end
+$var reg 1 &! issue_queue_all_stalled $end
+$var reg 3 '! issue_queue_future_exec_stage_slots [2:0] $end
+$var reg 1 (! mini_scoreboard_wr_en $end
+$var reg 17 )! mini_scoreboard_op [16:0] $end
+$var reg 32 *! instr_ff [31:0] $end
+$var reg 1 +! new_instr_ready $end
+$var reg 1 ,! iq_instr_ready $end
+$var reg 1 -! dispatch_instr $end
+$var reg 1 .! cntrl_instr $end
+$var reg 1 /! pc_instr $end
+$var reg 1 0! mem_instr $end
+$var reg 1 1! master_instr_valid $end
+$var reg 6 2! rob_head_counter [5:0] $end
+$var reg 3 3! spec_exec_counter [2:0] $end
+$var reg 3 4! pc_instr_counter [2:0] $end
+$var reg 6 5! mem_buff_counter [5:0] $end
+$var reg 36 6! xilinx_isim_temp_318_ln69_blkAssignCaching $end
+$var reg 20 7! xilinx_isim_temp_317_ln59_blkAssignCaching $end
+$scope module free_list_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var wire 1 8! wr_en_i $end
+$var wire 5 9! prev_phys_ptr_i [4:0] $end
+$var wire 1 :! exception_i $end
+$var wire 5 ;! commited_ptr_i [4:0] $end
+$var wire 1 <! rd_en_i $end
+$var reg 5 s free_ptr_o [4:0] $end
+$var reg 1 t none_free_o $end
+$var reg 32 =! free_list [31:0] $end
+$var reg 32 >! commit_list [31:0] $end
+$var reg 1 ?! found $end
+$scope begin Block405_315 $end
+$var reg 32 @! i [31:0] $end
+$upscope $end
+$upscope $end
+$scope module rename_table_async_read_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var wire 5 A! prf_ptr_i [4:0] $end
+$var wire 5 B! arf_ptr_i [4:0] $end
+$var wire 1 C! decode_en_i $end
+$var wire 5 D! prf_ptr_sb_i [4:0] $end
+$var wire 5 E! arf_ptr_sb_i [4:0] $end
+$var wire 1 F! writeback_en_i $end
+$var wire 5 G! arf_src0_i [4:0] $end
+$var wire 5 H! arf_src1_i [4:0] $end
+$var reg 5 z prf_src0_o [4:0] $end
+$var reg 5 { prf_src1_o [4:0] $end
+$var reg 1 | src0_pending_o $end
+$var reg 1 } src1_pending_o $end
+$var wire 5 I! rob_dest_arf_i [4:0] $end
+$var reg 5 !! rob_dest_prf_o [4:0] $end
+$var wire 1 J! commit_en_i $end
+$var wire 5 K! commit_arf_i [4:0] $end
+$var wire 5 ;! commit_prf_i [4:0] $end
+$var wire 1 L! exception_i $end
+$scope begin Block502_318 $end
+$var reg 32 M! i [31:0] $end
+$upscope $end
+$upscope $end
+$scope module issue_queue_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var reg 80 "! iq_entry_i $end
+$var wire 5 D! prf_dst_i [4:0] $end
+$var wire 1 F! prf_wr_en_i $end
+$var wire 3 N! future_exec_stage_slots_i [2:0] $end
+$var reg 74 #! instr_o $end
+$var reg 1 $! empty_o $end
+$var reg 1 %! full_o $end
+$var reg 1 &! all_stalled_o $end
+$var wire 1 O! exception_i $end
+$var reg 1 P! wr_en $end
+$var reg 16 Q! valid_array [15:0] $end
+$var reg 16 R! ready_array [15:0] $end
+$var reg 16 S! priority_ready_array [15:0] $end
+$scope begin Block573_320 $end
+$var reg 32 T! i [31:0] $end
+$upscope $end
+$scope begin Block583_322 $end
+$var reg 32 U! i [31:0] $end
+$upscope $end
+$scope begin Block601_324 $end
+$var reg 32 V! i [31:0] $end
+$upscope $end
+$scope begin Block622_326 $end
+$var reg 32 W! i [31:0] $end
+$upscope $end
+$scope begin Block640_327 $end
+$var reg 32 X! i [31:0] $end
+$upscope $end
+$scope begin Block649_328 $end
+$var reg 32 Y! i [31:0] $end
+$upscope $end
+$upscope $end
+$scope module mini_scoreboard_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var wire 1 Z! wr_en_i $end
+$var wire 17 [! op_i [16:0] $end
+$var reg 3 '! future_exec_stage_slots_o [2:0] $end
+$var wire 1 \! exception_i $end
+$var reg 4 ]! exec_stage_slots_int [3:0] $end
+$scope begin Block684_330 $end
+$var reg 32 ^! i [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module issue_stage_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var reg 74 6 instr_i $end
+$var reg 163 ; fetch_pkt_o $end
+$var reg 38 < wb_phys_reg_pkt_i $end
+$var reg 36 9 buff_inst_i $end
+$var wire 1 _! exception_i $end
+$var reg 1 - stall_o $end
+$var reg 74 `! instr_ff $end
+$var reg 36 a! buff_inst_ff $end
+$var reg 1 b! exception_ff $end
+$var reg 32 c! phys_reg_src0_data [31:0] $end
+$var reg 32 d! phys_reg_src1_data [31:0] $end
+$var reg 32 e! pc_out [31:0] $end
+$var reg 20 f! imm_compr_ff [19:0] $end
+$var reg 7 g! instr_op_ff [6:0] $end
+$var reg 1 h! is_imm_ff $end
+$scope module physical_register $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var wire 5 i! addr_r_1_i [4:0] $end
+$var wire 5 j! addr_r_2_i [4:0] $end
+$var reg 32 c! data_r_1_o [31:0] $end
+$var reg 32 d! data_r_2_o [31:0] $end
+$var wire 1 k! write_en_i $end
+$var wire 5 l! addr_w_i [4:0] $end
+$var wire 32 m! data_w_i [31:0] $end
+$upscope $end
+$scope module pc_buff_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var reg 36 a! buff_inst_i $end
+$var wire 1 n! is_pc_instr $end
+$var wire 3 o! rd_ptr_i [2:0] $end
+$var reg 32 e! pc_out_o [31:0] $end
+$var wire 1 p! exception_i $end
+$var reg 1 - full_o $end
+$var reg 3 q! counter [2:0] $end
+$var reg 1 r! empty $end
+$upscope $end
+$upscope $end
+$scope module execute_memory_stage_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var reg 163 ; fetch_pkt_i $end
+$var reg 39 = ex_mem_stage_pkt_o $end
+$var reg 38 > spec_exec_answr_o $end
+$var wire 1 s! exception_i $end
+$var reg 114 ? mem_addr_pkt_o $end
+$var reg 68 @ store_buffer_commit_pkt_i $end
+$var reg 163 t! fetch_pkt_ff $end
+$var reg 1 u! exception_ff $end
+$var reg 17 v! ex_mem_scoreboard_data_new $end
+$var reg 17 w! ex_mem_scoreboard_data_o $end
+$var reg 32 x! alu_result [31:0] $end
+$var reg 1 y! alu_zero $end
+$var reg 32 z! brnch_trgt [31:0] $end
+$var reg 32 {! jump_trgt [31:0] $end
+$var reg 6 |! funct_unit_one_hot_o [5:0] $end
+$var reg 1 }! store_o $end
+$scope module scoreboard_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var wire 3 ~! funct_unit_i $end
+$var reg 17 v! sb_data_pkt_i $end
+$var reg 17 w! sb_data_pkt_o $end
+$var wire 1 !" exception_i $end
+$var reg 1 "" new_op_delay [0:0] $end
+$scope begin Block229_346 $end
+$var reg 32 #" i [31:0] $end
+$upscope $end
+$upscope $end
+$scope module alu_stage_inst $end
+$var wire 1 $" en_i $end
+$var wire 32 %" a_i [31:0] $end
+$var wire 32 &" b_i [31:0] $end
+$var wire 4 '" funct_code_i [3:0] $end
+$var reg 32 (" result_o [31:0] $end
+$var reg 1 y! zero_o $end
+$var reg 32 )" a [31:0] $end
+$var reg 32 *" b [31:0] $end
+$var reg 4 +" alu_cntrl [3:0] $end
+$scope module alu_inst $end
+$var wire 32 ," a_i [31:0] $end
+$var wire 32 -" b_i [31:0] $end
+$var wire 4 ." alu_cntrl_i [3:0] $end
+$var reg 32 (" result_o [31:0] $end
+$var reg 1 y! zero_o $end
+$upscope $end
+$upscope $end
+$scope module mem_stage_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var wire 1 /" en_i $end
+$var wire 1 0" store_i $end
+$var wire 32 1" pc_i [31:0] $end
+$var wire 6 2" mem_buff_ptr_i [5:0] $end
+$var wire 4 '" funct_code_i [3:0] $end
+$var wire 32 %" base_addr_i [31:0] $end
+$var wire 32 3" offset_i [31:0] $end
+$var wire 32 &" store_data_i [31:0] $end
+$var reg 32 4" data_o [63:32] $end
+$var reg 114 ? mem_addr_pkt_o $end
+$var reg 68 @ store_buffer_commit_pkt_i $end
+$var wire 1 5" exception_i $end
+$var reg 32 6" base_addr [31:0] $end
+$var reg 32 7" offset [31:0] $end
+$var reg 32 8" store_data [31:0] $end
+$var reg 32 9" addr [31:0] $end
+$var reg 32 :" pc [31:0] $end
+$var reg 32 ;" loaded_data [31:0] $end
+$var reg 4 <" funct_code_ff [3:0] $end
+$var reg 1 =" load_ff $end
+$var reg 2 >" lower_addr_bits_ff [1:0] $end
+$var reg 32 ?" rd_addr_adj [31:0] $end
+$var reg 32 @" wr_addr_adj [31:0] $end
+$scope module data_memory $end
+$var wire 1 ( clk $end
+$var wire 4 A" vec_wr_en [3:0] $end
+$var wire 10 B" rd_addr [9:0] $end
+$var wire 10 C" wr_addr [9:0] $end
+$var wire 32 D" din [31:0] $end
+$var reg 32 ;" dout [31:0] $end
+$scope begin Block245_354 $end
+$var reg 32 E" i [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module branch_stage_inst $end
+$var wire 1 F" en_i $end
+$var wire 4 '" funct_code_i [3:0] $end
+$var wire 32 %" src0_data_i [31:0] $end
+$var wire 32 &" src1_data_i [31:0] $end
+$var wire 32 1" pc_i [31:0] $end
+$var wire 32 3" imm_i [31:0] $end
+$var reg 1 G" branch_taken_o $end
+$var reg 32 z! trgt_o [31:0] $end
+$var reg 32 H" src0_data [31:0] $end
+$var reg 32 I" src1_data [31:0] $end
+$var reg 32 J" imm [31:0] $end
+$var reg 32 K" pc [31:0] $end
+$var reg 4 L" funct_code [3:0] $end
+$scope module branch_unit_inst $end
+$var wire 4 M" funct_code_i [3:0] $end
+$var wire 32 N" src0_data_i [31:0] $end
+$var wire 32 O" src1_data_i [31:0] $end
+$var reg 1 G" branch_taken_o $end
+$upscope $end
+$upscope $end
+$scope module jalr_stage_inst $end
+$var wire 1 P" en_i $end
+$var wire 32 1" pc_i [31:0] $end
+$var wire 4 '" funct_code_i [3:0] $end
+$var wire 32 %" rs1_data_i [31:0] $end
+$var wire 32 &" imm_i [31:0] $end
+$var reg 32 {! pc_o [31:0] $end
+$var reg 32 Q" pc_plus_4_o [95:64] $end
+$var reg 32 R" pc [31:0] $end
+$var reg 32 S" rs1_data [31:0] $end
+$var reg 32 T" imm [31:0] $end
+$var reg 4 U" funct_code [3:0] $end
+$upscope $end
+$scope module auipc_stage_inst $end
+$var wire 1 V" en_i $end
+$var wire 32 1" pc_i [31:0] $end
+$var wire 32 &" imm_i [31:0] $end
+$var reg 32 W" result_o [127:96] $end
+$var reg 32 X" pc [31:0] $end
+$var reg 32 Y" imm [31:0] $end
+$upscope $end
+$upscope $end
+$scope module writeback_stage_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var reg 20 7 rob_instance_pkt_i $end
+$var reg 39 = ex_mem_stage_pkt_i $end
+$var reg 20 * commit_stage_pkt_o $end
+$var reg 38 < wb_phys_reg_pkt_o $end
+$var reg 11 5 rt_iq_update_pkt_o $end
+$var reg 1 8 spec_exec_buffer_instance_pkt_i $end
+$var reg 38 > spec_exec_answr_i $end
+$var reg 35 2 spec_exec_answr_pkt_o $end
+$var wire 1 Z" exception_i $end
+$var reg 1 . stall_o $end
+$var wire 1 [" mem_buff_wr_en_i $end
+$var reg 114 ? mem_addr_pkt_i $end
+$var reg 33 4 mem_addr_conflict_pkt_o $end
+$var reg 68 @ store_buffer_commit_pkt_o $end
+$var reg 39 \" ex_mem_stage_pkt_ff $end
+$var reg 38 ]" spec_exec_answr_ff $end
+$var reg 1 ^" exception_ff $end
+$var reg 1 _" rob_full $end
+$var reg 1 `" seab_full $end
+$var reg 1 a" mem_addr_full $end
+$scope module rob_buffer_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var reg 20 7 rob_instance_pkt_i $end
+$var reg 39 \" ex_mem_stage_pkt_i $end
+$var reg 20 * commit_stage_pkt_o $end
+$var wire 1 b" rob_full_o $end
+$var reg 38 < wb_phys_reg_pkt_o $end
+$var reg 11 5 rt_iq_update_pkt_o $end
+$var wire 1 c" exception_i $end
+$var reg 6 d" head_ptr [5:0] $end
+$var reg 6 e" tail_ptr [5:0] $end
+$var reg 5 f" head_ptr_lower [4:0] $end
+$var reg 5 g" tail_ptr_lower [4:0] $end
+$var reg 11 h" xilinx_isim_temp_351_ln342_blkAssignCaching $end
+$var reg 38 i" xilinx_isim_temp_350_ln340_blkAssignCaching $end
+$scope begin Block365_367 $end
+$var reg 32 j" i [31:0] $end
+$upscope $end
+$upscope $end
+$scope module spec_exec_answer_buffer_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var reg 38 ]" spec_exec_answr_i $end
+$var wire 1 k" full_o $end
+$var reg 1 8 spec_exec_buffer_instance_pkt_i $end
+$var wire 1 l" commit_en_i $end
+$var wire 1 m" commit_spec_instr_en_i $end
+$var reg 35 2 spec_exec_answr_pkt_o $end
+$var wire 1 n" exception_i $end
+$var reg 1 o" empty $end
+$var reg 1 p" forward $end
+$var reg 3 q" head_ptr [2:0] $end
+$var reg 3 r" tail_ptr [2:0] $end
+$var reg 2 s" head_ptr_lower [1:0] $end
+$var reg 2 t" tail_ptr_lower [1:0] $end
+$scope function set_wb_shift_reg_pkt $end
+$upscope $end
+$upscope $end
+$scope module mem_addr_buffer_inst $end
+$var wire 1 ( clk $end
+$var wire 1 ) rst $end
+$var reg 114 ? mem_addr_pkt_i $end
+$var wire 1 u" full_o $end
+$var wire 1 [" mem_buff_instance_wr_en_i $end
+$var wire 1 l" commit_en_i $end
+$var wire 1 v" store_commit_en_i $end
+$var wire 1 w" mem_commit_en_i $end
+$var reg 33 4 mem_addr_conflict_pkt_o $end
+$var reg 68 @ store_buffer_commit_pkt_o $end
+$var wire 1 x" exception_i $end
+$var reg 6 y" head_ptr [5:0] $end
+$var reg 6 z" tail_ptr [5:0] $end
+$var reg 5 {" head_ptr_lower [4:0] $end
+$var reg 5 |" tail_ptr_lower [4:0] $end
+$var reg 32 }" cnflct_arry [31:0] $end
+$var reg 1 ~" frwd_cnflct $end
+$var reg 68 !# xilinx_isim_temp_352_ln143_blkAssignCaching $end
+$scope begin Block198_375 $end
+$var reg 32 "# i [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+
+#0
+$dumpvars
+0!
+bx !!
+x!"
+bx !#
+1"
+b0 "!
+0""
+b0 "#
+0#
+b0 #!
+b0 #"
+1$
+x$!
+x$"
+b0 %
+x%!
+bx %"
+b0 &
+x&!
+bx &"
+b0 '
+bx '!
+bx '"
+0(
+x(!
+b0 ("
+1)
+b0 )!
+b0 )"
+b0 *
+bx *!
+b0 *"
+b0 +
+x+!
+b0 +"
+x,
+x,!
+b0 ,"
+x-
+x-!
+b0 -"
+x.
+x.!
+b0 ."
+x/
+x/!
+x/"
+00
+x0!
+x0"
+bx 1
+x1!
+bx 1"
+b0 2
+bx 2!
+bx 2"
+x3
+bx 3!
+bx 3"
+b0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 4
+bx 4!
+b0 4"
+b0 5
+bx 5!
+x5"
+b0 6
+bx 6!
+b0 6"
+b0 7
+bx 7!
+b0 7"
+08
+08!
+b0 8"
+b0 9
+b0 9!
+b0 9"
+0:
+x:!
+b0 :"
+bx000000001xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx00000000000000000000000000000000xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ;
+b0 ;!
+bx ;"
+b0 <
+0<!
+bx <"
+bx00000000000000000000000000000000 =
+bx =!
+x="
+bx00000000000000000000000000000000x1xxx >
+bx >!
+bx >"
+bx00000000xxxxxxx000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000xx ?
+0?!
+b1111111111111110000000000000000 ?"
+b0 @
+b100000 @!
+b1111111111111110000000000000000 @"
+0A
+b0 A!
+b0 A"
+xB
+b0 B!
+b0 B"
+bx C
+0C!
+b0 C"
+0D
+bx D!
+b0 D"
+1E
+bx E!
+b0 E"
+0F
+xF!
+xF"
+1G
+bx G!
+1G"
+bx H
+bx H!
+b0 H"
+bx I
+bx I!
+b0 I"
+bx J
+0J!
+b0 J"
+bx K
+b0 K!
+b0 K"
+xL
+xL!
+b0 L"
+0M
+b0 M!
+b0 M"
+0N
+bx N!
+b0 N"
+0O
+xO!
+b0 O"
+0P
+0P!
+xP"
+xQ
+bx Q!
+b100 Q"
+bx R
+bx R!
+b0 R"
+0S
+b0 S!
+b0 S"
+0T
+b10000 T!
+b0 T"
+bx U
+b10000 U!
+b0 U"
+bx V
+b0 V!
+xV"
+bx W
+b0 W!
+b0 W"
+xX
+b0 X!
+b0 X"
+bx Y
+b0 Y!
+b0 Y"
+0Z
+xZ!
+xZ"
+b0 [
+b0 [!
+0["
+bx \
+x\!
+bx \"
+bx ]
+bx ]!
+bx ]"
+x^
+b0 ^!
+x^"
+0_
+x_!
+x_"
+bx `
+bx `!
+x`"
+b0 a
+bx a!
+xa"
+bx b
+xb!
+xb"
+bx c
+bx c!
+xc"
+0d
+bx d!
+bx d"
+bx e
+bx e!
+bx e"
+0f
+bx f!
+bx f"
+bx0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx g
+bx g!
+bx g"
+bx h
+xh!
+b0 h"
+bx0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx i
+bx i!
+b0 i"
+bx j
+bx j!
+b0 j"
+xk
+0k!
+xk"
+bx l
+b0 l!
+0l"
+bx m
+b0 m!
+0m"
+xn
+xn!
+xn"
+bx o
+bx o!
+xo"
+bx p
+xp!
+xp"
+xq
+bx q!
+bx q"
+0r
+xr!
+bx r"
+b11111 s
+xs!
+bx s"
+xt
+bx t!
+bx t"
+b0 u
+xu!
+xu"
+b0 v
+bx v!
+0v"
+0w
+bx w!
+0w"
+bx x
+bx x!
+xx"
+bx y
+1y!
+bx y"
+bx z
+b0 z!
+bx z"
+bx {
+b0 {!
+bx {"
+x|
+bx |!
+bx |"
+x}
+x}!
+b0 }"
+bx ~
+bx ~!
+0~"
+$end
+
+#5000
+1!
+1#
+1(
+b0 l
+b0 m

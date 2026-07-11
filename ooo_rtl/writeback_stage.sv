@@ -360,7 +360,8 @@ import issue_pkg::*;
     // reorder buffer management
     always_ff @(posedge clk) begin
         if (rst || exception_i) begin
-            reorder_buffer <= '{default:'0};
+            // reorder_buffer <= '{default:'0};
+            reorder_buffer <= '{default: rob_entry_t'('0)};
             foreach (reorder_buffer[i]) begin
                 reorder_buffer[i].state <= FREE;
             end

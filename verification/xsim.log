@@ -1,0 +1,58 @@
+#-----------------------------------------------------------
+# xsim v2025.1 (64-bit)
+# SW Build 6140274 on Wed May 21 22:58:25 MDT 2025
+# IP Build 6138677 on Thu May 22 03:10:11 MDT 2025
+# SharedData Build 6139179 on Tue May 20 17:58:58 MDT 2025
+# Start of session at: Sat Jul 11 18:06:08 2026
+# Process ID         : 147014
+# Current directory  : /home/developer/RTL/RISC-V-CPU/verification
+# Command line       : xsim -mode tcl -source {xsim.dir/tb_sim/xsim_script.tcl}
+# Log file           : /home/developer/RTL/RISC-V-CPU/verification/xsim.log
+# Journal file       : /home/developer/RTL/RISC-V-CPU/verification/xsim.jou
+# Running On         : 95b2b41d58b0
+# Platform           : Ubuntu
+# Operating System   : Ubuntu 22.04.3 LTS
+# Processor Detail   : Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
+# CPU Frequency      : 3999.998 MHz
+# CPU Physical cores : 4
+# CPU Logical cores  : 8
+# Host memory        : 15713 MB
+# Swap memory        : 4294 MB
+# Total Virtual      : 20008 MB
+# Available Virtual  : 16690 MB
+#-----------------------------------------------------------
+source xsim.dir/tb_sim/xsim_script.tcl
+# xsim {tb_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+UVM_INFO /home/developer//tools/Xilinx/2025.1/Vivado/data/system_verilog/uvm_1.2/xlnx_uvm_package.sv(18601) @ 0: reporter [UVM/RELNOTES] 
+----------------------------------------------------------------
+UVM-1.2
+(C) 2007-2014 Mentor Graphics Corporation
+(C) 2007-2014 Cadence Design Systems, Inc.
+(C) 2006-2014 Synopsys, Inc.
+(C) 2011-2013 Cypress Semiconductor Corp.
+(C) 2013-2014 NVIDIA Corporation
+----------------------------------------------------------------
+
+  ***********       IMPORTANT RELEASE NOTES         ************
+
+  You are using a version of the UVM library that has been compiled
+  with `UVM_NO_DEPRECATED undefined.
+
+  You are using a version of the UVM library that has been compiled
+  with `UVM_OBJECT_DO_NOT_NEED_CONSTRUCTOR undefined.
+
+      (Specify +UVM_NO_RELNOTES to turn off this notice)
+
+UVM_INFO @ 0: reporter [RNTST] Running test riscv_base_test...
+Error: Assertion violation
+Time: 0 ps  Iteration: 0  Process: /tb_top/dut/issue_stage_inst/pc_buff_inst/Always174_342  File: /home/developer/RTL/RISC-V-CPU/ooo_rtl/issue_stage.sv
+Error: Assertion violation
+Time: 0 ps  Iteration: 0  Process: /tb_top/dut/issue_stage_inst/Always105_343  File: /home/developer/RTL/RISC-V-CPU/ooo_rtl/issue_stage.sv
+UVM_INFO /home/developer//tools/Xilinx/2025.1/Vivado/data/system_verilog/uvm_1.2/xlnx_uvm_package.sv(20867) @ 0: reporter [UVM/COMP/NAMECHECK] This implementation of the component name checks requires DPI to be enabled
+Fatal: Invalid instruction issued to execute stage
+Time: 5 ns  Iteration: 0  Process: /tb_top/dut/execute_memory_stage_inst/Always52_344  Scope: tb_top.dut.execute_memory_stage_inst  File: /home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv Line: 55
+$finish called at time : 5 ns
+exit
+INFO: [Common 17-206] Exiting xsim at Sat Jul 11 18:06:12 2026...
