@@ -20,7 +20,7 @@ spike --isa=rv32i -m0x80000000:0x10000,0x80010000:0x10000 --log-commits elfs/ini
 echo "--spike finished--"
 
 # translating trace.log to readable format for UVM testbench
-python3 translate_log.py trace.log trace_readable.log 5 0
+python3 translate_log.py trace.log trace_readable.log 5 1200
 
 # generating elf, then bin to python script
 cd asms/intermediate

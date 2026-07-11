@@ -43,7 +43,7 @@ def read_trace_log_file(
         rd_file_path: str, 
         wr_file_path: str, 
         commit_ignore_count: int = 0,
-        commit_neg_offset: int = 0
+        max_commit_count: int = 0
     ):
     """ read the trace.log file and return a list of dictionaries of the parsed values """
     with open(rd_file_path, "r") as f:
@@ -59,7 +59,7 @@ def read_trace_log_file(
             map_list.append(dict)
     
     with open(wr_file_path, "w") as f:
-        for i in range(len(map_list) - commit_neg_offset):
+        for i in range(min(len(map_list), max_commit_count)):
             dict = map_list[i]
             instr = dict["instr"]
             f.write(hex(dict["pc"]) + ": " + instr.gen_assembly_str() + "\n")
@@ -92,13 +92,13 @@ def read_trace_log_file(
 if __name__ == "__main__":
     
     if len(sys.argv) < 3:
-        print("Usage: python translate_log.py <read_file_path> <write_file_path> <commit_ignore_count> <commit_neg_offset>")
+        print("Usage: python translate_log.py <read_file_path> <write_file_path> <commit_ignore_count> <max_commit_count>")
         sys.exit(1)
     rd_file_path = sys.argv[1]
     wr_file_path = sys.argv[2]
     commit_ignore_count = int(sys.argv[3]) if len(sys.argv) > 3 else 0
-    commit_neg_offset = int(sys.argv[4]) if len(sys.argv) > 4 else 0
-    read_trace_log_file(rd_file_path, wr_file_path, commit_ignore_count, commit_neg_offset)
+    max_commit_count = int(sys.argv[4]) if len(sys.argv) > 4 else 0
+    read_trace_log_file(rd_file_path, wr_file_path, commit_ignore_count, max_commit_count)
     
 
 
