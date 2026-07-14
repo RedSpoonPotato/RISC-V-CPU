@@ -182,7 +182,8 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            pc <= '{default:'0};
+            // pc <= '{default:'0};
+            pc <= INSTR_ADDR_OFFSET;
             // instr_valid <= 1'b0;
             exception_o <= '0;
         end else begin
@@ -449,7 +450,8 @@ import general_pkg::DATA_WIDTH;
 
             // valid
             // logic miss_condition = !(tb_cache[curr_index].valid && tb_cache[curr_index].tag == curr_tag && rd_en_i);
-            logic miss_condition = !(tb_cache[curr_index].valid && tb_cache[curr_index].tag == curr_tag);
+            logic miss_condition;
+            assign miss_condition = !(tb_cache[curr_index].valid && tb_cache[curr_index].tag == curr_tag);
             
             always_comb begin : MakingAPredictionRead
                 if (miss_condition) begin

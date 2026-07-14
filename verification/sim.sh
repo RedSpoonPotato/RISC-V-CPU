@@ -38,8 +38,10 @@ echo "========================================================="
 # -R: Run simulation immediately
 # -testplusarg: Pass the trace file path to your scoreboard's $value$plusargs check
 # xsim tb_sim -R -testplusarg TRACE_FILE=../python_scripts/trace_readable.log
-xsim tb_sim -R
+# xsim tb_sim -R
+# launching using xsim waveform viewer instead of gtkwave for structtracing
+# xsim tb_sim --gui & # 
+xsim tb_sim --gui -view wcfgs/latest.wcfg --t init.tcl & # use this if you want to open a waveform
 
-echo "========================================================="
-echo " UVM Simulation Complete!"
-echo "========================================================="
+# RUN waveform.tcl
+

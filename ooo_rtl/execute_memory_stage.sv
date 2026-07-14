@@ -52,8 +52,13 @@ import issue_pkg::*;
     always_ff @(posedge clk) begin
         fetch_pkt_ff <= fetch_pkt_i;
         exception_ff <= exception_i;
-        assert (fetch_pkt_ff.valid || fetch_pkt_ff.funct_unit == NOOP) else $fatal("Invalid instruction issued to execute stage");
+        // assert (fetch_pkt_ff.valid || fetch_pkt_ff.funct_unit == NOOP) else $fatal("Invalid instruction issued to execute stage");
     end
+
+    assert property (
+        @(posedge clk) disable iff (rst || exception_i)
+        (fetch_pkt_i.valid || fetch_pkt_i.funct_unit == NOOP)
+    ) else $fatal("Invalid instruction issued to execute stage");
 
     // routing instruction
     ex_mem_scoreboard_data_t ex_mem_scoreboard_data_new, ex_mem_scoreboard_data_o;
@@ -216,7 +221,9 @@ import issue_pkg::*;
     ex_mem_scoreboard_data_t ex_mem_scoreboard_data_slots [MAX_EXEC_CYCLE_DELAY-1:0];
 
     // COME BACK TO THIS FUNCTION AND SIZING, NOT PROPERLY SET YET
-    logic [$clog2(MAX_EXEC_CYCLE_V2)-1:0] new_op_delay = get_exec_stage_delays_v3(
+    logic [$clog2(MAX_EXEC_CYCLE_V2)-1:0] new_op_delay;
+    
+    assign new_op_delay = get_exec_stage_delays_v3(
         funct_unit_i, 
         sb_data_pkt_i.store
         );
@@ -250,12 +257,19 @@ import issue_pkg::*;
         end else if (new_op_delay == 0 && funct_unit_i != NOOP) begin: Forwarding
             // current_funct_unit_output_o = funct_unit_i;
             sb_data_pkt_o = sb_data_pkt_i;
-            assert(exec_stage_slots_int[0] == NOOP) else $fatal("Scoreboard error: new instruction issued to occupied exec stage slot");
+            // assert(exec_stage_slots_int[0] == NOOP) else $fatal("Scoreboard error: new instruction issued to occupied exec stage slot");
         end else begin
             // current_funct_unit_output_o = exec_stage_slots_int[0];
             sb_data_pkt_o = ex_mem_scoreboard_data_slots[0];
         end
     end
+
+    assert property (
+        @(posedge clk)
+        disable iff (rst || exception_i)
+        (new_op_delay == 0 && funct_unit_i != NOOP)
+        |-> (exec_stage_slots_int[0] == NOOP)
+    ) else $fatal("Scoreboard error: new instruction issued to occupied exec stage slot");
 
 endmodule
 

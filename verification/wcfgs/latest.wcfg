@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_sim.wdb" id="1">
+         <top_modules>
+            <top_module name="\$unit_tb_top_sv " />
+            <top_module name="brnch_predict_pkg" />
+            <top_module name="core_pkg" />
+            <top_module name="decode_pkg" />
+            <top_module name="exec_mem_pkg" />
+            <top_module name="general_pkg" />
+            <top_module name="instr_fetch_pkg" />
+            <top_module name="issue_pkg" />
+            <top_module name="std" />
+            <top_module name="tb_top" />
+            <top_module name="trgt_buffer_pkg" />
+            <top_module name="uvm_pkg" />
+            <top_module name="writeback_pkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="5.290 ns"></ZoomStartTime>
+      <ZoomEndTime time="76.291 ns"></ZoomEndTime>
+      <Cursor1Time time="27.140 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="262"></NameColumnWidth>
+      <ValueColumnWidth column_width="222"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="25" />
+   <wvobject type="logic" fp_name="/tb_top/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/rst">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_ctrl_pkt_i">
+      <obj_property name="ElementShortName">instr_fetch_ctrl_pkt_i</obj_property>
+      <obj_property name="ObjectShortName">instr_fetch_ctrl_pkt_i</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/decode_stall">
+      <obj_property name="ElementShortName">decode_stall</obj_property>
+      <obj_property name="ObjectShortName">decode_stall</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/issue_stall">
+      <obj_property name="ElementShortName">issue_stall</obj_property>
+      <obj_property name="ObjectShortName">issue_stall</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/wb_stall">
+      <obj_property name="ElementShortName">wb_stall</obj_property>
+      <obj_property name="ObjectShortName">wb_stall</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/stall">
+      <obj_property name="ElementShortName">stall</obj_property>
+      <obj_property name="ObjectShortName">stall</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/instr_fetch_exception">
+      <obj_property name="ElementShortName">instr_fetch_exception</obj_property>
+      <obj_property name="ObjectShortName">instr_fetch_exception</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_output_pkt">
+      <obj_property name="ElementShortName">instr_fetch_output_pkt</obj_property>
+      <obj_property name="ObjectShortName">instr_fetch_output_pkt</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/decode_instr">
+      <obj_property name="ElementShortName">decode_instr</obj_property>
+      <obj_property name="ObjectShortName">decode_instr</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/decode_rob_instance_pkt">
+      <obj_property name="ElementShortName">decode_rob_instance_pkt</obj_property>
+      <obj_property name="ObjectShortName">decode_rob_instance_pkt</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/decode_spec_exec_buffer_instance_pkt">
+      <obj_property name="ElementShortName">decode_spec_exec_buffer_instance_pkt</obj_property>
+      <obj_property name="ObjectShortName">decode_spec_exec_buffer_instance_pkt</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/decode_pc_buff_inst">
+      <obj_property name="ElementShortName">decode_pc_buff_inst</obj_property>
+      <obj_property name="ObjectShortName">decode_pc_buff_inst</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/decode_mem_buff_wr_en">
+      <obj_property name="ElementShortName">decode_mem_buff_wr_en</obj_property>
+      <obj_property name="ObjectShortName">decode_mem_buff_wr_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/issue_fetch_pkt">
+      <obj_property name="ElementShortName">issue_fetch_pkt</obj_property>
+      <obj_property name="ObjectShortName">issue_fetch_pkt</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/exec_mem_stage_pkt">
+      <obj_property name="ElementShortName">exec_mem_stage_pkt</obj_property>
+      <obj_property name="ObjectShortName">exec_mem_stage_pkt</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/exec_mem_spec_exec_answr">
+      <obj_property name="ElementShortName">exec_mem_spec_exec_answr</obj_property>
+      <obj_property name="ObjectShortName">exec_mem_spec_exec_answr</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/mem_op_addr_pkt">
+      <obj_property name="ElementShortName">mem_op_addr_pkt</obj_property>
+      <obj_property name="ObjectShortName">mem_op_addr_pkt</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/writeback_phys_reg_pkt">
+      <obj_property name="ElementShortName">writeback_phys_reg_pkt</obj_property>
+      <obj_property name="ObjectShortName">writeback_phys_reg_pkt</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/writeback_mem_addr_conflict_pkt">
+      <obj_property name="ElementShortName">writeback_mem_addr_conflict_pkt</obj_property>
+      <obj_property name="ObjectShortName">writeback_mem_addr_conflict_pkt</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/commit_decode_pkt">
+      <obj_property name="ElementShortName">commit_decode_pkt</obj_property>
+      <obj_property name="ObjectShortName">commit_decode_pkt</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/commit_rt_iq_update_pkt">
+      <obj_property name="ElementShortName">commit_rt_iq_update_pkt</obj_property>
+      <obj_property name="ObjectShortName">commit_rt_iq_update_pkt</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/commit_spec_exec_answr_pkt">
+      <obj_property name="ElementShortName">commit_spec_exec_answr_pkt</obj_property>
+      <obj_property name="ObjectShortName">commit_spec_exec_answr_pkt</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_stage_inst/pc">
+      <obj_property name="ElementShortName">pc[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_stage_inst/if_output_pkt_o">
+      <obj_property name="ElementShortName">if_output_pkt_o</obj_property>
+      <obj_property name="ObjectShortName">if_output_pkt_o</obj_property>
+   </wvobject>
+</wave_config>

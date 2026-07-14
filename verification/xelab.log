@@ -7,19 +7,19 @@ WARNING: [XSIM 43-3431] One or more environment variables have been detected whi
 Starting static elaboration
 Pass Through NonSizing Optimizer
 WARNING: [VRFC 10-9543] actual bit length 30 differs from formal bit length 10 for port 'addr' [/home/developer/RTL/RISC-V-CPU/ooo_rtl/instr_fetch_stage.sv:129]
-WARNING: [VRFC 10-3645] port 'empty_o' remains unconnected for this instance [/home/developer/RTL/RISC-V-CPU/ooo_rtl/instr_fetch_stage.sv:256]
-WARNING: [VRFC 10-8967] first argument of $fatal is invalid; expected 0, 1 or 2 [/home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv:55]
-WARNING: [VRFC 10-8967] first argument of $fatal is invalid; expected 0, 1 or 2 [/home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv:253]
+WARNING: [VRFC 10-3645] port 'empty_o' remains unconnected for this instance [/home/developer/RTL/RISC-V-CPU/ooo_rtl/instr_fetch_stage.sv:257]
+WARNING: [VRFC 10-8967] first argument of $fatal is invalid; expected 0, 1 or 2 [/home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv:61]
+WARNING: [VRFC 10-8967] first argument of $fatal is invalid; expected 0, 1 or 2 [/home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv:272]
 Completed static elaboration
-INFO: [XSIM 43-4329] Assuming default value 1 for the first arguement of $fatal at Line 55, File /home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv
-INFO: [XSIM 43-4329] Assuming default value 1 for the first arguement of $fatal at Line 253, File /home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv
+INFO: [XSIM 43-4329] Assuming default value 1 for the first arguement of $fatal at Line 61, File /home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv
+INFO: [XSIM 43-4329] Assuming default value 1 for the first arguement of $fatal at Line 272, File /home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv
 Starting simulation data flow analysis
 WARNING: [XSIM 43-4468] File : /proj/primebuilds/9999.0_PRIME_0428_0031/installs/data/system_verilog/uvm_1.2/xlnx_uvm_package.sv, Line : 25994, RANDC variable size more than 8 bits. This will be treated as a RAND variable instead.
 Completed simulation data flow analysis
 Time Resolution for simulation is 1ps
 Compiling package work.$unit_tb_top_sv
-WARNING: [XSIM 43-3373] "/home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv" Line 144. System function $fgets is used as system task. This system function should have a LHS e.g. x=$fgets().
-WARNING: [XSIM 43-3373] "/home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv" Line 145. System function $fgets is used as system task. This system function should have a LHS e.g. x=$fgets().
+WARNING: [XSIM 43-3373] "/home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv" Line 148. System function $fgets is used as system task. This system function should have a LHS e.g. x=$fgets().
+WARNING: [XSIM 43-3373] "/home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv" Line 149. System function $fgets is used as system task. This system function should have a LHS e.g. x=$fgets().
 Compiling package work.core_pkg
 Compiling package work.instr_fetch_pkg
 Compiling package work.general_pkg
@@ -34,7 +34,7 @@ Compiling package work.trgt_buffer_pkg
 Compiling module work.cpu_commit_if_default
 Compiling module work.branch_predictor_default
 Compiling module work.trgt_buffer_default
-Compiling module work.sram_async_read(INIT_FILE="../me...
+Compiling module work.sram_async_read(INIT_FILE="../ve...
 Compiling module work.fifo_modded(DEPTH=4,DATA_WIDTH=6...
 Compiling module work.trgt_shift_register
 Compiling module work.instr_fetch_stage

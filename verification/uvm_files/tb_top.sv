@@ -7,6 +7,7 @@ interface cpu_commit_if(input logic clk, input logic rst);
     commit_stage_pkt_t commit_decode_pkt;
     store_buffer_commit_pkt_t store_buffer_commit_pkt;
     bit [DATA_WIDTH-1:0] pc;
+    bit [DATA_WIDTH-1:0] reg_data;
 endinterface
 
 import uvm_pkg::*;
@@ -20,6 +21,7 @@ class cpu_commit_pkt extends uvm_sequence_item;
     bit [DATA_WIDTH-1:0] store_addr;
     bit [DATA_WIDTH-1:0] store_data;
     bit [DATA_WIDTH-1:0] next_pc;
+    bit [DATA_WIDTH-1:0] reg_data;
 
     `uvm_object_utils_begin(cpu_commit_pkt)
         `uvm_field_int(wr_en, UVM_ALL_ON)
@@ -29,6 +31,7 @@ class cpu_commit_pkt extends uvm_sequence_item;
         `uvm_field_int(store_addr, UVM_ALL_ON)
         `uvm_field_int(store_data, UVM_ALL_ON)
         `uvm_field_int(next_pc, UVM_ALL_ON)
+        `uvm_field_int(reg_data, UVM_ALL_ON)
     `uvm_object_utils_end
 
     function new(string name = "cpu_commit_pkt");
@@ -70,6 +73,7 @@ class cpu_commit_monitor extends uvm_monitor;
                 commit_pkt.store_addr = vif.store_buffer_commit_pkt.addr;
                 commit_pkt.store_data = vif.store_buffer_commit_pkt.data;
                 commit_pkt.next_pc = vif.pc;
+                commit_pkt.reg_data = vif.reg_data;
                 ap.write(commit_pkt);
 
                 // check if finished
@@ -77,7 +81,7 @@ class cpu_commit_monitor extends uvm_monitor;
                     if (vif.store_buffer_commit_pkt.data == 32'hFFFF_FFFF) begin
                     `uvm_info("TEST_PASS", "CPU wrote 0xFFFF_FFFF to tohost. Test passed!", UVM_LOW)
                     end else begin
-                    `uvm_error("TEST_FAIL", $sformatf("CPU wrote failure code %0d to tohost.", vif.store_buffer_commit_pkt.data))
+                    `uvm_fatal("TEST_FAIL", $sformatf("CPU wrote failure code %0d to tohost.", vif.store_buffer_commit_pkt.data))
                     end
                     // Optional: Forcefully end simulation here if you aren't using objections
                     uvm_top.stop_request();
@@ -128,7 +132,7 @@ class cpu_scoreboard extends uvm_scoreboard;
         end
     endfunction
 
-  // Called when Input Monitor sees an instruction entering the pipeline
+    // Called when Input Monitor sees an instruction entering the pipeline
     virtual function void write(cpu_commit_pkt pkt);
         cpu_commit_pkt exp_pkt;
         string trace_line;
@@ -137,7 +141,7 @@ class cpu_scoreboard extends uvm_scoreboard;
             return;
         end
         if ($feof(file_h)) begin
-            `uvm_error("TRACE_ERR", $sformatf("RTL committed an instruction, but trace file is empty at line %0d", current_line_num))
+            `uvm_fatal("TRACE_ERR", $sformatf("RTL committed an instruction, but trace file is empty at line %0d", current_line_num))
             return;
         end
         exp_pkt = cpu_commit_pkt::type_id::create("exp_pkt");
@@ -148,21 +152,22 @@ class cpu_scoreboard extends uvm_scoreboard;
         // {dest_valid} {register address} {store_en} {store_addr} {store_data} {next_pc} 
         parsing_code = $sscanf(
             trace_line,
-            "%d %d %d 0x%h 0x%h 0x%h",
+            "%d %d %d 0x%h 0x%h 0x%h 0x%h",
             exp_pkt.dest_valid,
             exp_pkt.arch_reg_addr,
             exp_pkt.store_en,
             exp_pkt.store_addr,
             exp_pkt.store_data,
-            exp_pkt.next_pc
+            exp_pkt.next_pc,
+            exp_pkt.reg_data
         );
-        if (parsing_code != 6) begin
-            `uvm_error("TRACE_ERR", $sformatf("Failed to parse trace line at line %0d: %s", current_line_num, trace_line))
+        if (parsing_code != 7) begin
+            `uvm_fatal("TRACE_ERR", $sformatf("Failed to parse trace line at line %0d: %s", current_line_num, trace_line))
             return;
         end
         if (!exp_pkt.compare(pkt)) begin
-            `uvm_error("MISMATCH", $sformatf("Mismatch at line %0d!", current_line_num))
-            `uvm_error("MISMATCH", $sformatf("Expected: %p | Actual: %p", exp_pkt, pkt));
+            `uvm_fatal("MISMATCH", $sformatf("Mismatch at line %0d!", current_line_num))
+            `uvm_fatal("MISMATCH", $sformatf("Expected: %p | Actual: %p", exp_pkt, pkt));
         end else begin
             `uvm_info("MATCH", $sformatf("Match at line %0d!", current_line_num), UVM_LOW)
         end
@@ -222,7 +227,9 @@ class riscv_base_test extends uvm_test;
     task run_phase(uvm_phase phase);
         phase.raise_objection(this);
         // failsafe timeout in case the CPU hangs and never writes to tohost
-        #1000000; 
+        // #1000000
+        // #100000
+        #1000
         `uvm_fatal("TIMEOUT", "Simulation timed out waiting for tohost write!")
         phase.drop_objection(this);
     endtask
@@ -259,6 +266,7 @@ module tb_top;
     );
     assign commit_if.store_buffer_commit_pkt = dut.store_buffer_commit_pkt;
     assign commit_if.pc = dut.instr_fetch_stage_inst.pc;
+    assign commit_if.reg_data = dut.issue_stage_inst.physical_register.reg_mem[commit_if.commit_decode_pkt.phys_reg_addr];
 
     initial begin
         // Push the virtual interface into the UVM configuration database.

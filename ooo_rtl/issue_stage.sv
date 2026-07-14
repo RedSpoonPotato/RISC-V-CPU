@@ -127,9 +127,14 @@ import issue_pkg::*;
                 fetch_pkt_o.src1_data = format_20b_to_datawidth(imm_compr_ff, instr_op_ff);
             end
             fetch_pkt_o.mem_offset_or_brnch_imm =  (fetch_pkt_o.funct_unit == MEM || fetch_pkt_o.funct_unit == BRANCH) ? format_20b_to_datawidth(imm_compr_ff, instr_op_ff) : '{default:'0};
-            assert ((instr_ff.imm_valid == 1 && instr_ff.store == 1) || instr_ff.store == 0);
+            // assert ((instr_ff.imm_valid == 1 && instr_ff.store == 1) || instr_ff.store == 0);
         end
     end
+
+    assert property (
+        @(posedge clk) disable iff (rst || exception_i)
+        ((instr_i.imm_valid == 1 && instr_i.store == 1) || instr_i.store == 0)
+    );
 
 endmodule
 
@@ -178,8 +183,13 @@ import issue_pkg::*;
             pc_out_o = pc_buffer[rd_ptr_i];
         end
         // debugging
-        empty = counter != 0;
-        assert(!(empty && !buff_inst_i.wr_en && is_pc_instr));
+        empty = counter == 0;
+        // assert(!(empty && !buff_inst_i.wr_en && is_pc_instr));
     end
+
+    assert property (
+        @(posedge clk) disable iff (rst || exception_i)
+        !(empty && !buff_inst_i.wr_en && is_pc_instr)
+    );
 
 endmodule

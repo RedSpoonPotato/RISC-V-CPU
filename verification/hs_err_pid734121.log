@@ -1,0 +1,10 @@
+#
+# An unexpected error has occurred (11)
+#
+Stack:
+/home/developer/tools/Xilinx/2025.1/Vivado/tps/lnx64/jre21.0.1_12/lib//server/libjvm.so(+0xe4f55c) [0x7b49e792155c]
+/home/developer/tools/Xilinx/2025.1/Vivado/tps/lnx64/jre21.0.1_12/lib//server/libjvm.so(JVM_handle_linux_signal+0x23e) [0x7b49e792202e]
+/usr/lib/x86_64-linux-gnu/libc.so.6(+0x42520) [0x7b4a30819520]
+/home/developer/tools/Xilinx/2025.1/Vivado/lib/lnx64.o/libxv_wavedata.so(SimBridge::DataObjMgr::getObjectLineNo(SimBridge::Object const*) const+0x6) [0x7b4a3ba81526]
+/home/developer/tools/Xilinx/2025.1/Vivado/lib/lnx64.o/libxv_simdata.so(Java_ui_views_simulator_executive_simulationi_SimulationExecutive_1getObjectLineNumber+0x1f) [0x7b4a35ebf33f]
+[0x7b49d72e5aef]

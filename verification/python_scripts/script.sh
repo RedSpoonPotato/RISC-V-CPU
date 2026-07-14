@@ -31,3 +31,8 @@ cat init_p1.s \
 cd ../..
 clang --target=riscv32 -march=rv32i -mabi=ilp32 -nostdlib -Wl,-T,link.ld -o elfs/init_py.elf asms/init_py.s
 llvm-objcopy -O binary elfs/init_py.elf bins/init_py.bin
+
+# convert program to rtl-readable
+# adding -j to get rid of .data or .bss sections in the output binary
+llvm-objcopy -O binary -j .text elfs/init_spike.elf bins/init_spike.bin
+hexdump -v -e '1/4 "%08x\n"' bins/init_spike.bin > rtl_hexs/init_spike.hex

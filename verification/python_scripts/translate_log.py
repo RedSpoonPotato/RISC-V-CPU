@@ -31,8 +31,8 @@ def read_trace_log_line(line: str):
     elif instr.type3 == "STORE":
         assert len(str_arry) == 8, f"Unexpected format for store instruction: {line}"
         addr = int(str_arry[6], 16)
-        data = int(str_arry[7], 16)
-        return {"pc": pc, "instr": instr, "addr": addr, "data": data}
+        store_data = int(str_arry[7], 16)
+        return {"pc": pc, "instr": instr, "addr": addr, "store_data": store_data}
     else:
         assert len(str_arry) == 7, f"Unexpected format for other instruction: {line}"
         dest_reg = int(str_arry[5][1:], 10)
@@ -71,7 +71,7 @@ def read_trace_log_file(
             store_en = instr.type3 == "STORE"
             if store_en:
                 store_addr = dict["addr"]
-                store_data = dict["data"]
+                store_data = dict["store_data"]
             else:
                 store_addr = 0
                 store_data = 0
@@ -79,13 +79,18 @@ def read_trace_log_file(
                 next_pc = dict["pc"] + 4
             else:
                 next_pc = map_list[i+1]["pc"]
+            if "data" in dict:
+                reg_data = dict["data"]
+            else:
+                reg_data = 0
             f.write(
                 str(int(dest_valid)) + " " + 
                 str(arch_reg_addr) + " " + 
                 str(int(store_en)) + " " + 
                 str(hex(store_addr)) + " " + 
                 str(hex(store_data)) + " " + 
-                str(hex(next_pc)) + 
+                str(hex(next_pc)) + " " + 
+                str(hex(reg_data)) + 
                 "\n"
             )
     
