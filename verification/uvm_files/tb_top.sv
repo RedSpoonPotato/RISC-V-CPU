@@ -6,7 +6,6 @@ import core_pkg::*;
 interface cpu_commit_if(input logic clk, input logic rst);
     commit_stage_pkt_t commit_decode_pkt;
     store_buffer_commit_pkt_t store_buffer_commit_pkt;
-    bit [DATA_WIDTH-1:0] pc;
     bit [DATA_WIDTH-1:0] reg_data;
 endinterface
 
@@ -20,7 +19,7 @@ class cpu_commit_pkt extends uvm_sequence_item;
     bit [(DATA_WIDTH/8)-1:0] store_en;
     bit [DATA_WIDTH-1:0] store_addr;
     bit [DATA_WIDTH-1:0] store_data;
-    bit [DATA_WIDTH-1:0] next_pc;
+    bit [DATA_WIDTH-1:0] pc;
     bit [DATA_WIDTH-1:0] reg_data;
 
     `uvm_object_utils_begin(cpu_commit_pkt)
@@ -30,13 +29,19 @@ class cpu_commit_pkt extends uvm_sequence_item;
         `uvm_field_int(store_en, UVM_ALL_ON)
         `uvm_field_int(store_addr, UVM_ALL_ON)
         `uvm_field_int(store_data, UVM_ALL_ON)
-        `uvm_field_int(next_pc, UVM_ALL_ON)
+        `uvm_field_int(pc, UVM_ALL_ON)
         `uvm_field_int(reg_data, UVM_ALL_ON)
     `uvm_object_utils_end
 
     function new(string name = "cpu_commit_pkt");
         super.new(name);
     endfunction
+
+    virtual function string convert2string();
+        return $sformatf("PC: 'h%0h | DestValid: %b | ArchReg: %0d | StoreEn: %b | StoreAddr: 'h%0h | StoreData: 'h%0h | RegData: 'h%0h",
+            pc, dest_valid, arch_reg_addr, store_en, store_addr, store_data, reg_data);
+    endfunction
+
 endclass
 
 class cpu_commit_monitor extends uvm_monitor;
@@ -63,7 +68,8 @@ class cpu_commit_monitor extends uvm_monitor;
         cpu_commit_pkt commit_pkt;
         
         forever begin
-            @(posedge vif.clk);
+            // @(posedge vif.clk);
+            @(negedge vif.clk);
             if (vif.commit_decode_pkt.wr_en) begin 
                 commit_pkt = cpu_commit_pkt::type_id::create("commit_pkt");
                 commit_pkt.wr_en = 1;
@@ -72,7 +78,7 @@ class cpu_commit_monitor extends uvm_monitor;
                 commit_pkt.store_en = vif.store_buffer_commit_pkt.vec_wr_en;
                 commit_pkt.store_addr = vif.store_buffer_commit_pkt.addr;
                 commit_pkt.store_data = vif.store_buffer_commit_pkt.data;
-                commit_pkt.next_pc = vif.pc;
+                commit_pkt.pc = vif.commit_decode_pkt.pc;
                 commit_pkt.reg_data = vif.reg_data;
                 ap.write(commit_pkt);
 
@@ -132,6 +138,40 @@ class cpu_scoreboard extends uvm_scoreboard;
         end
     endfunction
 
+    function bit conditional_compare(cpu_commit_pkt exp, cpu_commit_pkt act);
+        bit match = 1;
+
+        if (exp.wr_en !== act.wr_en) begin
+            match = 0;
+        end
+        if (exp.dest_valid !== act.dest_valid) begin
+            match = 0;
+        end
+        if (exp.dest_valid) begin
+            if (exp.arch_reg_addr !== act.arch_reg_addr) begin
+                match = 0;
+            end
+            if (exp.reg_data !== act.reg_data) begin
+                match = 0;
+            end
+        end
+        if (exp.store_en !== act.store_en) begin
+            match = 0;
+        end
+        if (exp.store_en) begin
+            if (exp.store_addr !== act.store_addr) begin
+                match = 0;
+            end
+            if (exp.store_data !== act.store_data) begin
+                match = 0;
+            end
+        end
+        if (exp.pc !== act.pc) begin
+            match = 0;
+        end
+        return match;
+    endfunction
+
     // Called when Input Monitor sees an instruction entering the pipeline
     virtual function void write(cpu_commit_pkt pkt);
         cpu_commit_pkt exp_pkt;
@@ -149,7 +189,7 @@ class cpu_scoreboard extends uvm_scoreboard;
         void'($fgets(trace_line, file_h));
         current_line_num += 2;
         exp_pkt.wr_en = 1;
-        // {dest_valid} {register address} {store_en} {store_addr} {store_data} {next_pc} 
+        // {dest_valid} {register address} {store_en} {store_addr} {store_data} {pc} 
         parsing_code = $sscanf(
             trace_line,
             "%d %d %d 0x%h 0x%h 0x%h 0x%h",
@@ -158,16 +198,17 @@ class cpu_scoreboard extends uvm_scoreboard;
             exp_pkt.store_en,
             exp_pkt.store_addr,
             exp_pkt.store_data,
-            exp_pkt.next_pc,
+            exp_pkt.pc,
             exp_pkt.reg_data
         );
         if (parsing_code != 7) begin
             `uvm_fatal("TRACE_ERR", $sformatf("Failed to parse trace line at line %0d: %s", current_line_num, trace_line))
             return;
         end
-        if (!exp_pkt.compare(pkt)) begin
-            `uvm_fatal("MISMATCH", $sformatf("Mismatch at line %0d!", current_line_num))
-            `uvm_fatal("MISMATCH", $sformatf("Expected: %p | Actual: %p", exp_pkt, pkt));
+        // if (!exp_pkt.compare(pkt)) begin
+        if (!conditional_compare(exp_pkt, pkt)) begin
+            `uvm_error("MISMATCH", $sformatf("Mismatch at line %0d!", current_line_num))
+            `uvm_fatal("MISMATCH", $sformatf("\nExpected:\t%s\nActual:  \t%s", exp_pkt.convert2string(), pkt.convert2string()));
         end else begin
             `uvm_info("MATCH", $sformatf("Match at line %0d!", current_line_num), UVM_LOW)
         end
@@ -265,7 +306,7 @@ module tb_top;
         .commit_decode_pkt(commit_if.commit_decode_pkt)
     );
     assign commit_if.store_buffer_commit_pkt = dut.store_buffer_commit_pkt;
-    assign commit_if.pc = dut.instr_fetch_stage_inst.pc;
+    // assign commit_if.pc = dut.commit_decode_pkt.pc;
     assign commit_if.reg_data = dut.issue_stage_inst.physical_register.reg_mem[commit_if.commit_decode_pkt.phys_reg_addr];
 
     initial begin

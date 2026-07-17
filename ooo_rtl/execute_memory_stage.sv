@@ -463,7 +463,7 @@ import writeback_pkg::*;
     end
 
     always_comb begin
-        if (exception_i) begin
+        if (exception_i || !en_i) begin
             mem_addr_pkt_o = '{default:'0};
         end else begin
             mem_addr_pkt_o.wr_en = en_i;
@@ -479,8 +479,13 @@ import writeback_pkg::*;
 
     logic [DATA_WIDTH-1:0] rd_addr_adj;
     logic [DATA_WIDTH-1:0] wr_addr_adj;
-    assign rd_addr_adj = addr - DATA_ADDR_OFFSET;
-    assign wr_addr_adj = store_buffer_commit_pkt_i.addr - DATA_ADDR_OFFSET;
+    `ifdef DEBUG
+        assign rd_addr_adj = addr - DATA_ADDR_OFFSET;
+        assign wr_addr_adj = store_buffer_commit_pkt_i.addr - DATA_ADDR_OFFSET;
+    `else
+        assign rd_addr_adj = addr;
+        assign wr_addr_adj = store_buffer_commit_pkt_i.addr;
+    `endif
 
     sram_sync_read_dual_port_vari_width_write #(
     .ADDR_WIDTH(MEM_INDEX_WIDTH),

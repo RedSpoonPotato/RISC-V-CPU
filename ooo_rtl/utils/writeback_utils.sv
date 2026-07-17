@@ -25,6 +25,10 @@ package writeback_pkg;
         logic [4:0] arch_reg_addr;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
         // logic [$clog2(ROB_COUNT)-1:0] rob_count;
+
+        `ifdef DEBUG
+        logic [DATA_WIDTH-1:0] pc;
+        `endif
     } rob_instance_pkt_t;
 
 
@@ -49,6 +53,9 @@ package writeback_pkg;
         logic [4:0] arch_reg_addr;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
         // logic [$clog2(ROB_COUNT)-1:0] rob_count;
+        `ifdef DEBUG
+        logic [DATA_WIDTH-1:0] pc;
+        `endif
     } rob_entry_t;
 
     typedef struct packed {
@@ -67,6 +74,10 @@ package writeback_pkg;
         logic [$clog2(PRF_COUNT)-1:0] phys_reg_addr;
         logic [4:0] arch_reg_addr;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
+
+        `ifdef DEBUG
+        logic [DATA_WIDTH-1:0] pc;
+        `endif
     } commit_stage_pkt_t;
 
     typedef struct packed {
@@ -92,6 +103,9 @@ package writeback_pkg;
         rob_entry.phys_reg_addr = rob_instance_pkt_i.phys_reg_addr;
         rob_entry.arch_reg_addr = rob_instance_pkt_i.arch_reg_addr;
         rob_entry.prev_phys_reg_addr = rob_instance_pkt_i.prev_phys_reg_addr;
+        `ifdef DEBUG
+        rob_entry.pc = rob_instance_pkt_i.pc;
+        `endif
         return rob_entry;
     endfunction
 
@@ -107,6 +121,10 @@ package writeback_pkg;
         commit_pkt.phys_reg_addr = rob_entry_i.phys_reg_addr;
         commit_pkt.arch_reg_addr = rob_entry_i.arch_reg_addr;
         commit_pkt.prev_phys_reg_addr = rob_entry_i.prev_phys_reg_addr;
+        `ifdef DEBUG
+        commit_pkt.pc = rob_entry_i.pc;
+        `endif
+
         return commit_pkt;
     endfunction
         

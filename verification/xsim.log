@@ -3,8 +3,8 @@
 # SW Build 6140274 on Wed May 21 22:58:25 MDT 2025
 # IP Build 6138677 on Thu May 22 03:10:11 MDT 2025
 # SharedData Build 6139179 on Tue May 20 17:58:58 MDT 2025
-# Start of session at: Tue Jul 14 04:05:02 2026
-# Process ID         : 824444
+# Start of session at: Fri Jul 17 05:25:50 2026
+# Process ID         : 339900
 # Current directory  : /home/developer/RTL/RISC-V-CPU/verification
 # Command line       : xsim -source {xsim.dir/tb_sim/xsim_script.tcl}
 # Log file           : /home/developer/RTL/RISC-V-CPU/verification/xsim.log
@@ -13,13 +13,13 @@
 # Platform           : Ubuntu
 # Operating System   : Ubuntu 22.04.3 LTS
 # Processor Detail   : Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
-# CPU Frequency      : 3999.997 MHz
+# CPU Frequency      : 3999.992 MHz
 # CPU Physical cores : 4
 # CPU Logical cores  : 8
 # Host memory        : 15713 MB
 # Swap memory        : 4294 MB
 # Total Virtual      : 20008 MB
-# Available Virtual  : 13234 MB
+# Available Virtual  : 14554 MB
 #-----------------------------------------------------------
 start_gui
 WARNING: [Board 49-26] cannot add Board Part xilinx.com:emb-plus-vpr-4616:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/emb-plus-vpr-4616/1.0/board.xml as part xcve2302-sfva784-2mp-e-s specified in board_part file is either invalid or not available
@@ -117,24 +117,36 @@ UVM-1.2
 
 UVM_INFO @ 0: reporter [RNTST] Running test riscv_base_test...
 UVM_INFO /home/developer//tools/Xilinx/2025.1/Vivado/data/system_verilog/uvm_1.2/xlnx_uvm_package.sv(20867) @ 0: reporter [UVM/COMP/NAMECHECK] This implementation of the component name checks requires DPI to be enabled
-UVM_FATAL /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(233) @ 1000000: uvm_test_top [TIMEOUT] Simulation timed out waiting for tohost write!
-UVM_INFO /home/developer//tools/Xilinx/2025.1/Vivado/data/system_verilog/uvm_1.2/xlnx_uvm_package.sv(13673) @ 1000000: reporter [UVM/REPORT/SERVER] 
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 70000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 80000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 4!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 90000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 6!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 8!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 10!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 180000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 12!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 300000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 14!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 310000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 16!
+UVM_ERROR /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(210) @ 320000: uvm_test_top.env.cpu_scoreboard [MISMATCH] Mismatch at line 18!
+UVM_FATAL /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(211) @ 320000: uvm_test_top.env.cpu_scoreboard [MISMATCH] 
+Expected:	PC: 'h80000010 | DestValid: 0 | ArchReg: 0 | StoreEn: 0001 | StoreAddr: 'h80010101 | StoreData: 'h1 | RegData: 'h0
+Actual:  	PC: 'h80000020 | DestValid: 1 | ArchReg: 10 | StoreEn: 0000 | StoreAddr: 'h0 | StoreData: 'h0 | RegData: 'h11
+UVM_INFO /home/developer//tools/Xilinx/2025.1/Vivado/data/system_verilog/uvm_1.2/xlnx_uvm_package.sv(13673) @ 320000: reporter [UVM/REPORT/SERVER] 
 --- UVM Report Summary ---
 
 ** Report counts by severity
-UVM_INFO :    3
+UVM_INFO :   11
 UVM_WARNING :    0
-UVM_ERROR :    0
+UVM_ERROR :    1
 UVM_FATAL :    1
 ** Report counts by id
+[MATCH]     8
+[MISMATCH]     2
 [RNTST]     1
-[TIMEOUT]     1
 [UVM/COMP/NAMECHECK]     1
 [UVM/RELNOTES]     1
 
-$finish called at time : 1 us : File "/home/developer//tools/Xilinx/2025.1/Vivado/data/system_verilog/uvm_1.2/xlnx_uvm_package.sv" Line 18538
-xsim: Time (s): cpu = 00:00:18 ; elapsed = 00:00:07 . Memory (MB): peak = 13157.168 ; gain = 771.879 ; free physical = 5258 ; free virtual = 11877
-source exit.tcl
-# save_wave_config wcfgs/latest.wcfg
-# quit
-INFO: [Common 17-206] Exiting xsim at Tue Jul 14 04:28:26 2026...
+$finish called at time : 320 ns : File "/home/developer//tools/Xilinx/2025.1/Vivado/data/system_verilog/uvm_1.2/xlnx_uvm_package.sv" Line 18538
+xsim: Time (s): cpu = 00:00:11 ; elapsed = 00:00:05 . Memory (MB): peak = 13089.176 ; gain = 631.883 ; free physical = 6796 ; free virtual = 13078
+close_sim
+INFO: [Simtcl 6-16] Simulation closed
+exit
+INFO: [Common 17-206] Exiting xsim at Fri Jul 17 05:36:41 2026...

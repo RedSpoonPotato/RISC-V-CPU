@@ -75,10 +75,11 @@ def read_trace_log_file(
             else:
                 store_addr = 0
                 store_data = 0
-            if i == len(map_list) - 1:
-                next_pc = dict["pc"] + 4
-            else:
-                next_pc = map_list[i+1]["pc"]
+            # if i == len(map_list) - 1:
+            #     next_pc = dict["pc"] + 4
+            # else:
+            #     next_pc = map_list[i+1]["pc"]
+            pc = dict["pc"]
             if "data" in dict:
                 reg_data = dict["data"]
             else:
@@ -89,7 +90,7 @@ def read_trace_log_file(
                 str(int(store_en)) + " " + 
                 str(hex(store_addr)) + " " + 
                 str(hex(store_data)) + " " + 
-                str(hex(next_pc)) + " " + 
+                str(hex(pc)) + " " + 
                 str(hex(reg_data)) + 
                 "\n"
             )

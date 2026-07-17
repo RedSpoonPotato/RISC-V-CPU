@@ -203,18 +203,18 @@ module decode_stage
         .exception_i(exception_ff) // same functionality as rst
     );
 
-    logic [31:0] instr_ff = if_input_ff.instr;
+    logic [31:0] instr_ff;
+    assign instr_ff = if_input_ff.instr;
 
     // setting rest of rename table inputs
     always_comb begin
         rename_table_prf_dest_ptr = '{default:'0};
         rename_table_arf_ptr = '{default:'0};
-        rename_table_decode_en = 0;
         if (free_list_rd_en) begin
             rename_table_prf_dest_ptr = free_list_free_ptr;
             rename_table_arf_ptr = instr_ff[11:7];
-            rename_table_decode_en = 1;
         end
+        rename_table_decode_en = free_list_rd_en;
         rename_table_arf_src0 = instr_ff[19:15];
         rename_table_arf_src1 = instr_ff[24:20];
         // for rob_logic reading from rename table
@@ -229,7 +229,7 @@ module decode_stage
     logic mem_instr;
 
     logic master_instr_valid; // NEED TO SET, should depend alos upon exception
-    assign master_instr_valid = if_input_ff.instr_valid && exception_ff;
+    assign master_instr_valid = if_input_ff.instr_valid && !exception_ff;
 
     // setting cntrl instructions
     always_comb begin
@@ -251,14 +251,23 @@ module decode_stage
         // i think this is bad, this is really a stall condition
         // if ((free_list_empty && issue_queue_entry.dest_valid) || issue_queue_full)
             // free_list_rd_en = 0;
-        free_list_rd_en = master_instr_valid && issue_queue_entry.dest_valid && !free_list_empty;
+        free_list_rd_en = master_instr_valid && 
+            issue_queue_entry.dest_valid && 
+            !stall_o && 
+            instr_ff[11:7] != 5'b00000;
 
         // determined by operands being ready
         // free list not being empty, assuming it needs it
+        // new_instr_ready = 
+        //     (!(has_dest(instr_ff[6:0]) && free_list_empty) ||
+        //     !(has_src0(instr_ff[6:0]) && rename_table_src0_pending) ||
+        //     !(has_src1(instr_ff[6:0]) && rename_table_src1_pending)) &&
+        //     master_instr_valid;
+
         new_instr_ready = 
-            (!(has_dest(instr_ff[6:0]) && free_list_empty) ||
-            !(has_src0(instr_ff[6:0]) && rename_table_src0_pending) ||
-            !(has_src1(instr_ff[6:0]) && rename_table_src1_pending)) &&
+            !((has_dest(instr_ff[6:0]) && free_list_empty) ||
+            (has_src0(instr_ff[6:0]) && rename_table_src0_pending) ||
+            (has_src1(instr_ff[6:0]) && rename_table_src1_pending)) &&
             master_instr_valid;
         
         iq_instr_ready = !issue_queue_empty && !issue_queue_all_stalled && !exception_ff;
@@ -303,10 +312,10 @@ module decode_stage
         if (master_instr_valid) begin
             issue_queue_entry = decode_pkg::instr_to_iq_entry_partial(instr_ff, master_instr_valid);
             // filling in remanining values (free list being full should count as stalling)
-            // iq being full should also count as sstalling
+            // iq being full should also count as stalling
             // if stalling, comeback to this valid signal
             // issue_queue_entry.valid = !new_instr_ready || iq_instr_ready;
-            issue_queue_entry.valid = iq_instr_ready && master_instr_valid; // valid in this case means wr_en to iq
+            issue_queue_entry.valid = (!new_instr_ready || iq_instr_ready) && master_instr_valid; // valid in this case means wr_en to iq
             issue_queue_entry.dest_ptr = free_list_free_ptr;
             issue_queue_entry.src0_pending = rename_table_src0_pending;
             issue_queue_entry.src0_ptr = issue_queue_entry.src0_valid ? rename_table_prf_src0 : '{default:'0};
@@ -351,6 +360,9 @@ module decode_stage
             rob_instance_pkt_o.phys_reg_addr = issue_queue_entry.dest_ptr;
             rob_instance_pkt_o.arch_reg_addr = instr_ff[11:7];
             rob_instance_pkt_o.prev_phys_reg_addr = rename_table_rob_dest_prf; /// what about J and U types
+            `ifdef DEBUG
+            rob_instance_pkt_o.pc = if_input_ff.pc;
+            `endif
 
             spec_exec_buffer_instance_pkt_o.wr_en = cntrl_instr;
             // to issue
@@ -393,21 +405,24 @@ import general_pkg::*;
     // state
     output logic none_free_o
 );
-    logic [PRF_COUNT-1:0] free_list; // 1'b1 means free
-    logic [PRF_COUNT-1:0] commit_list; // 1'b1 means committed
+    logic [PRF_COUNT-2:0] free_list; // 1'b1 means free
+    logic [PRF_COUNT-2:0] commit_list; // 1'b1 means committed
+    logic [$clog2(PRF_COUNT)-1:0] free_ptr_int;
+
     // state
     assign none_free_o = ~|free_list;
     // reading
     logic found;
     always_comb begin
-        free_ptr_o = PRF_COUNT-1;
+        free_ptr_int = PRF_COUNT-2;
         found = 0;
-        for (int i = 0; i < PRF_COUNT; i++) begin
+        for (int i = 0; i < PRF_COUNT-1; i++) begin
             if (free_list[i] == 1 && !found) begin
-                free_ptr_o = i;
+                free_ptr_int = i;
                 found = 1;
             end
         end
+        free_ptr_o = free_ptr_int + 1;
     end
     
     always_ff @(posedge clk) begin
@@ -420,17 +435,27 @@ import general_pkg::*;
             end else begin
                 // writing
                 if (wr_en_i) begin
-                    free_list[prev_phys_ptr_i] <= 1;
-                    commit_list[prev_phys_ptr_i] <= 0;
-                    commit_list[commited_ptr_i] <= 1;
+                    if (prev_phys_ptr_i != '0) begin
+                        free_list[prev_phys_ptr_i - 1] <= 1;
+                        commit_list[prev_phys_ptr_i - 1] <= 0;
+                    end
+                    if (commited_ptr_i != '0) begin
+                        commit_list[commited_ptr_i - 1] <= 1;
+                    end
                 end
                 // reading
                 if (!none_free_o && rd_en_i) begin
-                    free_list[free_ptr_o] <= 0;
+                    free_list[free_ptr_int] <= 0;
                 end
             end
         end
     end
+
+    assert property (
+        @(posedge clk) disable iff (rst || exception_i)
+        !(rd_en_i && none_free_o)
+    );
+
 endmodule
 
 // used for knowing where to commit: idk bout that
@@ -504,7 +529,7 @@ import decode_pkg::*;
                     rename_table[i].pending <= 0;
                 end
             end else begin
-                if (decode_en_i) begin
+                if (decode_en_i && arf_ptr_i != '0) begin
                     rename_table[arf_ptr_i].prf_ptr <= prf_ptr_i;
                     rename_table[arf_ptr_i].pending <= 1'b1;
                 end
@@ -522,12 +547,44 @@ import decode_pkg::*;
             end
         end
     end
+
+    assert property (
+        @(posedge clk) disable iff (rst)
+        !(decode_en_i && arf_ptr_i == '0 && prf_ptr_i != '0)
+    );
+
+    assert property (
+        @(posedge clk) disable iff (rst)
+        (rename_table[0].prf_ptr == '0 && rename_table[0].pending == 1'b0)
+    );
     
+    assert property (
+        @(posedge clk) disable iff (rst)
+        (writeback_en_i && rename_table[arf_src0_i].prf_ptr == prf_ptr_sb_i) |-> (arf_src0_i == arf_ptr_sb_i)
+    );
+
+    assert property (
+        @(posedge clk) disable iff (rst)
+        (writeback_en_i && rename_table[arf_src1_i].prf_ptr == prf_ptr_sb_i) |-> (arf_src1_i == arf_ptr_sb_i)
+    );
+
     // read logic (asynchronous)
     assign prf_src0_o = rename_table[arf_src0_i].prf_ptr;
-    assign src0_pending_o = rename_table[arf_src0_i].pending;
     assign prf_src1_o = rename_table[arf_src1_i].prf_ptr;
-    assign src1_pending_o = rename_table[arf_src1_i].pending;
+    // forwarding
+    always_comb begin
+        if (writeback_en_i && rename_table[arf_src0_i].prf_ptr == prf_ptr_sb_i) begin
+            src0_pending_o = 1'b0;
+        end else begin
+            src0_pending_o = rename_table[arf_src0_i].pending;
+        end
+
+        if (writeback_en_i && rename_table[arf_src1_i].prf_ptr == prf_ptr_sb_i) begin
+            src1_pending_o = 1'b0;
+        end else begin
+            src1_pending_o = rename_table[arf_src1_i].pending;
+        end
+    end
     assign rob_dest_prf_o = rename_table[rob_dest_arf_i].prf_ptr;
 
 endmodule
@@ -623,14 +680,6 @@ module issue_queue
                     if (!iq[i].valid) begin
                         iq[i].valid <= 1;
                         iq[i][$bits(iq_entry_t)-2:0] <= iq_entry_i[$bits(iq_entry_t)-2:0];
-                        // iq[i].valid <= 1;    
-                        // iq[i].op <= grab_compr_instr(instr);
-                        // iq[i].imm <= imm_gen(instr); // dont use
-                        // iq[i].speculative <= is_speculative(instr[6:0]);
-                        // iq[i].dest_valid <= is_dest(instr[6:0]);
-                        // iq[i].dest_ptr <= dest_ptr;
-                        // iq[i].src0_valid <= has_src0(instr[6:0]);
-                        // // iq[i].pe
                         break;
                     end
                 end
@@ -678,7 +727,7 @@ import general_pkg::*;
     logic [MAX_EXEC_CYCLE+1:0] exec_stage_slots_int;
 
     always_ff @(posedge clk) begin
-        if (rst ||exception_i) begin
+        if (rst || exception_i) begin
             exec_stage_slots_int <= '{default:'0};
         end else begin
             for (int i = MAX_EXEC_CYCLE+1; i >= 0; i--) begin

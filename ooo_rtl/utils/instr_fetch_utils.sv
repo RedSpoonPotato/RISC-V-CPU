@@ -24,7 +24,11 @@ package instr_fetch_pkg;
     // may have to change back for synth
     // localparam INSTR_MEM_FILE = "memory/instr_mem_simple.mem";
     localparam INSTR_MEM_FILE = "../verification/python_scripts/rtl_hexs/init_spike.hex";
-    localparam INSTR_ADDR_OFFSET = 32'h80010100;
+
+    `ifdef DEBUG
+        localparam INSTR_ADDR_OFFSET = 32'h80000000;
+    `endif
+
 
     typedef struct packed {
         logic wr_en;

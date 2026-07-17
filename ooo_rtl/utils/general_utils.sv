@@ -2,8 +2,12 @@
 package general_pkg;
 
     // !!! PLEASE CHANGE THESE AFTER DEBUGGING
-    localparam INSTR_ADDR_OFFSET = 32'h80000000;
-    localparam DATA_ADDR_OFFSET  = 32'h80010000;
+    // localparam INSTR_ADDR_OFFSET = 32'h80000000;
+    // localparam DATA_ADDR_OFFSET  = 32'h80010000;
+
+    `ifdef DEBUG
+        localparam DATA_ADDR_OFFSET  = 32'h80010100;
+    `endif
 
     // CHECK ALL OF THEEEESE
     localparam DATA_WIDTH = 32;
@@ -211,15 +215,15 @@ module register_file_async_read #(
         if (rst) begin
             reg_mem <= '{default:'0};
         end else begin
-            if (write_en_i) begin
+            if (write_en_i && addr_w_i != '0) begin
                 reg_mem[addr_w_i] <= data_w_i;
             end
         end
     end
 
     always_comb begin : Reading
-        data_r_1_o = reg_mem[addr_r_1_i];
-        data_r_2_o = reg_mem[addr_r_2_i];
+        data_r_1_o = (addr_r_1_i == '0) ? '0 : reg_mem[addr_r_1_i];
+        data_r_2_o = (addr_r_2_i == '0) ? '0 : reg_mem[addr_r_2_i];
     end
 
 endmodule

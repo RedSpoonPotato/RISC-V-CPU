@@ -6,8 +6,8 @@ Multi-threading is on. Using 6 slave threads.
 WARNING: [XSIM 43-3431] One or more environment variables have been detected which affect the operation of the C compiler. These are typically not set in standard installations and are not tested by AMD, however they may be appropriate for your system, so the flow will attempt to continue.  If errors occur, try running xelab with the "-mt off -v 1" switches to see more information from the C compiler. The following environment variables have been detected:
 Starting static elaboration
 Pass Through NonSizing Optimizer
-WARNING: [VRFC 10-9543] actual bit length 30 differs from formal bit length 10 for port 'addr' [/home/developer/RTL/RISC-V-CPU/ooo_rtl/instr_fetch_stage.sv:129]
-WARNING: [VRFC 10-3645] port 'empty_o' remains unconnected for this instance [/home/developer/RTL/RISC-V-CPU/ooo_rtl/instr_fetch_stage.sv:257]
+WARNING: [VRFC 10-9543] actual bit length 30 differs from formal bit length 10 for port 'addr' [/home/developer/RTL/RISC-V-CPU/ooo_rtl/instr_fetch_stage.sv:133]
+WARNING: [VRFC 10-3645] port 'empty_o' remains unconnected for this instance [/home/developer/RTL/RISC-V-CPU/ooo_rtl/instr_fetch_stage.sv:261]
 WARNING: [VRFC 10-8967] first argument of $fatal is invalid; expected 0, 1 or 2 [/home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv:61]
 WARNING: [VRFC 10-8967] first argument of $fatal is invalid; expected 0, 1 or 2 [/home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv:272]
 Completed static elaboration
@@ -18,8 +18,8 @@ WARNING: [XSIM 43-4468] File : /proj/primebuilds/9999.0_PRIME_0428_0031/installs
 Completed simulation data flow analysis
 Time Resolution for simulation is 1ps
 Compiling package work.$unit_tb_top_sv
-WARNING: [XSIM 43-3373] "/home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv" Line 148. System function $fgets is used as system task. This system function should have a LHS e.g. x=$fgets().
-WARNING: [XSIM 43-3373] "/home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv" Line 149. System function $fgets is used as system task. This system function should have a LHS e.g. x=$fgets().
+WARNING: [XSIM 43-3373] "/home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv" Line 188. System function $fgets is used as system task. This system function should have a LHS e.g. x=$fgets().
+WARNING: [XSIM 43-3373] "/home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv" Line 189. System function $fgets is used as system task. This system function should have a LHS e.g. x=$fgets().
 Compiling package work.core_pkg
 Compiling package work.instr_fetch_pkg
 Compiling package work.general_pkg

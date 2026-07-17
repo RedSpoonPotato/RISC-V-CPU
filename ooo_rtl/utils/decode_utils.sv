@@ -163,6 +163,7 @@ package decode_pkg;
         out.imm_valid   = in.imm_valid;
         out.imm_compr   = in.imm_compr;
         out.speculative = in.speculative;
+        out.store       = in.store;
         // out.dest_valid  = in.dest_valid;
         out.dest_ptr    = in.dest_ptr;
         // out.src0_valid  = in.src0_valid;

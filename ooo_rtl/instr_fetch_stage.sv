@@ -115,7 +115,11 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
     logic [DATA_WIDTH-1:0] instr_mem_addr;
     assign instr_mem_addr = instr_fetch_ctrl_pkt_i.valid ? instr_fetch_ctrl_pkt_i.instr_addr : pc;
     logic [DATA_WIDTH-1:0] instr_mem_addr_adj;
-    assign instr_mem_addr_adj = instr_mem_addr - INSTR_ADDR_OFFSET;
+    `ifdef DEBUG
+        assign instr_mem_addr_adj = instr_mem_addr - INSTR_ADDR_OFFSET;
+    `else
+        assign instr_mem_addr_adj = instr_mem_addr;
+    `endif
 
     // synthesizes to distrbuted ram
     sram_async_read #(
@@ -178,7 +182,7 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
     logic master_stall;
     assign master_stall = stall_i || trgt_shift_buff_full;
     // assign instr_valid  !master_stall;
-    assign if_output_pkt_o.instr_valid = !master_stall;
+    assign if_output_pkt_o.instr_valid = !master_stall && !rst;
 
     always_ff @(posedge clk) begin
         if (rst) begin

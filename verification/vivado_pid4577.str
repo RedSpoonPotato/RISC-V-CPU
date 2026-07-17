@@ -1,0 +1,609 @@
+/*
+
+AMD xsim v2025.1 (64-bit) [Major: 2025, Minor: 1]
+SW Build: 6140274 on Wed May 21 22:58:25 MDT 2025
+IP Build: 6138677 on Thu May 22 03:10:11 MDT 2025
+IP Build: 6138677 on Thu May 22 03:10:11 MDT 2025
+
+Process ID (PID): 4577
+License: Customer
+Mode: GUI Mode
+
+Current time: 	Wed Jul 15 19:16:12 UTC 2026
+Time zone: 	Coordinated Universal Time (Etc/UTC)
+
+OS: Ubuntu
+OS Version: 6.18.33.2-microsoft-standard-WSL2
+OS Architecture: amd64
+Available processors (cores): 8
+LSB Release Description: DISTRIB_ID=Ubuntu
+
+Display: 0
+Screen size: 2560x1440
+Local screen bounds: x = 0, y = 0, width = 2560, height = 1440
+Screen resolution (DPI): 100
+Available screens: 2
+Default font: family=Dialog,name=Dialog,style=plain,size=12
+Scale size: 12
+OS font scaling: 100%
+Anti-Alias Enabled: true
+
+Java version: 	21.0.1 64-bit
+
+Java home: 	/home/developer/tools/Xilinx/2025.1/tps/lnx64/jre21.0.1_12
+Java executable: 	/home/developer/tools/Xilinx/2025.1/tps/lnx64/jre21.0.1_12/bin/java
+Java arguments: 	[-Dsun.java2d.pmoffscreen=false, -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2, -Dsun.java2d.xrender=false, -Dsun.java2d.uiScale.enabled=false, -Dswing.aatext=true, -XX:-UsePerfData, -Djdk.map.althashing.threshold=512, -XX:StringTableSize=4072, -XX:+UseStringDeduplication, -XX:MaxGCPauseMillis=200, -XX:ParallelGCThreads=4, -XX:+ParallelRefProcEnabled, --add-opens=java.desktop/javax.swing.plaf.synth=ALL-UNNAMED, --add-opens=java.base/java.nio=ALL-UNNAMED, --add-opens=java.desktop/sun.swing=ALL-UNNAMED, --add-opens=java.desktop/javax.swing=ALL-UNNAMED, --add-opens=java.desktop/javax.swing.tree=ALL-UNNAMED, --add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED, --add-opens=java.desktop/javax.swing.plaf.synth=ALL-UNNAMED, --add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED, --add-opens=java.desktop/javax.swing=ALL-UNNAMED, --add-opens=java.desktop/javax.swing.tree=ALL-UNNAMED, --add-opens=java.desktop/java.awt.event=ALL-UNNAMED, --add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED, --add-exports=java.desktop/javax.swing.plaf.synth=ALL-UNNAMED, --add-exports=java.base/java.nio=ALL-UNNAMED, --add-exports=java.desktop/sun.swing=ALL-UNNAMED, --add-exports=java.desktop/javax.swing=ALL-UNNAMED, --add-exports=java.desktop/javax.swing.tree=ALL-UNNAMED, --add-exports=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED, --add-exports=java.desktop/sun.swing=ALL-UNNAMED, --add-exports=java.desktop/sun.swing.table=ALL-UNNAMED, --add-exports=java.desktop/sun.swing.plaf.synth=ALL-UNNAMED, --add-exports=java.desktop/sun.awt.shell=ALL-UNNAMED, --add-exports=java.base/sun.security.action=ALL-UNNAMED, --add-exports=java.desktop/sun.font=ALL-UNNAMED, --add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED, -XX:NewSize=80m, -XX:MaxNewSize=80m, -Xms812m, -Xmx6144m, -Xss10m, -Xrs]
+Java initial memory (-Xms): 	812 MB
+Java maximum memory (-Xmx):	 6 GB
+
+User name: 	developer
+User home directory: /home/developer
+User working directory: /home/developer/RTL/RISC-V-CPU/verification
+User country: 	US
+User language: 	en
+User locale: 	en_US
+
+RDI_BASEROOT: /home/developer/tools/Xilinx/2025.1
+HDI_APPROOT: /home/developer/tools/Xilinx/2025.1/Vivado
+RDI_DATADIR: /home/developer/tools/Xilinx/2025.1/data
+RDI_BINDIR: /home/developer/tools/Xilinx/2025.1/Vivado/bin
+
+Vivado preferences file: /home/developer/.Xilinx/xsim/2025.1/vivado.xml
+Vivado preferences directory: /home/developer/.Xilinx/xsim/2025.1/
+Vivado layouts directory: /home/developer/.Xilinx/xsim/2025.1/data/layouts
+PlanAhead jar file: 	/home/developer/tools/Xilinx/2025.1/Vivado/lib/classes/planAhead.jar
+Vivado log file: 	/home/developer/RTL/RISC-V-CPU/verification/xsim.log
+Vivado journal file: 	/home/developer/RTL/RISC-V-CPU/verification/xsim.jou
+Engine tmp dir: 	./.Xil/xsim-4577-95b2b41d58b0
+Non-Default Parameters:	[]
+
+Xilinx & AMD Environment Variables
+--------------------------------------------------------------------------------------------
+RDI_APPROOT: /home/developer/tools/Xilinx/2025.1/Vivado
+RDI_BASEROOT: /home/developer/tools/Xilinx/2025.1
+RDI_BINROOT: /home/developer/tools/Xilinx/2025.1/Vivado/bin
+RDI_BUILD: yes
+RDI_DATADIR: /home/developer/tools/Xilinx/2025.1/Vivado/data
+RDI_INSTALLROOT: /home/developer/tools/Xilinx
+RDI_INSTALLVER: Vivado
+RDI_JAVA_PLATFORM: 
+RDI_JAVA_VERSION: 21.0.1_12
+RDI_LIBDIR: /home/developer/tools/Xilinx/2025.1/Vivado/lib/lnx64.o/Ubuntu/22:/home/developer/tools/Xilinx/2025.1/Vivado/lib/lnx64.o/Ubuntu:/home/developer/tools/Xilinx/2025.1/Vivado/lib/lnx64.o
+RDI_OPT_EXT: .o
+RDI_PATCHROOT: 
+RDI_PLATFORM: lnx64
+RDI_PREPEND_PATH: /home/developer/tools/Xilinx/2025.1/Vitis/bin:/home/developer/tools/Xilinx/2025.1/Vivado/ids_lite/ISE/bin/lin64
+RDI_PROG: /home/developer/tools/Xilinx/2025.1/Vivado/bin/unwrapped/lnx64.o/xsim
+RDI_SESSION_INFO: /home/developer/RTL/RISC-V-CPU/verification:95b2b41d58b0_1784142946_4527
+RDI_SHARED_DATA: /home/developer/tools/Xilinx/SharedData/Vivado/data
+RDI_TPS_ROOT: /home/developer/tools/Xilinx/2025.1/Vivado/tps/lnx64
+RDI_USE_JDK21: 1
+XILINX: /home/developer/tools/Xilinx/2025.1/Vivado/ids_lite/ISE
+XILINX_DSP: /home/developer/tools/Xilinx/2025.1/Vivado/ids_lite/ISE
+XILINX_HLS: /home/developer//tools/Xilinx/2025.1/Vitis
+XILINX_PLANAHEAD: /home/developer/tools/Xilinx/2025.1/Vivado
+XILINX_SDK: /home/developer/tools/Xilinx/2025.1/Vitis
+XILINX_VITIS: /home/developer//tools/Xilinx/2025.1/Vitis
+XILINX_VIVADO: /home/developer//tools/Xilinx/2025.1/Vivado
+
+
+GUI allocated memory:	812 MB
+GUI max memory:		6,144 MB
+Engine allocated memory: 2,031 MB
+
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+*/
+
+// TclEventType: START_GUI
+// Tcl Message: start_gui 
+// TclEventType: START_PROGRESS_DIALOG
+// TclEventType: LOAD_FEATURE
+// TclEventType: DEBUG_PROBE_SET_CHANGE
+// TclEventType: FLOW_ADDED
+// TclEventType: FILE_SET_NEW
+// TclEventType: RUN_ADD
+// TclEventType: RUN_CURRENT
+// TclEventType: PROJECT_DASHBOARD_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_CHANGE
+// TclEventType: PROJECT_DASHBOARD_GADGET_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_CHANGE
+// TclEventType: PROJECT_DASHBOARD_GADGET_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_CHANGE
+// TclEventType: PROJECT_DASHBOARD_GADGET_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_CHANGE
+// TclEventType: PROJECT_DASHBOARD_GADGET_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_CHANGE
+// TclEventType: PROJECT_NEW
+// Tcl Message: source xsim.dir/tb_sim/xsim_script.tcl 
+// Tcl Message: # set_param project.enableReportConfiguration 0 # load_feature core # current_fileset 
+// TclEventType: PROJECT_NEW
+// [GUI Memory]: 146 MB (+150273kb) [00:00:15]
+// [Engine Memory]: 2,024 MB (+1970948kb) [00:00:15]
+// WARNING: HEventQueue.dispatchEvent() is taking  2390 ms.
+// Tcl Message: INFO: [IP_Flow 19-234] Refreshing IP repositories INFO: [IP_Flow 19-1704] No user IP repositories specified INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/home/developer/tools/Xilinx/2025.1/Vivado/data/ip'. 
+// [GUI Memory]: 158 MB (+4919kb) [00:00:16]
+// Tcl Message: # xsim {tb_sim} -view {{wcfgs/latest.wcfg}} -tclbatch {init.tcl} 
+// HMemoryUtils.trashcanNow. Engine heap size: 2,061 MB. GUI used memory: 87 MB. Current time: 7/15/26, 7:16:13 PM UTC
+// TclEventType: SIMULATION_CREATE_SIMULATION_OBJECT
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// Tcl Message: Time resolution is 1 ps 
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: WAVEFORM_UPDATE_TITLE
+// TclEventType: WAVEFORM_OPEN_WCFG
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: WAVEFORM_OPEN_WCFG
+// TclEventType: WAVEFORM_DELAYED_MODEL_EVENT
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// [Engine Memory]: 2,147 MB (+22409kb) [00:00:19]
+// Tcl Message: open_wave_config wcfgs/latest.wcfg 
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_UPDATE_PROTOCOL_INSTANCE_TREE
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,165 MB. GUI used memory: 96 MB. Current time: 7/15/26, 7:16:16 PM UTC
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: SIMULATION_CLEAR_CURRENT_LINE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: SIMULATION_OBJECT_TREE_RESTORED
+// TclEventType: WAVEFORM_MODEL_EVENT
+// Tcl Message: source init.tcl 
+// Tcl Message: ## log_wave -recursive * ## run -all 
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: SIMULATION_UPDATE_LATEST_TIME
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: SIMULATION_CURRENT_SCOPE_CHANGED
+// TclEventType: SIMULATION_CURRENT_STACK_CHANGED
+// TclEventType: SIMULATION_UPDATE_STACK_FRAMES
+// TclEventType: SIMULATION_CURRENT_STACK_FRAME_CHANGED
+// TclEventType: SIMULATION_UPDATE_LOCALS
+// TclEventType: SIMULATION_UPDATE_SCOPE_TREE
+// TclEventType: SIMULATION_UPDATE_STACKS
+// TclEventType: SIMULATION_UPDATE_OBJECT_TREE
+// TclEventType: SIMULATION_STOPPED
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_MODEL_EVENT
+// TclEventType: SIMULATION_UPDATE_SIMULATION_STATE
+// TclEventType: STOP_PROGRESS_DIALOG
+// Tcl Message: xsim: Time (s): cpu = 00:00:18 ; elapsed = 00:00:06 . Memory (MB): peak = 13167.172 ; gain = 643.879 ; free physical = 6100 ; free virtual = 15997 
+// [Engine Memory]: 3,928 MB (+1755098kb) [00:00:22]
+dismissDialog("Sourcing Tcl script 'xsim.dir/tb_sim/xsim_script.tcl'"); // bk (Sourcing Tcl script 'xsim.dir/tb_sim/xsim_script.tcl' Progress)
+// TclEventType: STOP_PROGRESS_DIALOG
+// WARNING: HEventQueue.dispatchEvent() is taking  2044 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2674 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2611 ms.
+// [GUI Memory]: 167 MB (+1010kb) [00:01:56]
+// WARNING: HEventQueue.dispatchEvent() is taking  2621 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2498 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2847 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2622 ms.
+// Elapsed time: 226 seconds
+closeView(PAResourceOtoP.PAViews_CODE, "Code"); // J (PAResourceOtoP.PAViews_CODE, PlanAheadTabCode)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 3,936 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:20:06 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,296 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:20:07 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,296 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:20:07 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// WARNING: HEventQueue.dispatchEvent() is taking  2182 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2777 ms.
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,287 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:21:07 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 3,943 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:21:08 PM UTC
+// Elapsed time: 64 seconds
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, if_input_ff, .instr[31:0]]", 21, true); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE) - Node
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+selectGraphicalView(RDIResource.RDIViews_WAVEFORM_VIEWER, 331, 516); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform View_viewer)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+/********** leftMouseClick (1377, 699, true); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform View_viewer) **********/
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,293 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:21:13 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,293 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:21:13 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,293 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:21:18 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 3,949 MB. GUI used memory: 103 MB. Current time: 7/15/26, 7:21:19 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:21:22 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:21:22 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:21:25 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 3,978 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:21:59 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// Elapsed time: 51 seconds
+expandTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, iq[0:15]]", 36); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:22:04 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+expandTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, iq[0:15], [1]]", 30); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:22:13 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// WARNING: HEventQueue.dispatchEvent() is taking  2140 ms.
+// Elapsed time: 10 seconds
+collapseTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, iq[0:15]]", 16); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:22:22 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// WARNING: HEventQueue.dispatchEvent() is taking  2788 ms.
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 3,979 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:25:38 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// Elapsed time: 198 seconds
+expandTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, iq[0:15]]", 36); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:25:42 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:25:42 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:25:45 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 3,979 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:25:46 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// Elapsed time: 17 seconds
+collapseTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, iq[0:15], [1]]", 18); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE)
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:25:59 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+expandTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, iq[0:15], [2]]", 19); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:27:04 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:27:04 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 3,979 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:27:04 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:27:05 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:27:05 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:27:06 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 3,979 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:27:07 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:27:08 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:27:08 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// WARNING: HEventQueue.dispatchEvent() is taking  1990 ms.
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:27:15 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 3,979 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:27:15 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:27:21 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// Elapsed time: 83 seconds
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, issue_queue_entry, .src0_pending]", 16, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE)
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, issue_queue_entry, .src1_pending]", 19, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE)
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:27:24 PM UTC
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, issue_queue_entry, .src0_pending]", 16, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE)
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// WARNING: HEventQueue.dispatchEvent() is taking  1992 ms.
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,323 MB. GUI used memory: 102 MB. Current time: 7/15/26, 7:29:21 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// WARNING: HEventQueue.dispatchEvent() is taking  2183 ms.
+// HMemoryUtils.trashcanNow. Engine heap size: 3,979 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:29:38 PM UTC
+// Elapsed time: 155 seconds
+selectGraphicalView(RDIResource.RDIViews_WAVEFORM_VIEWER, 385, 703); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform View_viewer)
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+/********** leftMouseClick (1430, 884, true); // b (RDIResource.RDIViews_WAVEFORM_VIEWER, PlanAheadTabWaveform View_viewer) **********/
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_MOVE_CURSOR
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, issue_queue_entry, .src0_pending]", 25, false); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE)
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// HMemoryUtils.trashcanNow. Engine heap size: 2,324 MB. GUI used memory: 101 MB. Current time: 7/15/26, 7:30:08 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+selectTree(RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE, "[true, issue_queue_entry, .src0_ptr[4:0]]", 26, true); // k (RDIResource.WaveformNameTree_WAVEFORM_NAME_TREE) - Node
+// TclEventType: WAVEFORM_SELECTED_WAVE_OBJECT_NAMES
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// [GUI Memory]: 178 MB (+3260kb) [00:17:39]
+// WARNING: HEventQueue.dispatchEvent() is taking  1247 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1087 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1031 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1090 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2102 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2106 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1151 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2113 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1191 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2118 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2126 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2130 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1153 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2136 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1192 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2140 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1027 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2147 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1024 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2153 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1142 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2157 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1204 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2163 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1052 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2172 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1043 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2179 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1118 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2179 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1212 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2186 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1276 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2191 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1082 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2198 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1239 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2203 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1210 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2215 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1120 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2217 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1115 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2225 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1201 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2230 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1237 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2237 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1216 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2241 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1118 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2248 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1167 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2254 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1301 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2267 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1153 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2267 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1128 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2274 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1173 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2280 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1261 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2283 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1158 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2290 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1116 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2297 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1210 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2304 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1106 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2312 ms.
+// HMemoryUtils.trashcanNow. Engine heap size: 2,324 MB. GUI used memory: 102 MB. Current time: 7/15/26, 8:00:11 PM UTC
+// WARNING: HEventQueue.dispatchEvent() is taking  1267 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2317 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1116 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2325 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1207 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2331 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1105 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2337 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1238 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2342 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1083 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2349 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1211 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2356 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1164 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2362 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1157 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2367 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1135 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2377 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1168 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2379 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1152 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2389 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1176 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2390 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1132 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2395 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1160 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2403 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1228 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2409 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1135 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2414 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1064 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2424 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1357 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2429 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1367 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2436 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1385 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2434 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1292 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2422 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1350 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2435 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1357 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2406 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1382 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2432 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1351 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2391 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1371 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2431 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1453 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2373 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1352 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2430 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1512 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2360 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1354 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2425 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1481 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1320 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1319 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1365 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1346 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1341 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1441 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1357 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1345 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2054 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1349 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2059 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1424 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2066 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1366 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2070 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1456 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2075 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1355 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2081 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1364 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2087 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1398 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2093 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1429 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2102 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1442 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2105 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1362 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2111 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1349 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2118 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1434 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1339 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1343 ms.
+// HMemoryUtils.trashcanNow. Engine heap size: 2,324 MB. GUI used memory: 102 MB. Current time: 7/15/26, 8:30:12 PM UTC
+// WARNING: HEventQueue.dispatchEvent() is taking  1361 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1348 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1606 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2412 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2419 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2424 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2290 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1379 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2294 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  2355 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1088 ms.
+// HMemoryUtils.trashcanNow. Engine heap size: 2,324 MB. GUI used memory: 102 MB. Current time: 7/15/26, 9:00:14 PM UTC
+// WARNING: HEventQueue.dispatchEvent() is taking  1469 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1635 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1027 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1229 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1083 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1173 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1203 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1121 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1115 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1216 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1285 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1062 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1039 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1162 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1198 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1110 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1030 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1069 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1106 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1027 ms.
+// HMemoryUtils.trashcanNow. Engine heap size: 2,324 MB. GUI used memory: 82 MB. Current time: 7/15/26, 9:30:17 PM UTC
+// HMemoryUtils.trashcanNow. Engine heap size: 2,324 MB. GUI used memory: 82 MB. Current time: 7/15/26, 10:00:21 PM UTC
+// HMemoryUtils.trashcanNow. Engine heap size: 2,324 MB. GUI used memory: 81 MB. Current time: 7/15/26, 10:30:24 PM UTC
+// TclEventType: WAVEFORM_UPDATE_WAVEFORM
+// TclEventType: WAVEFORM_UPDATE_COMMANDS
+// Tcl (Dont Echo) Command: 'rdi::info_commands {source*}'

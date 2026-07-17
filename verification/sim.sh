@@ -20,7 +20,7 @@ echo "========================================================="
 #     ./ooo_rtl/utils/*.sv \
 #     ./ooo_rtl/*.sv \
 #     ./verification/uvm_files/tb_top.sv
-xvlog -sv -L uvm -prj sim.prj
+xvlog -sv -L uvm -d DEBUG -prj sim.prj
 
 echo "========================================================="
 echo " Step 2: Elaboration (xelab)"
