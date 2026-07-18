@@ -68,11 +68,18 @@ def read_trace_log_file(
                 arch_reg_addr = instr.rd
             else:
                 arch_reg_addr = 0
-            store_en = instr.type3 == "STORE"
-            if store_en:
+            store_bit_en = instr.type3 == "STORE"
+            if store_bit_en:
+                # store_vec_en = "0x" + "0" * (4-instr.store_width) + "1" * instr.store_width
+                offset = dict["addr"] % 4
+                store_vec_en = "0" * (4 - offset - instr.store_width) + "1" * instr.store_width + "0" * offset
+                store_vec_en_int = int(store_vec_en, 2)
+                assert store_vec_en_int < (2 ** 4), f"store_vec_en_int is too large {store_vec_en}"
                 store_addr = dict["addr"]
                 store_data = dict["store_data"]
             else:
+                # store_vec_en = "0x0000"
+                store_vec_en_int = 0
                 store_addr = 0
                 store_data = 0
             # if i == len(map_list) - 1:
@@ -87,7 +94,7 @@ def read_trace_log_file(
             f.write(
                 str(int(dest_valid)) + " " + 
                 str(arch_reg_addr) + " " + 
-                str(int(store_en)) + " " + 
+                str(bin(store_vec_en_int)) + " " + 
                 str(hex(store_addr)) + " " + 
                 str(hex(store_data)) + " " + 
                 str(hex(pc)) + " " + 

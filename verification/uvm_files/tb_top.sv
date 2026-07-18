@@ -38,7 +38,7 @@ class cpu_commit_pkt extends uvm_sequence_item;
     endfunction
 
     virtual function string convert2string();
-        return $sformatf("PC: 'h%0h | DestValid: %b | ArchReg: %0d | StoreEn: %b | StoreAddr: 'h%0h | StoreData: 'h%0h | RegData: 'h%0h",
+        return $sformatf("PC: 'h%0h | DestValid: %b | ArchReg: %0d | StoreEn: 'b%0b | StoreAddr: 'h%0h | StoreData: 'h%0h | RegData: 'h%0h",
             pc, dest_valid, arch_reg_addr, store_en, store_addr, store_data, reg_data);
     endfunction
 
@@ -192,7 +192,7 @@ class cpu_scoreboard extends uvm_scoreboard;
         // {dest_valid} {register address} {store_en} {store_addr} {store_data} {pc} 
         parsing_code = $sscanf(
             trace_line,
-            "%d %d %d 0x%h 0x%h 0x%h 0x%h",
+            "%d %d 0b%b 0x%h 0x%h 0x%h 0x%h",
             exp_pkt.dest_valid,
             exp_pkt.arch_reg_addr,
             exp_pkt.store_en,

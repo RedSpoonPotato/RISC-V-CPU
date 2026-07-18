@@ -46,10 +46,10 @@ import instr_fetch_pkg::*;
     // rob_instance_pkt_t rob_instance_pkt_ff; not gonna use b/c can save on flipflops while still functional
     ex_mem_stage_pkt_t ex_mem_stage_pkt_ff;
     spec_exec_answr_pkt_t spec_exec_answr_ff;
-    logic exception_ff;
+    // logic exception_ff;
     always_ff @(posedge clk) begin
         ex_mem_stage_pkt_ff <= ex_mem_stage_pkt_i;
-        exception_ff <= exception_i;
+        // exception_ff <= exception_i;
         spec_exec_answr_ff <= spec_exec_answr_i;
     end
 
@@ -70,7 +70,7 @@ import instr_fetch_pkg::*;
         .wb_phys_reg_pkt_o(wb_phys_reg_pkt_o),
         // updating pending state in issue queue and rename table
         .rt_iq_update_pkt_o(rt_iq_update_pkt_o),
-        .exception_i(exception_ff)
+        .exception_i(exception_i)
     );
 
     spec_exec_answer_buffer spec_exec_answer_buffer_inst (
@@ -86,7 +86,7 @@ import instr_fetch_pkg::*;
         .commit_en_i(commit_stage_pkt_o.wr_en),
         .commit_spec_instr_en_i(commit_stage_pkt_o.speculative),
         .spec_exec_answr_pkt_o(spec_exec_answr_pkt_o),
-        .exception_i(exception_ff)
+        .exception_i(exception_i)
     );
 
     mem_addr_buffer mem_addr_buffer_inst (
@@ -106,7 +106,7 @@ import instr_fetch_pkg::*;
         // .pc_o()
         .mem_addr_conflict_pkt_o(mem_addr_conflict_pkt_o),
         .store_buffer_commit_pkt_o(store_buffer_commit_pkt_o),
-        .exception_i(exception_ff)
+        .exception_i(exception_i)
     );
 
     assign stall_o = rob_full && seab_full && mem_addr_full;

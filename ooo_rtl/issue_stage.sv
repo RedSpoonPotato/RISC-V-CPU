@@ -50,12 +50,12 @@ import issue_pkg::*;
     iq_output_t instr_ff;
     // wb_phys_reg_pkt_t wb_phys_reg_pkt_ff; not gonna use b/c can save on flipflops while still functional
     pc_buff_instance_pkt_t buff_inst_ff;
-    logic exception_ff;
+    // logic exception_ff;
     always_ff @(posedge clk) begin
         instr_ff <= instr_i;
         buff_inst_ff <= buff_inst_i;
         // wb_phys_reg_pkt_ff <= wb_phys_reg_pkt_i;
-        exception_ff <= exception_i;
+        // exception_ff <= exception_i;
     end
 
     logic [DATA_WIDTH-1:0] phys_reg_src0_data;
@@ -86,10 +86,10 @@ import issue_pkg::*;
         // write
         .buff_inst_i(buff_inst_ff),
         // read
-        .is_pc_instr(instr_ff.pc_instr && instr_ff.valid && !exception_ff),
+        .is_pc_instr(instr_ff.pc_instr && instr_ff.valid && !exception_i),
         .rd_ptr_i(instr_ff.pc_buff_ptr),
         .pc_out_o(pc_out),
-        .exception_i(exception_ff),
+        .exception_i(exception_i),
         .full_o(stall_o)
     );
 
@@ -106,7 +106,7 @@ import issue_pkg::*;
         imm_compr_ff = instr_ff.imm_compr;
         instr_op_ff = instr_ff.op[6:0];
         is_imm_ff = instr_ff.imm_valid;
-        if (exception_ff) begin
+        if (exception_i) begin
             fetch_pkt_o = '{funct_unit: NOOP, default: '0};
         end else begin
             fetch_pkt_o.valid           = instr_ff.valid;
@@ -121,12 +121,13 @@ import issue_pkg::*;
             fetch_pkt_o.funct_unit = get_ex_mem_type(instr_op_ff, fetch_pkt_o.valid);
             fetch_pkt_o.funct_unit_one_hot = get_ex_mem_type_one_hot(instr_op_ff, fetch_pkt_o.valid);
             fetch_pkt_o.src0_data = phys_reg_src0_data;
-            if (fetch_pkt_o.store || !is_imm_ff) begin
+            // if (fetch_pkt_o.store || !is_imm_ff) begin
+            if (fetch_pkt_o.store || !is_imm_ff || fetch_pkt_o.funct_unit == BRANCH) begin
                 fetch_pkt_o.src1_data = phys_reg_src1_data;
             end else begin
                 fetch_pkt_o.src1_data = format_20b_to_datawidth(imm_compr_ff, instr_op_ff);
             end
-            fetch_pkt_o.mem_offset_or_brnch_imm =  (fetch_pkt_o.funct_unit == MEM || fetch_pkt_o.funct_unit == BRANCH) ? format_20b_to_datawidth(imm_compr_ff, instr_op_ff) : '{default:'0};
+            fetch_pkt_o.mem_offset_or_brnch_imm = (fetch_pkt_o.funct_unit == MEM || fetch_pkt_o.funct_unit == BRANCH) ? format_20b_to_datawidth(imm_compr_ff, instr_op_ff) : '{default:'0};
             // assert ((instr_ff.imm_valid == 1 && instr_ff.store == 1) || instr_ff.store == 0);
         end
     end

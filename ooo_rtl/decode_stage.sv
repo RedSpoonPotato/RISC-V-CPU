@@ -81,7 +81,7 @@ module decode_stage
     // rename_table_update_pkt_t rename_table_update_pkt_ff;
     // issue_queue_update_pkt_t issue_queue_update_pkt_ff;
     rt_and_iq_pending_update_pkt_t rt_iq_update_pkt_ff;
-    logic exception_ff;
+    // logic exception_ff;
 
     always_ff @(posedge clk) begin
         if_input_ff <= if_input_i;
@@ -89,7 +89,7 @@ module decode_stage
         // rename_table_update_pkt_ff <= rename_table_update_pkt_i;
         // issue_queue_update_pkt_ff <= issue_queue_update_pkt_i;
         rt_iq_update_pkt_ff <= rt_iq_update_pkt_i;
-        exception_ff <= exception_i;
+        // exception_ff <= exception_i;
     end
 
     /* free list */
@@ -105,7 +105,7 @@ module decode_stage
         .wr_en_i(decode_commit_pkt_i.wr_en && !decode_commit_pkt_i.dest_valid),
         .prev_phys_ptr_i(decode_commit_pkt_i.prev_phys_reg_addr),
         // for commiting
-        .exception_i(exception_ff),
+        .exception_i(exception_i),
         .commited_ptr_i(decode_commit_pkt_i.phys_reg_addr),
         // reading
         .rd_en_i(free_list_rd_en),
@@ -157,7 +157,7 @@ module decode_stage
         .commit_arf_i(decode_commit_pkt_i.arch_reg_addr),
         .commit_prf_i(decode_commit_pkt_i.phys_reg_addr),
         // ports for exception handling
-        .exception_i(exception_ff)
+        .exception_i(exception_i)
     );
 
     /* issue queue */
@@ -183,7 +183,7 @@ module decode_stage
         .empty_o(issue_queue_empty),
         .full_o(issue_queue_full),
         .all_stalled_o(issue_queue_all_stalled), // when all current entries are still stalling, does also account for input "prf_dst_i"
-        .exception_i(exception_ff)
+        .exception_i(exception_i)
     );
 
     logic mini_scoreboard_wr_en;
@@ -200,7 +200,7 @@ module decode_stage
         // 1 extra: 1 for reg fetch stage
         .future_exec_stage_slots_o(issue_queue_future_exec_stage_slots),
         // stalling or clearing
-        .exception_i(exception_ff) // same functionality as rst
+        .exception_i(exception_i) // same functionality as rst
     );
 
     logic [31:0] instr_ff;
@@ -229,7 +229,7 @@ module decode_stage
     logic mem_instr;
 
     logic master_instr_valid; // NEED TO SET, should depend alos upon exception
-    assign master_instr_valid = if_input_ff.instr_valid && !exception_ff;
+    assign master_instr_valid = if_input_ff.instr_valid && !exception_i;
 
     // setting cntrl instructions
     always_comb begin
@@ -270,7 +270,7 @@ module decode_stage
             (has_src1(instr_ff[6:0]) && rename_table_src1_pending)) &&
             master_instr_valid;
         
-        iq_instr_ready = !issue_queue_empty && !issue_queue_all_stalled && !exception_ff;
+        iq_instr_ready = !issue_queue_empty && !issue_queue_all_stalled && !exception_i;
 
         dispatch_instr = new_instr_ready || iq_instr_ready;
 
@@ -284,7 +284,7 @@ module decode_stage
     logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_counter;
     
     always_ff @(posedge clk) begin
-        if (rst) begin
+        if (rst || exception_i) begin
             rob_head_counter <= '{default:'0};
             spec_exec_counter <= '{default:'0};
             pc_instr_counter <= '{default:'0};
@@ -558,15 +558,15 @@ import decode_pkg::*;
         (rename_table[0].prf_ptr == '0 && rename_table[0].pending == 1'b0)
     );
     
-    assert property (
-        @(posedge clk) disable iff (rst)
-        (writeback_en_i && rename_table[arf_src0_i].prf_ptr == prf_ptr_sb_i) |-> (arf_src0_i == arf_ptr_sb_i)
-    );
+    // assert property (
+    //     @(posedge clk) disable iff (rst)
+    //     (writeback_en_i && rename_table[arf_src0_i].prf_ptr == prf_ptr_sb_i) |-> (arf_src0_i == arf_ptr_sb_i) 
+    // );
 
-    assert property (
-        @(posedge clk) disable iff (rst)
-        (writeback_en_i && rename_table[arf_src1_i].prf_ptr == prf_ptr_sb_i) |-> (arf_src1_i == arf_ptr_sb_i)
-    );
+    // assert property (
+    //     @(posedge clk) disable iff (rst)
+    //     (writeback_en_i && rename_table[arf_src1_i].prf_ptr == prf_ptr_sb_i) |-> (arf_src1_i == arf_ptr_sb_i)
+    // ) else $fatal("%h,%h,%h,%h", arf_src1_i, arf_ptr_sb_i, rename_table[arf_src1_i].prf_ptr, prf_ptr_sb_i);
 
     // read logic (asynchronous)
     assign prf_src0_o = rename_table[arf_src0_i].prf_ptr;

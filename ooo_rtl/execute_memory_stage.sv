@@ -48,10 +48,10 @@ import issue_pkg::*;
 );
 
     fetch_packet_t fetch_pkt_ff;
-    logic exception_ff;
+    // logic exception_ff;
     always_ff @(posedge clk) begin
         fetch_pkt_ff <= fetch_pkt_i;
-        exception_ff <= exception_i;
+        // exception_ff <= exception_i;
         // assert (fetch_pkt_ff.valid || fetch_pkt_ff.funct_unit == NOOP) else $fatal("Invalid instruction issued to execute stage");
     end
 
@@ -71,7 +71,7 @@ import issue_pkg::*;
         .sb_data_pkt_i(ex_mem_scoreboard_data_new),
         // .current_funct_unit_output_o(scoreboard_curr_funct_unit_output),
         .sb_data_pkt_o(ex_mem_scoreboard_data_o),
-        .exception_i(exception_ff)
+        .exception_i(exception_i)
     );
 
     // alu, mem, jalr, auipc
@@ -105,7 +105,7 @@ import issue_pkg::*;
         .data_o(result_arry[1]), // will connect this to writeback stage later
         .mem_addr_pkt_o(mem_addr_pkt_o),
         .store_buffer_commit_pkt_i(store_buffer_commit_pkt_i),
-        .exception_i(exception_ff)
+        .exception_i(exception_i)
     );
 
     // branch path (1 cycle for now): if(rs1 == rs2) PC += imm
