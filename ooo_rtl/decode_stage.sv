@@ -102,7 +102,8 @@ module decode_stage
         .clk(clk),
         .rst(rst),
         // notify of reaching phys register
-        .wr_en_i(decode_commit_pkt_i.wr_en && !decode_commit_pkt_i.dest_valid),
+        // .wr_en_i(decode_commit_pkt_i.wr_en && !decode_commit_pkt_i.dest_valid),
+        .wr_en_i(decode_commit_pkt_i.wr_en && decode_commit_pkt_i.dest_valid),
         .prev_phys_ptr_i(decode_commit_pkt_i.prev_phys_reg_addr),
         // for commiting
         .exception_i(exception_i),
@@ -316,7 +317,8 @@ module decode_stage
             // if stalling, comeback to this valid signal
             // issue_queue_entry.valid = !new_instr_ready || iq_instr_ready;
             issue_queue_entry.valid = (!new_instr_ready || iq_instr_ready) && master_instr_valid; // valid in this case means wr_en to iq
-            issue_queue_entry.dest_ptr = free_list_free_ptr;
+            // issue_queue_entry.dest_ptr = free_list_free_ptr;
+            issue_queue_entry.dest_ptr = rename_table_prf_dest_ptr;
             issue_queue_entry.src0_pending = rename_table_src0_pending;
             issue_queue_entry.src0_ptr = issue_queue_entry.src0_valid ? rename_table_prf_src0 : '{default:'0};
             issue_queue_entry.src1_pending = rename_table_src1_pending;
@@ -529,13 +531,14 @@ import decode_pkg::*;
                     rename_table[i].pending <= 0;
                 end
             end else begin
+                if (writeback_en_i) begin
+                    if (rename_table[arf_ptr_sb_i].prf_ptr == prf_ptr_sb_i && (arf_ptr_sb_i != arf_ptr_i || !decode_en_i)) begin
+                        rename_table[arf_ptr_sb_i].pending <= 1'b0;
+                    end
+                end
                 if (decode_en_i && arf_ptr_i != '0) begin
                     rename_table[arf_ptr_i].prf_ptr <= prf_ptr_i;
                     rename_table[arf_ptr_i].pending <= 1'b1;
-                end
-                if (writeback_en_i) begin
-                    if (rename_table[arf_ptr_sb_i].prf_ptr == prf_ptr_sb_i)
-                        rename_table[arf_ptr_sb_i].pending <= 1'b0;
                 end
                 // if (commit_en_i) begin
                 //     commit_map[commit_arf_i] <= commit_prf_i;

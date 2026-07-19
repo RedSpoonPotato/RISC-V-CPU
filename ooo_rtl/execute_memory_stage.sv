@@ -345,17 +345,17 @@ module branch_unit
 import decode_pkg::*;
 import issue_pkg::*;
 (
-    input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
+    input logic [2:0] funct_code_i,
     input logic [DATA_WIDTH-1:0] src0_data_i,
     input logic [DATA_WIDTH-1:0] src1_data_i,
     output logic branch_taken_o
 );
-    localparam BEQ  = 4'b0000;
-    localparam BNE  = 4'b0001;
-    localparam BLT  = 4'b0100;
-    localparam BGE  = 4'b0101;
-    localparam BLTU = 4'b0110;
-    localparam BGEU = 4'b0111;
+    localparam BEQ  = 3'b000;
+    localparam BNE  = 3'b001;
+    localparam BLT  = 3'b100;
+    localparam BGE  = 3'b101;
+    localparam BLTU = 3'b110;
+    localparam BGEU = 3'b111;
 
     always_comb begin
         case (funct_code_i)
@@ -386,7 +386,7 @@ import issue_pkg::*;
 );
 
     logic [DATA_WIDTH-1:0] src0_data, src1_data, imm, pc;
-    logic [FUNCT_COMB_WIDTH-1:0] funct_code;
+    logic [2:0] funct_code;
 
     branch_unit branch_unit_inst (
         .funct_code_i(funct_code),
@@ -401,7 +401,7 @@ import issue_pkg::*;
         if (en_i) begin
             src0_data = src0_data_i;
             src1_data = src1_data_i;
-            funct_code = funct_code_i;
+            funct_code = funct_code_i[2:0];
             imm = imm_i;
             pc = pc_i;
         end else begin

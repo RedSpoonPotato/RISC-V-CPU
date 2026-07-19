@@ -353,7 +353,7 @@ import general_pkg::DATA_WIDTH;
                 end
             end
 
-            // makign assumption write_en_i "1" iff entry in prev_predict_pkts is valid
+            // making assumption write_en_i "1" iff entry in prev_predict_pkts is valid
             always_ff @(posedge clk) begin : CheckingAPrediction
                 if (rst) begin
                     bp_cache <= '{default:'0};
