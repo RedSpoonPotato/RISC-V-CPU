@@ -85,12 +85,13 @@ class cpu_commit_monitor extends uvm_monitor;
                 // check if finished
                 if (vif.store_buffer_commit_pkt.addr == TOHOST_ADDR) begin
                     if (vif.store_buffer_commit_pkt.data == 32'hFFFF_FFFF) begin
-                    `uvm_info("TEST_PASS", "CPU wrote 0xFFFF_FFFF to tohost. Test passed!", UVM_LOW)
+                        `uvm_info("TEST_PASS", "CPU wrote 0xFFFF_FFFF to tohost. Test passed!", UVM_LOW)
+                        uvm_event_pool::get_global("tohost_pass_event").trigger();
                     end else begin
-                    `uvm_fatal("TEST_FAIL", $sformatf("CPU wrote failure code %0d to tohost.", vif.store_buffer_commit_pkt.data))
+                        `uvm_fatal("TEST_FAIL", $sformatf("CPU wrote failure code %0d to tohost.", vif.store_buffer_commit_pkt.data))
                     end
                     // Optional: Forcefully end simulation here if you aren't using objections
-                    uvm_top.stop_request();
+                    // uvm_top.stop_request();
                 end
             end
         end
@@ -265,15 +266,35 @@ class riscv_base_test extends uvm_test;
         env = riscv_env::type_id::create("env", this);
     endfunction
 
+    // task run_phase(uvm_phase phase);
+    //     phase.raise_objection(this);
+    //     // failsafe timeout in case the CPU hangs and never writes to tohost
+    //     #100000;
+    //     `uvm_fatal("TIMEOUT", "Simulation timed out waiting for tohost write!")
+    //     phase.drop_objection(this);
+    // endtask
+
     task run_phase(uvm_phase phase);
+        uvm_event pass_event = uvm_event_pool::get_global("tohost_pass_event");
         phase.raise_objection(this);
-        // failsafe timeout in case the CPU hangs and never writes to tohost
-        // #1000000
-        // #100000
-        #1000
-        `uvm_fatal("TIMEOUT", "Simulation timed out waiting for tohost write!")
+        // Fork two parallel threads: a timeout timer and an event listener
+        fork
+            // Thread 1: Timeout failsafe
+            begin
+                #100000;
+                `uvm_fatal("TIMEOUT", "Simulation timed out waiting for tohost write!")
+            end
+            // Thread 2: Wait for monitor to announce the test passed
+            begin
+                pass_event.wait_trigger();
+            end
+        join_any // The first thread to finish unblocks the fork
+        // Kill the remaining thread (e.g., stop the timeout timer if the test passed)
+        disable fork; 
+        // Drop the objection so UVM can naturally progress to extract_phase and check_phase
         phase.drop_objection(this);
     endtask
+
 endclass
 
 // Make sure to import your packages and UVM macros

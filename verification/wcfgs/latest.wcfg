@@ -22,15 +22,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="535.716 ns"></ZoomEndTime>
-      <Cursor1Time time="829.822 ns"></Cursor1Time>
+      <ZoomStartTime time="16,368.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="17,126.501 ns"></ZoomEndTime>
+      <Cursor1Time time="16,945.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="262"></NameColumnWidth>
-      <ValueColumnWidth column_width="106"></ValueColumnWidth>
+      <NameColumnWidth column_width="221"></NameColumnWidth>
+      <ValueColumnWidth column_width="166"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="111" />
+   <WVObjectSize size="153" />
    <wvobject type="logic" fp_name="/tb_top/clk">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -42,6 +42,34 @@
    <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_ctrl_pkt_i">
       <obj_property name="ElementShortName">instr_fetch_ctrl_pkt_i</obj_property>
       <obj_property name="ObjectShortName">instr_fetch_ctrl_pkt_i</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/execute_memory_stage_inst/jalr_stage_inst/en_i">
+      <obj_property name="ElementShortName">en_i</obj_property>
+      <obj_property name="ObjectShortName">en_i</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/execute_memory_stage_inst/jalr_stage_inst/pc">
+      <obj_property name="ElementShortName">pc[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/execute_memory_stage_inst/jalr_stage_inst/rs1_data">
+      <obj_property name="ElementShortName">rs1_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rs1_data[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/execute_memory_stage_inst/jalr_stage_inst/imm">
+      <obj_property name="ElementShortName">imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">imm[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/execute_memory_stage_inst/jalr_stage_inst/pc_o">
+      <obj_property name="ElementShortName">pc_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/execute_memory_stage_inst/jalr_stage_inst/pc_plus_4_o">
+      <obj_property name="ElementShortName">pc_plus_4_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_plus_4_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_stage_inst/spec_exec_answr_pkt_i">
+      <obj_property name="ElementShortName">spec_exec_answr_pkt_i</obj_property>
+      <obj_property name="ObjectShortName">spec_exec_answr_pkt_i</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/tb_top/dut/decode_stall">
       <obj_property name="ElementShortName">decode_stall</obj_property>
@@ -55,13 +83,29 @@
       <obj_property name="ElementShortName">wb_stall</obj_property>
       <obj_property name="ObjectShortName">wb_stall</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_top/dut/stall">
-      <obj_property name="ElementShortName">stall</obj_property>
-      <obj_property name="ObjectShortName">stall</obj_property>
+   <wvobject type="logic" fp_name="/tb_top/dut/decode_stall">
+      <obj_property name="ElementShortName">decode_stall</obj_property>
+      <obj_property name="ObjectShortName">decode_stall</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/issue_stall">
+      <obj_property name="ElementShortName">issue_stall</obj_property>
+      <obj_property name="ObjectShortName">issue_stall</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/tb_top/dut/instr_fetch_stage_inst/trgt_mispredict">
       <obj_property name="ElementShortName">trgt_mispredict</obj_property>
       <obj_property name="ObjectShortName">trgt_mispredict</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/wb_stall">
+      <obj_property name="ElementShortName">wb_stall</obj_property>
+      <obj_property name="ObjectShortName">wb_stall</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/stall">
+      <obj_property name="ElementShortName">stall</obj_property>
+      <obj_property name="ObjectShortName">stall</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/instr_fetch_stage_inst/trgt_shift_buff_full">
+      <obj_property name="ElementShortName">trgt_shift_buff_full</obj_property>
+      <obj_property name="ObjectShortName">trgt_shift_buff_full</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/tb_top/dut/instr_fetch_stage_inst/master_stall">
       <obj_property name="ElementShortName">master_stall</obj_property>
@@ -83,10 +127,33 @@
       <obj_property name="ElementShortName">bp_pred</obj_property>
       <obj_property name="ObjectShortName">bp_pred</obj_property>
    </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/instr_fetch_stage_inst/branch_predictor_inst/write_en_i">
+      <obj_property name="ElementShortName">write_en_i</obj_property>
+      <obj_property name="ObjectShortName">write_en_i</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_stage_inst/branch_predictor_inst/\DirectMapped.bp_cache ">
+      <obj_property name="ElementShortName">\DirectMapped.bp_cache [63:0]</obj_property>
+      <obj_property name="ObjectShortName">\DirectMapped.bp_cache [63:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_stage_inst/branch_predictor_inst/curr_addr_i">
+      <obj_property name="ElementShortName">curr_addr_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">curr_addr_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_stage_inst/branch_predictor_inst/curr_tag">
+      <obj_property name="ElementShortName">curr_tag[23:0]</obj_property>
+      <obj_property name="ObjectShortName">curr_tag[23:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_stage_inst/branch_predictor_inst/curr_index">
+      <obj_property name="ElementShortName">curr_index[5:0]</obj_property>
+      <obj_property name="ObjectShortName">curr_index[5:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_stage_inst/branch_predictor_inst/old_pc_i">
+      <obj_property name="ElementShortName">old_pc_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">old_pc_i[31:0]</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_stage_inst/spec_exec_answr_pkt_i">
       <obj_property name="ElementShortName">spec_exec_answr_pkt_i</obj_property>
       <obj_property name="ObjectShortName">spec_exec_answr_pkt_i</obj_property>
-      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_stage_inst/mem_addr_conflict_pkt_i">
       <obj_property name="ElementShortName">mem_addr_conflict_pkt_i</obj_property>
@@ -152,10 +219,13 @@
       <obj_property name="ElementShortName">none_free_o</obj_property>
       <obj_property name="ObjectShortName">none_free_o</obj_property>
    </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/writeback_stage_inst/mem_addr_buffer_inst/mem_addr_buff">
+      <obj_property name="ElementShortName">mem_addr_buff[0:31]</obj_property>
+      <obj_property name="ObjectShortName">mem_addr_buff[0:31]</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/decode_stage_inst/free_list_inst/free_list">
       <obj_property name="ElementShortName">free_list[30:0]</obj_property>
       <obj_property name="ObjectShortName">free_list[30:0]</obj_property>
-      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/decode_stage_inst/free_list_inst/free_ptr_o">
       <obj_property name="ElementShortName">free_ptr_o[4:0]</obj_property>
@@ -181,277 +251,27 @@
       <obj_property name="ElementShortName">reg_mem[31:0][31:0]</obj_property>
       <obj_property name="ObjectShortName">reg_mem[31:0][31:0]</obj_property>
       <obj_property name="isExpanded"></obj_property>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[31]">
-         <obj_property name="ElementShortName">[31][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[31][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[30]">
-         <obj_property name="ElementShortName">[30][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[30][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[29]">
-         <obj_property name="ElementShortName">[29][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[29][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[28]">
-         <obj_property name="ElementShortName">[28][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[28][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[27]">
-         <obj_property name="ElementShortName">[27][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[27][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[26]">
-         <obj_property name="ElementShortName">[26][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[26][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[25]">
-         <obj_property name="ElementShortName">[25][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[25][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[24]">
-         <obj_property name="ElementShortName">[24][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[24][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[23]">
-         <obj_property name="ElementShortName">[23][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[23][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[22]">
-         <obj_property name="ElementShortName">[22][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[22][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[21]">
-         <obj_property name="ElementShortName">[21][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[21][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[20]">
-         <obj_property name="ElementShortName">[20][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[20][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[19]">
-         <obj_property name="ElementShortName">[19][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[19][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[18]">
-         <obj_property name="ElementShortName">[18][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[18][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[17]">
-         <obj_property name="ElementShortName">[17][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[17][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[16]">
-         <obj_property name="ElementShortName">[16][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[16][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[15]">
-         <obj_property name="ElementShortName">[15][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[15][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[14]">
-         <obj_property name="ElementShortName">[14][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[14][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[13]">
-         <obj_property name="ElementShortName">[13][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[13][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[12]">
-         <obj_property name="ElementShortName">[12][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[12][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[11]">
-         <obj_property name="ElementShortName">[11][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[11][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[10]">
-         <obj_property name="ElementShortName">[10][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[10][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[9]">
-         <obj_property name="ElementShortName">[9][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[9][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[8]">
-         <obj_property name="ElementShortName">[8][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[8][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[7]">
-         <obj_property name="ElementShortName">[7][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[7][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[6]">
-         <obj_property name="ElementShortName">[6][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[6][31:0]</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[5]">
-         <obj_property name="ElementShortName">[5][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[5][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[4]">
-         <obj_property name="ElementShortName">[4][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[4][31:0]</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[3]">
-         <obj_property name="ElementShortName">[3][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[3][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[2]">
-         <obj_property name="ElementShortName">[2][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[2][31:0]</obj_property>
-         <obj_property name="CustomSignalColor">#FF00FF</obj_property>
-         <obj_property name="UseCustomSignalColor">true</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[1]">
-         <obj_property name="ElementShortName">[1][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[1][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[0]">
-         <obj_property name="ElementShortName">[0][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[0][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[31]">
-         <obj_property name="ElementShortName">[31][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[31][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[30]">
-         <obj_property name="ElementShortName">[30][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[30][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[29]">
-         <obj_property name="ElementShortName">[29][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[29][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[28]">
-         <obj_property name="ElementShortName">[28][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[28][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[27]">
-         <obj_property name="ElementShortName">[27][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[27][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[26]">
-         <obj_property name="ElementShortName">[26][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[26][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[25]">
-         <obj_property name="ElementShortName">[25][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[25][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[24]">
-         <obj_property name="ElementShortName">[24][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[24][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[23]">
-         <obj_property name="ElementShortName">[23][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[23][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[22]">
-         <obj_property name="ElementShortName">[22][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[22][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[21]">
-         <obj_property name="ElementShortName">[21][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[21][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[20]">
-         <obj_property name="ElementShortName">[20][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[20][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[19]">
-         <obj_property name="ElementShortName">[19][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[19][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[18]">
-         <obj_property name="ElementShortName">[18][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[18][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[17]">
-         <obj_property name="ElementShortName">[17][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[17][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[16]">
-         <obj_property name="ElementShortName">[16][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[16][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[15]">
-         <obj_property name="ElementShortName">[15][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[15][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[14]">
-         <obj_property name="ElementShortName">[14][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[14][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[13]">
-         <obj_property name="ElementShortName">[13][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[13][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[12]">
-         <obj_property name="ElementShortName">[12][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[12][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[11]">
-         <obj_property name="ElementShortName">[11][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[11][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[10]">
-         <obj_property name="ElementShortName">[10][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[10][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[9]">
-         <obj_property name="ElementShortName">[9][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[9][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[8]">
-         <obj_property name="ElementShortName">[8][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[8][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[7]">
-         <obj_property name="ElementShortName">[7][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[7][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[6]">
-         <obj_property name="ElementShortName">[6][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[6][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[5]">
-         <obj_property name="ElementShortName">[5][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[5][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[4]">
-         <obj_property name="ElementShortName">[4][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[4][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[3]">
-         <obj_property name="ElementShortName">[3][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[3][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[2]">
-         <obj_property name="ElementShortName">[2][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[2][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[1]">
-         <obj_property name="ElementShortName">[1][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[1][31:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/physical_register/reg_mem[0]">
-         <obj_property name="ElementShortName">[0][31:0]</obj_property>
-         <obj_property name="ObjectShortName">[0][31:0]</obj_property>
-      </wvobject>
    </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/writeback_stage_inst/rob_buffer_inst/tail_ptr">
       <obj_property name="ElementShortName">tail_ptr[5:0]</obj_property>
       <obj_property name="ObjectShortName">tail_ptr[5:0]</obj_property>
    </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/writeback_stage_inst/rob_buffer_inst/tail_ptr_lower">
+      <obj_property name="ElementShortName">tail_ptr_lower[4:0]</obj_property>
+      <obj_property name="ObjectShortName">tail_ptr_lower[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/writeback_stage_inst/commit_stage_pkt_o.pc">
+      <obj_property name="ElementShortName">.pc[31:0]</obj_property>
+      <obj_property name="ObjectShortName">.pc[31:0]</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/decode_stage_inst/rename_table_async_read_inst/rename_table">
       <obj_property name="ElementShortName">rename_table[0:31]</obj_property>
       <obj_property name="ObjectShortName">rename_table[0:31]</obj_property>
       <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/writeback_stage_inst/rob_buffer_inst/tail_ptr_lower">
+      <obj_property name="ElementShortName">tail_ptr_lower[4:0]</obj_property>
+      <obj_property name="ObjectShortName">tail_ptr_lower[4:0]</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/instr_fetch_output_pkt">
       <obj_property name="ElementShortName">instr_fetch_output_pkt</obj_property>
@@ -516,7 +336,6 @@
    <wvobject type="array" fp_name="/tb_top/dut/writeback_phys_reg_pkt">
       <obj_property name="ElementShortName">writeback_phys_reg_pkt</obj_property>
       <obj_property name="ObjectShortName">writeback_phys_reg_pkt</obj_property>
-      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/writeback_mem_addr_conflict_pkt">
       <obj_property name="ElementShortName">writeback_mem_addr_conflict_pkt</obj_property>
@@ -525,7 +344,6 @@
    <wvobject type="array" fp_name="/tb_top/dut/commit_decode_pkt">
       <obj_property name="ElementShortName">commit_decode_pkt</obj_property>
       <obj_property name="ObjectShortName">commit_decode_pkt</obj_property>
-      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/commit_rt_iq_update_pkt">
       <obj_property name="ElementShortName">commit_rt_iq_update_pkt</obj_property>
@@ -649,9 +467,39 @@
       <obj_property name="ElementShortName">issue_queue_all_stalled</obj_property>
       <obj_property name="ObjectShortName">issue_queue_all_stalled</obj_property>
    </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/decode_stage_inst/issue_queue_inst/ready_array">
+      <obj_property name="ElementShortName">ready_array[15:0]</obj_property>
+      <obj_property name="ObjectShortName">ready_array[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/decode_stage_inst/issue_queue_inst/instr_o.valid">
+      <obj_property name="ElementShortName">.valid</obj_property>
+      <obj_property name="ObjectShortName">.valid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/decode_stage_inst/issue_queue_inst/instr_o.rob_ptr">
+      <obj_property name="ElementShortName">.rob_ptr[4:0]</obj_property>
+      <obj_property name="ObjectShortName">.rob_ptr[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/decode_stage_inst/iq_instr_ready">
+      <obj_property name="ElementShortName">iq_instr_ready</obj_property>
+      <obj_property name="ObjectShortName">iq_instr_ready</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/decode_stage_inst/issue_queue_inst/instr_o">
+      <obj_property name="ElementShortName">instr_o</obj_property>
+      <obj_property name="ObjectShortName">instr_o</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/decode_stage_inst/issue_queue_inst/prf_wr_en_i">
+      <obj_property name="ElementShortName">prf_wr_en_i</obj_property>
+      <obj_property name="ObjectShortName">prf_wr_en_i</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/decode_stage_inst/issue_queue_inst/prf_dst_i">
+      <obj_property name="ElementShortName">prf_dst_i[4:0]</obj_property>
+      <obj_property name="ObjectShortName">prf_dst_i[4:0]</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/decode_stage_inst/issue_queue_inst/iq">
       <obj_property name="ElementShortName">iq[0:15]</obj_property>
       <obj_property name="ObjectShortName">iq[0:15]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/tb_top/dut/decode_stage_inst/issue_queue_inst/wr_en">
       <obj_property name="ElementShortName">wr_en</obj_property>
@@ -693,6 +541,30 @@
       <obj_property name="ElementShortName">prf_dst_i[4:0]</obj_property>
       <obj_property name="ObjectShortName">prf_dst_i[4:0]</obj_property>
    </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/fetch_pkt_o">
+      <obj_property name="ElementShortName">fetch_pkt_o</obj_property>
+      <obj_property name="ObjectShortName">fetch_pkt_o</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/execute_memory_stage_inst/alu_stage_inst/en_i">
+      <obj_property name="ElementShortName">en_i</obj_property>
+      <obj_property name="ObjectShortName">en_i</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/execute_memory_stage_inst/alu_stage_inst/a">
+      <obj_property name="ElementShortName">a[31:0]</obj_property>
+      <obj_property name="ObjectShortName">a[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/execute_memory_stage_inst/alu_stage_inst/b">
+      <obj_property name="ElementShortName">b[31:0]</obj_property>
+      <obj_property name="ObjectShortName">b[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/execute_memory_stage_inst/alu_stage_inst/alu_cntrl">
+      <obj_property name="ElementShortName">alu_cntrl[3:0]</obj_property>
+      <obj_property name="ObjectShortName">alu_cntrl[3:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/execute_memory_stage_inst/alu_stage_inst/result_o">
+      <obj_property name="ElementShortName">result_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">result_o[31:0]</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/issue_stage_inst/instr_ff">
       <obj_property name="ElementShortName">instr_ff</obj_property>
       <obj_property name="ObjectShortName">instr_ff</obj_property>
@@ -719,6 +591,26 @@
       <obj_property name="ElementShortName">mem_addr_buff[0:31]</obj_property>
       <obj_property name="ObjectShortName">mem_addr_buff[0:31]</obj_property>
    </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/writeback_stage_inst/mem_addr_buffer_inst/mem_addr_conflict_pkt_o">
+      <obj_property name="ElementShortName">mem_addr_conflict_pkt_o</obj_property>
+      <obj_property name="ObjectShortName">mem_addr_conflict_pkt_o</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/writeback_stage_inst/mem_addr_buffer_inst/exception_i">
+      <obj_property name="ElementShortName">exception_i</obj_property>
+      <obj_property name="ObjectShortName">exception_i</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/writeback_stage_inst/mem_addr_buffer_inst/rst">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/writeback_stage_inst/mem_addr_buffer_inst/full_o">
+      <obj_property name="ElementShortName">full_o</obj_property>
+      <obj_property name="ObjectShortName">full_o</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_top/dut/writeback_stage_inst/mem_addr_buffer_inst/commit_en_i">
+      <obj_property name="ElementShortName">commit_en_i</obj_property>
+      <obj_property name="ObjectShortName">commit_en_i</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/writeback_stage_inst/mem_addr_buffer_inst/tail_ptr">
       <obj_property name="ElementShortName">tail_ptr[5:0]</obj_property>
       <obj_property name="ObjectShortName">tail_ptr[5:0]</obj_property>
@@ -726,6 +618,14 @@
    <wvobject type="array" fp_name="/tb_top/dut/writeback_stage_inst/mem_addr_buffer_inst/head_ptr">
       <obj_property name="ElementShortName">head_ptr[5:0]</obj_property>
       <obj_property name="ObjectShortName">head_ptr[5:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/writeback_stage_inst/mem_addr_buffer_inst/tail_ptr">
+      <obj_property name="ElementShortName">tail_ptr[5:0]</obj_property>
+      <obj_property name="ObjectShortName">tail_ptr[5:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/writeback_stage_inst/mem_addr_buffer_inst/mem_addr_pkt_i">
+      <obj_property name="ElementShortName">mem_addr_pkt_i</obj_property>
+      <obj_property name="ObjectShortName">mem_addr_pkt_i</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_top/dut/writeback_stage_inst/mem_addr_buffer_inst/mem_addr_buff">
       <obj_property name="ElementShortName">mem_addr_buff[0:31]</obj_property>
@@ -749,5 +649,9 @@
       <obj_property name="ElementShortName">commit_decode_pkt</obj_property>
       <obj_property name="ObjectShortName">commit_decode_pkt</obj_property>
       <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_top/dut/writeback_stage_inst/rob_buffer_inst/reorder_buffer">
+      <obj_property name="ElementShortName">reorder_buffer[0:31]</obj_property>
+      <obj_property name="ObjectShortName">reorder_buffer[0:31]</obj_property>
    </wvobject>
 </wave_config>

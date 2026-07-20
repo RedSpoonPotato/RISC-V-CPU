@@ -642,8 +642,8 @@ module issue_queue
     always_comb begin
         for (int i = 0; i < IQ_SIZE; i++) begin
             ready_array[i] = (
-                (!iq[i].src0_valid || !iq[i].src0_pending || iq[i].src0_ptr == prf_dst_i) &&
-                (!iq[i].src1_valid || !iq[i].src1_pending || iq[i].src1_ptr == prf_dst_i) &&
+                (!iq[i].src0_valid || !iq[i].src0_pending || ((iq[i].src0_ptr == prf_dst_i) && prf_wr_en_i)) &&
+                (!iq[i].src1_valid || !iq[i].src1_pending || ((iq[i].src1_ptr == prf_dst_i) && prf_wr_en_i)) &&
                 (iq[i].valid) &&
                 (future_exec_stage_slots_i[iq[i].exec_dur] == 0)
             );

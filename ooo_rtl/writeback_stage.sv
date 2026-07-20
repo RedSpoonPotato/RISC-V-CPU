@@ -171,14 +171,14 @@ import general_pkg::*;
                 // mem_addr_buff[head_ptr_lower].valid = 1'b1;
                 head_ptr <= head_ptr + 1;
             end
-            // updating stat
+            // updating state
             if (mem_addr_pkt_i.wr_en) begin
-                mem_addr_buff[mem_addr_pkt_i.buff_ptr].valid <= 1'b1;
-                mem_addr_buff[mem_addr_pkt_i.buff_ptr].vec_wr_en = mem_addr_pkt_i.vec_wr_en;
-                mem_addr_buff[mem_addr_pkt_i.buff_ptr].is_store <= mem_addr_pkt_i.is_store;
-                mem_addr_buff[mem_addr_pkt_i.buff_ptr].addr <= mem_addr_pkt_i.addr;
-                mem_addr_buff[mem_addr_pkt_i.buff_ptr].pc <= mem_addr_pkt_i.pc;
-                mem_addr_buff[mem_addr_pkt_i.buff_ptr].store_data <= mem_addr_pkt_i.store_data;
+                mem_addr_buff[mem_addr_pkt_i.buff_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].valid <= 1'b1;
+                mem_addr_buff[mem_addr_pkt_i.buff_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].vec_wr_en <= mem_addr_pkt_i.vec_wr_en;
+                mem_addr_buff[mem_addr_pkt_i.buff_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].is_store <= mem_addr_pkt_i.is_store;
+                mem_addr_buff[mem_addr_pkt_i.buff_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].addr <= mem_addr_pkt_i.addr;
+                mem_addr_buff[mem_addr_pkt_i.buff_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].pc <= mem_addr_pkt_i.pc;
+                mem_addr_buff[mem_addr_pkt_i.buff_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].store_data <= mem_addr_pkt_i.store_data;
             end
             // committing
             if (commit_en_i && mem_commit_en_i) begin
@@ -293,7 +293,7 @@ import instr_fetch_pkg::*;
             end
             // updating state
             if (spec_exec_answr_i.trgt_en && !forward) begin
-                sea_buff[spec_exec_answr_i.spec_exec_ptr] <= set_wb_shift_reg_pkt(spec_exec_answr_i);
+                sea_buff[spec_exec_answr_i.spec_exec_ptr[$clog2(MAX_SPEC_EXEC_INSTRS)-1:0]] <= set_wb_shift_reg_pkt(spec_exec_answr_i);
             end
             // committing
             if ((commit_en_i && commit_spec_instr_en_i) || forward) begin

@@ -206,7 +206,8 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
                     shift_reg_pkt_2.pc + 4;
             end else if (mem_addr_conflict_pkt_i.en) begin: MemoryAddrConflict
                 pc <= mem_addr_conflict_pkt_i.pc;
-            end else if (stall_i) begin: Stall
+            // end else if (stall_i) begin: Stall
+            end else if (master_stall) begin: Stall
                 pc <= pc;
                 // instr_valid <= 1'b0;
             end else if (tb_hit && bp_hit && bp_pred) begin: SpecBranch

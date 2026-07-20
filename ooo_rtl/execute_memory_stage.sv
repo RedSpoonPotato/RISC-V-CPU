@@ -315,27 +315,29 @@ import issue_pkg::*;
     logic [DATA_WIDTH-1:0] pc;
     logic [DATA_WIDTH-1:0] rs1_data;
     logic [DATA_WIDTH-1:0] imm;
-    logic [FUNCT_COMB_WIDTH-1:0] funct_code;
+    // logic [FUNCT_COMB_WIDTH-1:0] funct_code;
+    logic jump_type; // 0: jalr, 1: jal
 
     always_comb begin
         if (en_i) begin
             pc = pc_i;
             rs1_data = rs1_data_i;
             imm = imm_i;
-            funct_code = funct_code_i;
+            jump_type = funct_code_i[3];
         end else begin
             pc = '{default:'0};
             rs1_data = '{default:'0};
             imm = '{default:'0};
-            funct_code = '{default:'0};
+            jump_type = 1'b0;
         end
     end
 
     always_comb begin
-        if (funct_code[3] == 1'b1) begin: Jal
-            pc_o = rs1_data + imm;
-        end else begin: Jalr
+        if (jump_type == 1'b1) begin: Jal
+            // pc_o = rs1_data + imm;
             pc_o = pc + imm;
+        end else begin: Jalr
+            pc_o = rs1_data + imm;
         end
         pc_plus_4_o = pc + 4;
     end

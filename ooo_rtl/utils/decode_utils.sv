@@ -158,6 +158,7 @@ package decode_pkg;
         input iq_entry_t in
     );
         iq_output_t out;
+        out = '{default: '0};
         out.op = in.op;
         // out.exec_dur    = in.exec_dur;
         out.imm_valid   = in.imm_valid;

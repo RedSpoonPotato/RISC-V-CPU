@@ -7,7 +7,7 @@ WARNING: [XSIM 43-3431] One or more environment variables have been detected whi
 Starting static elaboration
 Pass Through NonSizing Optimizer
 WARNING: [VRFC 10-9543] actual bit length 30 differs from formal bit length 10 for port 'addr' [/home/developer/RTL/RISC-V-CPU/ooo_rtl/instr_fetch_stage.sv:133]
-WARNING: [VRFC 10-3645] port 'empty_o' remains unconnected for this instance [/home/developer/RTL/RISC-V-CPU/ooo_rtl/instr_fetch_stage.sv:261]
+WARNING: [VRFC 10-3645] port 'empty_o' remains unconnected for this instance [/home/developer/RTL/RISC-V-CPU/ooo_rtl/instr_fetch_stage.sv:262]
 WARNING: [VRFC 10-8967] first argument of $fatal is invalid; expected 0, 1 or 2 [/home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv:61]
 WARNING: [VRFC 10-8967] first argument of $fatal is invalid; expected 0, 1 or 2 [/home/developer/RTL/RISC-V-CPU/ooo_rtl/execute_memory_stage.sv:272]
 Completed static elaboration
@@ -18,8 +18,8 @@ WARNING: [XSIM 43-4468] File : /proj/primebuilds/9999.0_PRIME_0428_0031/installs
 Completed simulation data flow analysis
 Time Resolution for simulation is 1ps
 Compiling package work.$unit_tb_top_sv
-WARNING: [XSIM 43-3373] "/home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv" Line 188. System function $fgets is used as system task. This system function should have a LHS e.g. x=$fgets().
 WARNING: [XSIM 43-3373] "/home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv" Line 189. System function $fgets is used as system task. This system function should have a LHS e.g. x=$fgets().
+WARNING: [XSIM 43-3373] "/home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv" Line 190. System function $fgets is used as system task. This system function should have a LHS e.g. x=$fgets().
 Compiling package work.core_pkg
 Compiling package work.instr_fetch_pkg
 Compiling package work.general_pkg

@@ -1,0 +1,1184 @@
+#-----------------------------------------------------------
+# xsim v2025.1 (64-bit)
+# SW Build 6140274 on Wed May 21 22:58:25 MDT 2025
+# IP Build 6138677 on Thu May 22 03:10:11 MDT 2025
+# SharedData Build 6139179 on Tue May 20 17:58:58 MDT 2025
+# Start of session at: Sun Jul 19 21:33:08 2026
+# Process ID         : 209453
+# Current directory  : /home/developer/RTL/RISC-V-CPU/verification
+# Command line       : xsim -source {xsim.dir/tb_sim/xsim_script.tcl}
+# Log file           : /home/developer/RTL/RISC-V-CPU/verification/xsim.log
+# Journal file       : /home/developer/RTL/RISC-V-CPU/verification/xsim.jou
+# Running On         : 95b2b41d58b0
+# Platform           : Ubuntu
+# Operating System   : Ubuntu 22.04.3 LTS
+# Processor Detail   : Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
+# CPU Frequency      : 3999.995 MHz
+# CPU Physical cores : 4
+# CPU Logical cores  : 8
+# Host memory        : 15713 MB
+# Swap memory        : 4294 MB
+# Total Virtual      : 20008 MB
+# Available Virtual  : 17078 MB
+#-----------------------------------------------------------
+start_gui
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:emb-plus-vpr-4616:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/emb-plus-vpr-4616/1.0/board.xml as part xcve2302-sfva784-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:emb-plus-vpr-4616:part0:1.1 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/emb-plus-vpr-4616/1.1/board.xml as part xcve2302-sfva784-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:kcu105:part0:1.6 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/kcu105/1.6/board.xml as part xcku040-ffva1156-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:kcu105:part0:1.7 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/kcu105/1.7/board.xml as part xcku040-ffva1156-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:kcu1500:part0:1.2 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/kcu1500/1.2/board.xml as part xcku115-flvb2104-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:v80:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/v80/1.0/board.xml as part xcv80-lsva4737-2mhp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vck190:part0:2.2 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vck190/production/2.2/board.xml as part xcvc1902-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vck190:part0:3.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vck190/production/3.0/board.xml as part xcvc1902-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vck190:part0:3.1 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vck190/production/3.1/board.xml as part xcvc1902-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vck190:part0:3.2 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vck190/production/3.2/board.xml as part xcvc1902-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vck190:part0:3.3 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vck190/production/3.3/board.xml as part xcvc1902-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vck190:part0:3.4 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vck190/production/3.4/board.xml as part xcvc1902-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vck190_newl:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vck190_newl/production/1.0/board.xml as part xcvc1902-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vck190_newl:part0:1.1 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vck190_newl/production/1.1/board.xml as part xcvc1902-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vck190_newl:part0:1.2 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vck190_newl/production/1.2/board.xml as part xcvc1902-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vck190_newl:part0:1.3 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vck190_newl/production/1.3/board.xml as part xcvc1902-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vcu108:part0:1.6 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vcu108/1.6/board.xml as part xcvu095-ffva2104-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vcu108:part0:1.7 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vcu108/1.7/board.xml as part xcvu095-ffva2104-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vcu110:part0:1.4 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vcu110/1.4/board.xml as part xcvu190-flgc2104-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vcu118:part0:2.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vcu118/2.0/board.xml as part xcvu9p-flga2104-2l-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vcu118:part0:2.3 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vcu118/2.3/board.xml as part xcvu9p-flga2104-2l-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vcu118:part0:2.4 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vcu118/2.4/board.xml as part xcvu9p-flga2104-2l-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vcu128:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vcu128/production/1.0/board.xml as part xcvu37p-fsvh2892-2l-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vcu129:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vcu129/production/1.0/board.xml as part xcvu29p-fsga2577-2l-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vcu1525:part0:1.3 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vcu1525/1.3/board.xml as part xcvu9p-fsgd2104-2l-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vek280:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vek280/production/1.0/board.xml as part xcve2802-vsvh1760-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vek280:part0:1.1 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vek280/production/1.1/board.xml as part xcve2802-vsvh1760-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vek280:part0:1.2 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vek280/production/1.2/board.xml as part xcve2802-vsvh1760-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vek385:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vek385/1.0/board.xml as part xc2ve3858-ssva2112-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vermeo_t1_mpsoc:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vermeo_t1_mpsoc/1.0/board.xml as part xczu19eg-ffvd1760-2l-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vermeo_t1_rfsoc:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vermeo_t1_rfsoc/1.0/board.xml as part xczu21dr-ffvd1156-2l-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vhk158:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vhk158/production/1.0/board.xml as part xcvh1582-vsva3697-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vhk158:part0:1.1 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vhk158/production/1.1/board.xml as part xcvh1582-vsva3697-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vhk158:part0:1.2 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vhk158/production/1.2/board.xml as part xcvh1582-vsva3697-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vmk180:part0:2.2 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vmk180/production/2.2/board.xml as part xcvm1802-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vmk180:part0:3.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vmk180/production/3.0/board.xml as part xcvm1802-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vmk180:part0:3.1 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vmk180/production/3.1/board.xml as part xcvm1802-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vmk180:part0:3.2 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vmk180/production/3.2/board.xml as part xcvm1802-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vmk180:part0:3.3 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vmk180/production/3.3/board.xml as part xcvm1802-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vmk180_newl:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vmk180_newl/production/1.0/board.xml as part xcvm1802-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vmk180_newl:part0:1.1 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vmk180_newl/production/1.1/board.xml as part xcvm1802-vsva2197-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vpk120:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vpk120/production/1.0/board.xml as part xcvp1202-vsva2785-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vpk120:part0:1.1 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vpk120/production/1.1/board.xml as part xcvp1202-vsva2785-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vpk120:part0:1.2 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vpk120/production/1.2/board.xml as part xcvp1202-vsva2785-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vpk180:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vpk180/production/1.0/board.xml as part xcvp1802-lsvc4072-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vpk180:part0:1.1 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vpk180/production/1.1/board.xml as part xcvp1802-lsvc4072-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vpk180:part0:1.2 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vpk180/production/1.2/board.xml as part xcvp1802-lsvc4072-2mp-e-s specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu102:part0:3.3 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu102/3.3/board.xml as part xczu9eg-ffvb1156-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu102:part0:3.4 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu102/3.4/board.xml as part xczu9eg-ffvb1156-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu111:part0:1.2 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu111/1.2/board.xml as part xczu28dr-ffvg1517-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu111:part0:1.3 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu111/1.3/board.xml as part xczu28dr-ffvg1517-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu111:part0:1.4 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu111/1.4/board.xml as part xczu28dr-ffvg1517-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu1275:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu1275/1.0/board.xml as part xczu29dr-ffvf1760-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu1285:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu1285/1.0/board.xml as part xczu39dr-ffvf1760-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu208:part0:2.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu208/production/2.0/board.xml as part xczu48dr-fsvg1517-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu208ld:part0:2.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu208ld/production/2.0/board.xml as part xczu58dr-fsvg1517-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu216:part0:2.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu216/production/2.0/board.xml as part xczu49dr-ffvf1760-2-e specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu216ld:part0:2.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu216ld/production/2.0/board.xml as part xczu59dr-ffvf1760-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu670:part0:2.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu670/2.0/board.xml as part xczu67dr-fsve1156-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu670ld:part0:1.0 available at /home/developer/tools/Xilinx/2025.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu670ld/1.0/board.xml as part xczu57dr-fsve1156-2-i specified in board_part file is either invalid or not available
+source xsim.dir/tb_sim/xsim_script.tcl
+# set_param project.enableReportConfiguration 0
+# load_feature core
+# current_fileset
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/home/developer/tools/Xilinx/2025.1/Vivado/data/ip'.
+# xsim {tb_sim} -view {{wcfgs/latest.wcfg}} -tclbatch {init.tcl}
+Time resolution is 1 ps
+open_wave_config wcfgs/latest.wcfg
+source init.tcl
+## log_wave -recursive *
+## run -all
+UVM_INFO /home/developer//tools/Xilinx/2025.1/Vivado/data/system_verilog/uvm_1.2/xlnx_uvm_package.sv(18601) @ 0: reporter [UVM/RELNOTES] 
+----------------------------------------------------------------
+UVM-1.2
+(C) 2007-2014 Mentor Graphics Corporation
+(C) 2007-2014 Cadence Design Systems, Inc.
+(C) 2006-2014 Synopsys, Inc.
+(C) 2011-2013 Cypress Semiconductor Corp.
+(C) 2013-2014 NVIDIA Corporation
+----------------------------------------------------------------
+
+  ***********       IMPORTANT RELEASE NOTES         ************
+
+  You are using a version of the UVM library that has been compiled
+  with `UVM_NO_DEPRECATED undefined.
+
+  You are using a version of the UVM library that has been compiled
+  with `UVM_OBJECT_DO_NOT_NEED_CONSTRUCTOR undefined.
+
+      (Specify +UVM_NO_RELNOTES to turn off this notice)
+
+UVM_INFO @ 0: reporter [RNTST] Running test riscv_base_test...
+UVM_INFO /home/developer//tools/Xilinx/2025.1/Vivado/data/system_verilog/uvm_1.2/xlnx_uvm_package.sv(20867) @ 0: reporter [UVM/COMP/NAMECHECK] This implementation of the component name checks requires DPI to be enabled
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 70000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 80000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 4!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 90000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 6!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 8!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 10!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 180000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 12!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 300000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 14!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 310000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 16!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 370000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 18!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 380000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 20!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 390000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 22!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 420000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 24!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 480000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 26!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 490000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 28!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 500000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 30!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 530000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 32!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 590000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 34!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 36!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 610000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 38!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 640000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 40!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 700000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 42!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 710000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 44!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 720000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 46!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 750000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 48!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 810000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 50!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 820000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 52!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 830000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 54!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 860000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 56!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 870000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 58!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 60!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 900000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 62!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 940000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 64!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 950000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 66!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 960000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 68!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 970000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 70!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 990000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 72!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1000000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 74!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1010000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 76!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1020000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 78!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1050000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 80!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1060000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 82!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1080000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 84!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1090000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 86!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 88!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1140000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 90!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1150000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 92!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1160000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 94!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1180000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 96!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1190000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 98!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1200000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 100!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1210000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 102!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1240000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 104!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1250000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 106!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1270000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 108!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1280000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 110!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1320000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 112!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1330000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 114!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1340000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 116!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1350000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 118!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1370000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 120!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1380000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 122!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1390000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 124!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1400000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 126!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1430000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 128!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1440000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 130!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1460000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 132!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1470000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 134!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1510000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 136!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1520000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 138!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1530000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 140!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1540000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 142!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1560000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 144!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1570000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 146!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1580000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 148!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1590000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 150!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1620000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 152!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1630000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 154!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1650000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 156!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1660000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 158!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1700000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 160!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1710000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 162!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1720000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 164!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1730000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 166!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1750000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 168!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1760000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 170!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1770000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 172!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1780000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 174!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1810000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 176!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1820000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 178!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 180!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1850000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 182!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 184!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1900000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 186!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1910000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 188!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1920000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 190!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1940000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 192!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1950000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 194!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1960000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 196!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 1970000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 198!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2000000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 200!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2010000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 202!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2030000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 204!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2040000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 206!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2080000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 208!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2090000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 210!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2100000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 212!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2110000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 214!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 216!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2140000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 218!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2150000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 220!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2160000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 222!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2190000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 224!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2200000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 226!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2220000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 228!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2230000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 230!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2270000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 232!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2280000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 234!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2290000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 236!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2300000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 238!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2320000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 240!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2330000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 242!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2340000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 244!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2350000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 246!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2380000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 248!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2390000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 250!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2410000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 252!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2420000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 254!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2460000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 256!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2470000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 258!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2480000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 260!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2490000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 262!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2510000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 264!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2520000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 266!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2530000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 268!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2540000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 270!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2570000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 272!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2580000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 274!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 276!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2610000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 278!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2650000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 280!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2660000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 282!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2670000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 284!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2680000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 286!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2700000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 288!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2710000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 290!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2720000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 292!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2730000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 294!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2760000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 296!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2770000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 298!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2790000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 300!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2800000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 302!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 304!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2850000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 306!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2860000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 308!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2870000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 310!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 312!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2900000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 314!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2910000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 316!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2920000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 318!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2950000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 320!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2960000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 322!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2980000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 324!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 2990000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 326!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3030000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 328!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3040000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 330!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3050000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 332!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3060000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 334!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3080000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 336!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3090000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 338!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3100000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 340!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3110000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 342!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3140000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 344!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3150000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 346!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 348!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3180000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 350!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3220000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 352!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3230000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 354!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3240000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 356!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3250000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 358!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3270000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 360!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3280000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 362!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3290000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 364!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3300000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 366!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3330000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 368!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3340000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 370!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3360000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 372!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3370000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 374!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3410000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 376!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3420000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 378!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3430000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 380!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3440000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 382!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3460000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 384!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3470000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 386!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3480000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 388!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3490000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 390!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3520000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 392!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3530000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 394!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3550000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 396!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3560000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 398!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 400!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3610000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 402!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3620000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 404!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3630000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 406!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3650000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 408!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3660000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 410!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3670000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 412!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3680000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 414!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3710000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 416!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3720000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 418!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3740000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 420!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3750000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 422!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3790000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 424!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3800000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 426!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3810000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 428!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3820000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 430!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 432!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3850000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 434!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3860000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 436!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3870000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 438!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3900000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 440!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3910000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 442!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3930000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 444!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3940000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 446!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3980000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 448!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 3990000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 450!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4000000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 452!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4010000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 454!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4030000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 456!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4040000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 458!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4050000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 460!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4060000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 462!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4090000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 464!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4100000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 466!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4120000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 468!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 470!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 472!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4180000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 474!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4190000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 476!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4200000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 478!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4220000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 480!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4230000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 482!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4240000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 484!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4250000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 486!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4280000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 488!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4290000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 490!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4310000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 492!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4320000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 494!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4360000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 496!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4370000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 498!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4380000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 500!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4390000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 502!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4410000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 504!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4420000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 506!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4430000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 508!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4440000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 510!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4470000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 512!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4480000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 514!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4500000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 516!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4510000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 518!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4550000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 520!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4560000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 522!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4570000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 524!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4580000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 526!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 528!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4610000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 530!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4620000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 532!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4630000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 534!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4660000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 536!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4670000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 538!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4690000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 540!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4700000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 542!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4740000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 544!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4750000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 546!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4760000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 548!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4770000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 550!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4790000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 552!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4800000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 554!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4810000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 556!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4820000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 558!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4850000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 560!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4860000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 562!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4880000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 564!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 566!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4930000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 568!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4940000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 570!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4950000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 572!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4960000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 574!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4980000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 576!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 4990000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 578!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5000000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 580!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5010000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 582!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5040000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 584!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5050000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 586!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5070000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 588!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5080000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 590!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5120000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 592!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 594!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5140000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 596!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5150000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 598!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 600!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5180000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 602!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5190000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 604!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5200000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 606!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5230000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 608!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5240000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 610!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5260000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 612!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5270000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 614!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5310000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 616!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5320000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 618!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5330000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 620!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5340000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 622!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5360000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 624!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5370000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 626!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5380000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 628!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5390000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 630!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5420000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 632!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5430000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 634!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5450000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 636!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5460000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 638!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5500000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 640!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5510000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 642!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5520000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 644!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5530000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 646!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5550000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 648!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5560000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 650!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5570000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 652!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5580000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 654!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5610000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 656!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5620000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 658!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5640000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 660!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5650000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 662!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5690000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 664!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5700000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 666!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5710000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 668!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5720000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 670!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5740000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 672!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5750000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 674!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5760000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 676!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5770000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 678!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5800000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 680!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5810000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 682!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5830000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 684!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 686!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5880000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 688!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 690!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5900000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 692!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5910000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 694!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5930000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 696!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5940000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 698!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5950000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 700!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5960000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 702!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 5990000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 704!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6000000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 706!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6020000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 708!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6030000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 710!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6070000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 712!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6080000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 714!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6090000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 716!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6100000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 718!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6120000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 720!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 722!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6140000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 724!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6150000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 726!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6180000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 728!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6190000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 730!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6210000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 732!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6220000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 734!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6260000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 736!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6270000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 738!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6280000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 740!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6290000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 742!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6310000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 744!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6320000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 746!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6330000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 748!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6340000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 750!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6370000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 752!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6380000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 754!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6400000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 756!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6410000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 758!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6450000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 760!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6460000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 762!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6470000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 764!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6480000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 766!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6500000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 768!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6510000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 770!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6520000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 772!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6530000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 774!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6560000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 776!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6570000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 778!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6590000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 780!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 782!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6640000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 784!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6650000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 786!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6660000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 788!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6670000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 790!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6690000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 792!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6700000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 794!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6710000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 796!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6720000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 798!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6750000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 800!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6760000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 802!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6780000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 804!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6790000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 806!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6830000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 808!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 810!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6850000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 812!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6860000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 814!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6880000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 816!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 818!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6900000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 820!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6910000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 822!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6940000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 824!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6950000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 826!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6970000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 828!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 6980000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 830!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7020000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 832!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7030000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 834!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7040000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 836!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7050000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 838!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7070000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 840!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7080000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 842!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7090000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 844!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7100000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 846!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 848!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7140000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 850!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7160000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 852!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 854!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7210000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 856!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7220000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 858!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7230000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 860!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7240000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 862!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7260000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 864!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7270000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 866!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7280000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 868!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7290000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 870!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7320000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 872!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7330000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 874!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7350000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 876!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7360000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 878!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7400000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 880!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7410000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 882!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7420000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 884!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7430000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 886!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7450000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 888!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7460000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 890!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7470000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 892!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7480000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 894!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7510000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 896!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7520000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 898!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7540000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 900!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7550000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 902!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7590000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 904!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 906!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7610000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 908!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7620000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 910!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7640000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 912!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7650000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 914!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7660000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 916!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7670000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 918!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7700000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 920!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7710000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 922!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7730000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 924!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7740000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 926!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7780000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 928!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7790000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 930!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7800000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 932!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7810000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 934!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7830000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 936!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 938!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7850000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 940!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7860000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 942!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 944!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7900000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 946!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7920000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 948!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7930000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 950!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7970000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 952!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7980000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 954!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 7990000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 956!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8000000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 958!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8020000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 960!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8030000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 962!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8040000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 964!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8050000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 966!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8080000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 968!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8090000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 970!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8110000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 972!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8120000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 974!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8160000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 976!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 978!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8180000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 980!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8190000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 982!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8210000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 984!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8220000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 986!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8230000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 988!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8240000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 990!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8270000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 992!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8280000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 994!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8300000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 996!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8310000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 998!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8350000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1000!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8360000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1002!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8370000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1004!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8380000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1006!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8400000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1008!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8410000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1010!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8420000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1012!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8430000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1014!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8460000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1016!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8470000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1018!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8490000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1020!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8500000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1022!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8540000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1024!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8550000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1026!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8560000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1028!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8570000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1030!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8590000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1032!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1034!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8610000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1036!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8620000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1038!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8650000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1040!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8660000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1042!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8680000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1044!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8690000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1046!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8730000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1048!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8740000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1050!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8750000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1052!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8760000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1054!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8780000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1056!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8790000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1058!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8800000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1060!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8810000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1062!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1064!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8850000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1066!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8870000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1068!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8880000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1070!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8920000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1072!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8930000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1074!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8940000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1076!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8950000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1078!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8970000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1080!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8980000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1082!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 8990000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1084!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9000000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1086!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9030000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1088!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9040000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1090!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9060000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1092!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9070000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1094!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9110000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1096!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9120000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1098!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1100!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9140000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1102!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9160000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1104!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1106!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9180000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1108!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9190000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1110!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9220000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1112!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9230000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1114!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9250000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1116!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9260000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1118!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9300000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1120!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9310000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1122!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9320000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1124!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9330000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1126!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9350000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1128!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9360000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1130!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9370000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1132!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9380000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1134!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9410000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1136!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9420000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1138!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9440000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1140!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9450000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1142!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9490000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1144!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9500000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1146!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9510000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1148!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9520000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1150!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9540000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1152!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9550000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1154!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9560000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1156!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9570000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1158!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1160!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9610000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1162!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9630000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1164!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9640000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1166!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9680000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1168!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9690000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1170!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9700000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1172!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9710000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1174!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9730000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1176!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9740000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1178!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9750000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1180!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9760000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1182!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9790000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1184!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9800000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1186!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9820000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1188!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9830000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1190!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9870000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1192!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9880000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1194!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1196!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9900000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1198!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9920000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1200!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9930000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1202!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9940000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1204!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9950000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1206!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9980000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1208!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 9990000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1210!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10010000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1212!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10020000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1214!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10060000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1216!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10070000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1218!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10080000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1220!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10090000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1222!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10110000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1224!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10120000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1226!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1228!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10140000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1230!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1232!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10180000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1234!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10200000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1236!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10210000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1238!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10250000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1240!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10260000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1242!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10270000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1244!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10280000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1246!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10300000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1248!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10310000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1250!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10320000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1252!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10330000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1254!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10360000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1256!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10370000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1258!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10390000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1260!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10400000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1262!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10440000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1264!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10450000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1266!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10460000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1268!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10470000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1270!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10490000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1272!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10500000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1274!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10510000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1276!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10520000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1278!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10550000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1280!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10560000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1282!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10580000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1284!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10590000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1286!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10630000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1288!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10640000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1290!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10650000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1292!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10660000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1294!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10680000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1296!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10690000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1298!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10700000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1300!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10710000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1302!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10740000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1304!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10750000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1306!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10770000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1308!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10780000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1310!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10820000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1312!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10830000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1314!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1316!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10850000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1318!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10870000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1320!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10880000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1322!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1324!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10900000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1326!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10930000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1328!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10940000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1330!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10960000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1332!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 10970000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1334!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11010000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1336!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11020000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1338!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11030000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1340!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11040000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1342!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11060000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1344!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11070000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1346!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11080000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1348!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11090000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1350!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11120000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1352!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1354!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11150000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1356!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11160000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1358!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11200000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1360!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11210000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1362!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11220000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1364!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11230000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1366!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11250000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1368!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11260000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1370!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11270000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1372!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11280000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1374!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11310000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1376!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11320000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1378!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11340000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1380!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11350000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1382!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11390000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1384!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11400000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1386!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11410000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1388!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11420000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1390!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11440000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1392!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11450000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1394!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11460000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1396!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11470000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1398!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11500000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1400!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11510000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1402!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11530000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1404!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11540000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1406!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11580000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1408!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11590000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1410!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1412!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11610000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1414!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11630000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1416!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11640000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1418!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11650000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1420!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11660000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1422!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11690000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1424!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11700000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1426!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11720000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1428!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11730000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1430!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11770000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1432!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11780000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1434!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11790000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1436!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11800000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1438!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11820000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1440!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11830000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1442!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1444!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11850000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1446!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11880000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1448!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1450!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11910000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1452!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11920000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1454!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11960000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1456!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11970000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1458!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11980000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1460!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 11990000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1462!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12010000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1464!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12020000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1466!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12030000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1468!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12040000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1470!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12070000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1472!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12080000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1474!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12100000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1476!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12110000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1478!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12150000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1480!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12160000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1482!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1484!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12180000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1486!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12200000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1488!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12210000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1490!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12220000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1492!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12230000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1494!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12260000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1496!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12270000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1498!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12290000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1500!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12300000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1502!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12340000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1504!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12350000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1506!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12360000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1508!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12370000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1510!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12390000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1512!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12400000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1514!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12410000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1516!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12420000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1518!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12450000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1520!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12460000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1522!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12480000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1524!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12490000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1526!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12530000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1528!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12540000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1530!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12550000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1532!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12560000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1534!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12580000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1536!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12590000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1538!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1540!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12610000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1542!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12640000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1544!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12650000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1546!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12670000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1548!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12680000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1550!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12720000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1552!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12730000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1554!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12740000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1556!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12750000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1558!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12770000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1560!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12780000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1562!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12790000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1564!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12800000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1566!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12830000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1568!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1570!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12860000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1572!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12870000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1574!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12910000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1576!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12920000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1578!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12930000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1580!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12940000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1582!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12960000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1584!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12970000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1586!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12980000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1588!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 12990000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1590!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13020000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1592!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13030000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1594!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13050000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1596!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13060000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1598!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13100000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1600!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13110000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1602!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13120000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1604!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1606!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13150000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1608!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13160000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1610!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1612!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13180000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1614!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13210000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1616!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13220000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1618!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13240000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1620!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13250000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1622!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13290000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1624!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13300000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1626!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13310000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1628!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13320000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1630!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13340000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1632!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13350000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1634!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13360000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1636!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13370000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1638!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13400000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1640!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13410000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1642!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13430000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1644!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13440000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1646!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13480000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1648!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13490000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1650!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13500000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1652!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13510000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1654!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13530000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1656!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13540000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1658!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13550000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1660!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13560000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1662!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13590000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1664!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1666!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13620000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1668!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13630000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1670!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13670000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1672!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13680000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1674!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13690000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1676!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13700000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1678!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13720000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1680!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13730000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1682!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13740000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1684!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13750000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1686!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13780000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1688!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13790000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1690!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13810000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1692!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13820000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1694!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13860000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1696!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13870000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1698!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13880000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1700!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1702!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13910000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1704!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13920000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1706!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13930000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1708!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13940000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1710!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13970000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1712!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 13980000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1714!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14000000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1716!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14010000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1718!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14050000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1720!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14060000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1722!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14070000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1724!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14080000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1726!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14100000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1728!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14110000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1730!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14120000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1732!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14130000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1734!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14160000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1736!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1738!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14190000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1740!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14200000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1742!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14240000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1744!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14250000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1746!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14260000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1748!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14270000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1750!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14290000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1752!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14300000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1754!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14310000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1756!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14320000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1758!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14350000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1760!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14360000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1762!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14380000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1764!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14390000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1766!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14430000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1768!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14440000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1770!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14450000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1772!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14460000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1774!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14480000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1776!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14490000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1778!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14500000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1780!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14510000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1782!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14540000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1784!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14550000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1786!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14570000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1788!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14580000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1790!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14620000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1792!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14630000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1794!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14640000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1796!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14650000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1798!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14670000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1800!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14680000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1802!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14690000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1804!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14700000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1806!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14730000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1808!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14740000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1810!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14760000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1812!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14770000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1814!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14810000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1816!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14820000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1818!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14830000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1820!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1822!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14860000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1824!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14870000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1826!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14880000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1828!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1830!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14920000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1832!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14930000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1834!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14950000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1836!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 14960000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1838!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15000000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1840!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15010000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1842!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15020000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1844!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15030000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1846!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15050000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1848!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15060000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1850!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15070000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1852!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15080000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1854!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15110000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1856!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15120000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1858!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15140000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1860!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15150000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1862!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15190000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1864!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15200000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1866!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15210000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1868!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15220000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1870!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15240000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1872!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15250000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1874!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15260000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1876!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15270000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1878!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15300000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1880!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15310000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1882!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15330000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1884!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15340000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1886!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15380000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1888!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15390000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1890!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15400000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1892!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15410000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1894!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15430000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1896!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15440000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1898!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15450000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1900!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15460000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1902!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15490000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1904!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15500000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1906!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15520000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1908!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15530000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1910!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15570000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1912!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15580000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1914!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15590000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1916!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1918!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15620000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1920!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15630000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1922!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15640000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1924!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15650000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1926!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15680000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1928!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15690000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1930!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15710000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1932!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15720000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1934!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15760000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1936!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15770000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1938!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15780000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1940!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15790000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1942!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15810000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1944!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15820000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1946!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15830000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1948!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1950!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15870000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1952!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15880000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1954!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15900000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1956!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15910000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1958!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15950000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1960!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15960000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1962!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15970000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1964!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 15980000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1966!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16000000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1968!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16010000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1970!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16020000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1972!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16030000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1974!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16060000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1976!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16070000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1978!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16090000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1980!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16100000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1982!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16140000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1984!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16150000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1986!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16160000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1988!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16170000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1990!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16190000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1992!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16200000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1994!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16210000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1996!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16220000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 1998!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16250000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2000!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16260000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2002!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16280000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2004!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16290000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2006!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16330000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2008!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16340000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2010!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16350000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2012!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16360000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2014!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16380000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2016!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16390000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2018!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16400000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2020!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16410000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2022!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16440000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2024!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16450000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2026!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16470000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2028!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16480000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2030!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16520000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2032!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16530000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2034!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16540000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2036!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16550000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2038!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16570000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2040!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16580000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2042!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16590000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2044!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16600000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2046!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16630000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2048!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16640000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2050!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16660000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2052!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16670000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2054!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16710000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2056!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16770000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2058!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16780000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2060!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16790000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2062!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16800000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2064!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16810000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2066!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16820000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2068!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16830000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2070!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16840000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2072!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16850000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2074!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16860000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2076!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16870000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2078!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16880000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2080!
+UVM_INFO /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(213) @ 16890000: uvm_test_top.env.cpu_scoreboard [MATCH] Match at line 2082!
+UVM_ERROR /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(210) @ 16950000: uvm_test_top.env.cpu_scoreboard [MISMATCH] Mismatch at line 2084!
+UVM_FATAL /home/developer/RTL/RISC-V-CPU/verification/uvm_files/tb_top.sv(211) @ 16950000: uvm_test_top.env.cpu_scoreboard [MISMATCH] 
+Expected:	PC: 'h8000005c | DestValid: 1 | ArchReg: 31 | StoreEn: 'b0 | StoreAddr: 'h0 | StoreData: 'h0 | RegData: 'h80012000
+Actual:  	PC: 'hc | DestValid: 1 | ArchReg: 7 | StoreEn: 'b0 | StoreAddr: 'h0 | StoreData: 'h0 | RegData: 'h80010300
+UVM_INFO /home/developer//tools/Xilinx/2025.1/Vivado/data/system_verilog/uvm_1.2/xlnx_uvm_package.sv(13673) @ 16950000: reporter [UVM/REPORT/SERVER] 
+--- UVM Report Summary ---
+
+** Report counts by severity
+UVM_INFO : 1044
+UVM_WARNING :    0
+UVM_ERROR :    1
+UVM_FATAL :    1
+** Report counts by id
+[MATCH]  1041
+[MISMATCH]     2
+[RNTST]     1
+[UVM/COMP/NAMECHECK]     1
+[UVM/RELNOTES]     1
+
+$finish called at time : 16950 ns : File "/home/developer//tools/Xilinx/2025.1/Vivado/data/system_verilog/uvm_1.2/xlnx_uvm_package.sv" Line 18538
+xsim: Time (s): cpu = 00:00:15 ; elapsed = 00:00:07 . Memory (MB): peak = 13269.164 ; gain = 873.863 ; free physical = 9172 ; free virtual = 15498
+source exit.tcl
+# save_wave_config wcfgs/latest.wcfg
+# quit

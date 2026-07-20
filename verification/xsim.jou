@@ -3,8 +3,8 @@
 # SW Build 6140274 on Wed May 21 22:58:25 MDT 2025
 # IP Build 6138677 on Thu May 22 03:10:11 MDT 2025
 # SharedData Build 6139179 on Tue May 20 17:58:58 MDT 2025
-# Start of session at: Sun Jul 19 03:05:11 2026
-# Process ID         : 352505
+# Start of session at: Mon Jul 20 00:43:11 2026
+# Process ID         : 433063
 # Current directory  : /home/developer/RTL/RISC-V-CPU/verification
 # Command line       : xsim -source {xsim.dir/tb_sim/xsim_script.tcl}
 # Log file           : /home/developer/RTL/RISC-V-CPU/verification/xsim.log
@@ -13,13 +13,13 @@
 # Platform           : Ubuntu
 # Operating System   : Ubuntu 22.04.3 LTS
 # Processor Detail   : Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
-# CPU Frequency      : 3999.999 MHz
+# CPU Frequency      : 3999.995 MHz
 # CPU Physical cores : 4
 # CPU Logical cores  : 8
 # Host memory        : 15713 MB
 # Swap memory        : 4294 MB
 # Total Virtual      : 20008 MB
-# Available Virtual  : 14771 MB
+# Available Virtual  : 16187 MB
 #-----------------------------------------------------------
 start_gui
 source xsim.dir/tb_sim/xsim_script.tcl
