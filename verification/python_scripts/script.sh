@@ -2,6 +2,7 @@
 export RISCV=~/spike_install/riscv
 export PATH=$PATH:$RISCV/bin
 
+set -e
 
 # generating elf, then trace for spike
 # clang --target=riscv32 -march=rv32i -mabi=ilp32 -nostdlib -Wl,-Ttext=0x00000000 -o init.elf init.s
@@ -11,12 +12,14 @@ cd asms/intermediate
 cat init_p1.s \
     <(printf "\tli x7, 0x80010100       # Base memory address for data (0x80010100 to protect the mailboxes)") \
     init_p2.s \
-    init_p3.s \
-        > ../init_spike.s
+    generated_instructions.s \
+    finish_uvm.s \
+    finish_spike.s \
+        > ../rand_sim_spike.s
 cd ../..
-clang --target=riscv32 -march=rv32i -mabi=ilp32 -nostdlib -Wl,-T,link.ld -o elfs/init_spike.elf asms/init_spike.s
+clang --target=riscv32 -march=rv32i -mabi=ilp32 -nostdlib -Wl,-T,link.ld -ferror-limit=10 -o elfs/rand_sim_spike.elf asms/rand_sim_spike.s
 echo "--launching spike--"
-spike --isa=rv32i -m0x80000000:0x10000,0x80010000:0x10000 --log-commits elfs/init_spike.elf 2> trace.log
+spike --isa=rv32i -m0x80000000:0x10000,0x80010000:0x10000 --log-commits elfs/rand_sim_spike.elf 2> trace.log
 echo "--spike finished--"
 
 # translating trace.log to readable format for UVM testbench
@@ -27,12 +30,14 @@ cd asms/intermediate
 cat init_p1.s \
     <(printf "\tli x7, 0x80010100       # Base memory address for data (0x80010100 to protect the mailboxes)") \
     init_p2.s \
-        > ../init_py.s
+    generated_instructions.s \
+    finish_uvm.s \
+        > ../rand_sim_py.s
 cd ../..
-clang --target=riscv32 -march=rv32i -mabi=ilp32 -nostdlib -Wl,-T,link.ld -o elfs/init_py.elf asms/init_py.s
-llvm-objcopy -O binary elfs/init_py.elf bins/init_py.bin
+clang --target=riscv32 -march=rv32i -mabi=ilp32 -nostdlib -Wl,-T,link.ld -ferror-limit=10 -o elfs/rand_sim_py.elf asms/rand_sim_py.s
+llvm-objcopy -O binary elfs/rand_sim_py.elf bins/rand_sim_py.bin
 
 # convert program to rtl-readable
 # adding -j to get rid of .data or .bss sections in the output binary
-llvm-objcopy -O binary -j .text elfs/init_spike.elf bins/init_spike.bin
-hexdump -v -e '1/4 "%08x\n"' bins/init_spike.bin > rtl_hexs/init_spike.hex
+llvm-objcopy -O binary -j .text elfs/rand_sim_spike.elf bins/rand_sim_spike.bin
+hexdump -v -e '1/4 "%08x\n"' bins/rand_sim_spike.bin > rtl_hexs/rand_sim_spike.hex

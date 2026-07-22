@@ -1,16 +1,29 @@
 import random as rand
 from enum import Enum, auto
 import sys
+from typing import Tuple
 
 def print_to_file(filename, content, append=False):
     mode = "a" if append else "w"
     with open(filename, mode, encoding="utf-8") as f:
         f.write(content)
 
+def bounded_normal_ints(min_val, max_val, tightness=1e9):
+    """
+    tightness controls the variance (higher = lower variance).
+    """
+    raw_beta = rand.betavariate(tightness, tightness)
+    float_val = min_val + (max_val - min_val) * raw_beta
+    return round(float_val)
+
 # General Utils
 InstrType = [ "R-TYPE", "I-TYPE", "S-TYPE", "B-TYPE", "U-TYPE", "J-TYPE"]
 InstrType2 = [ "ALU", "LOAD", "STORE", "BRANCH", "JAL", "JALR", "LUI", "AUIPC"]
 InstrType3 = ["ALU_R", "ALU_I", "LOAD", "STORE", "BRANCH", "JAL", "JALR", "LUI", "AUIPC"]
+# safe_set = {"ALU_R", "ALU_I", "LUI", "AUIPC"}
+safe_set = {"ALU_R": 0.45, "ALU_I": 0.45, "LUI": 0.05, "AUIPC": 0.05}
+mem_set  = {"LOAD", "STORE"}
+cntrl_set = {"BRANCH", "JAL", "JALR"}
 def get_op_code(type: str, type2: str):
     opcode = "-Invalid_Opcode-"
     if (type == "R-TYPE"):
@@ -128,7 +141,7 @@ def get_alu_r_op_from_bin_32(bin_32: str) -> str:
     raise ValueError("Invalid ALU R-type instruction")
 
 # ALU I-TYPE Utils
-ALU_I_ops = [ "ADDI", "XORI", "ORI", "ANDI", "SLLI", "SRLI", "SRAI", "SLTI", "SLTUI" ]
+ALU_I_ops = [ "ADDI", "XORI", "ORI", "ANDI", "SLLI", "SRLI", "SRAI", "SLTI", "SLTIU" ]
 ALU_I_funct3_map = {
     "ADDI":  0b000,
     "XORI":  0b100,
@@ -138,7 +151,7 @@ ALU_I_funct3_map = {
     "SRLI":  0b101,
     "SRAI":  0b101,
     "SLTI":  0b010,
-    "SLTUI": 0b011
+    "SLTIU": 0b011
 }
 def get_alu_i_op_from_bin_32(bin_32: str) -> str:
     funct3 = int(bin_32[17:20], 2)
@@ -163,7 +176,7 @@ def get_alu_i_op_from_bin_32(bin_32: str) -> str:
     elif funct3 == 0b010:
         return "SLTI"
     elif funct3 == 0b011:
-        return "SLTUI"
+        return "SLTIU"
     raise ValueError("Invalid ALU I-type instruction")
 
 # LOAD Utils 
@@ -350,7 +363,7 @@ def compute_alu_i_op(op: str, rs1: int, imm_comp32: int) -> int:
         return comp32_add(rs1, imm_comp32)
     elif op == "SLTI":
         return 1 if comp32_to_signed_int(rs1) < comp32_to_signed_int(imm_comp32) else 0
-    elif op == "SLTUI":
+    elif op == "SLTIU":
         return 1 if rs1 < imm_comp32 else 0
     elif op == "XORI":
         return (rs1 ^ imm_comp32) & 0xFFFFFFFF
@@ -449,10 +462,11 @@ class Register_File:
                     break
                 reg = self.regs[reg_idx]
                 commit_state = "C" if reg.committed else "U"
-                value = comp32_to_signed_int(reg.value) if reg.committed else "----"
+                # value = comp32_to_signed_int(reg.value) if reg.committed else "----"
+                value = f"0x{comp32_to_signed_int(reg.value) & 0xFFFFFFFF:08X}" if reg.committed else "----"
                 # value = reg.value if reg.committed else "----"
                 row_entries.append(
-                    f"x{reg_idx:02}: {str(value):>12} [{commit_state}]"
+                    f"x{reg_idx:02}: {value:>12} [{commit_state}]"
                 )
             print(" | ".join(row_entries))
 
@@ -478,18 +492,18 @@ class Memory:
         self.valid_address_ranges = []
 
     def read(self, addr: int, byte_size: int) -> int:
-        assert 0 <= addr < self.size, "Base address out of bounds"
+        assert self.base_addr <= addr < self.base_addr + self.size, f"Base address ({addr:#010x}) out of bounds"
         assert byte_size > 0, "Byte size must be positive"
-        assert addr + byte_size <= self.size, "Read range out of bounds"
+        assert addr + byte_size <= self.base_addr + self.size, "Read range out of bounds"
         value = 0
         # little endian
         for i in range(byte_size):
-            byte_data = self.data[addr + i].read() & 0xFF
+            byte_data = self.data[addr + i - self.base_addr].read() & 0xFF
             value |= (byte_data << (i * 8))
         return value
 
     def write_byte(self, addr: int, value: int):
-        assert self.base_addr <= addr < self.base_addr + self.size, "Address out of bounds"
+        assert self.base_addr <= addr < self.base_addr + self.size, f"Address out of bounds: {addr:#010x}, while memory range is {self.base_addr:#010x} - {self.base_addr + self.size - 1:#010x}"
         self.data[addr - self.base_addr].write(value)
         # insert/conjoin valid address ranges
         if not self.valid_address_ranges:
@@ -543,9 +557,9 @@ class Memory:
 
     # not very efficient with use of write_byte
     def write(self, addr: int, value: int, byte_size: int):
-        assert self.base_addr <= addr < self.base_addr + self.size, "Base address out of bounds"
+        assert self.base_addr <= addr < self.base_addr + self.size, f"Base address out of bounds: {addr:#010x}, while memory range is {self.base_addr:#010x} - {self.base_addr + self.size - 1:#010x}"
         assert byte_size > 0, "Byte size must be positive"
-        assert addr + byte_size <= self.base_addr + self.size, "Write range out of bounds"
+        assert addr + byte_size - 1 < self.base_addr + self.size, f"Write range out of bounds: {addr:#010x} + {byte_size}, while memory range is {self.base_addr:#010x} - {self.base_addr + self.size - 1:#010x}"
         # little endian
         for i in range(byte_size):
             self.write_byte(addr + i, (value >> (i * 8)) & 0xFF)
@@ -561,7 +575,14 @@ class Memory:
         for start, end in self.valid_address_ranges:
             for addr in range(start, end + 1):
                 value = self.read(addr, 1)
-                print(f"0x{addr:08X}: 0x{value:02X}")
+                print(f"0x{addr:08X}: 0x{value:08X}")
+    
+    def print_valid_address_ranges(self):
+        for start, end in self.valid_address_ranges:
+            if start == end:
+                print(f"0x{start:08X}")
+            else:
+                print(f"0x{start:08X} - 0x{end:08X}")
 
 class Instr:
     def __init__(self, type=None, type2=None):
@@ -609,11 +630,14 @@ class Instr:
         assert len(commited_regs) > 0, "No committed registers available"
         assert self.type == "I-TYPE", "Invalid instruction type"
         assert self.type2 == "ALU", "Invalid instruction type2"
+        assert imm_bounds[1] >= 0
+        assert imm_bounds[0] <= 31
         self.alu_i_op = rand.choice(ALU_I_ops)
         self.funct3 = ALU_I_funct3_map[self.alu_i_op]
         self.rs1 = rand.choice(list(commited_regs))
-        imm_lower = max(-2048, imm_bounds[0])
-        imm_upper = min(2047, imm_bounds[1])
+        is_shift_op = self.alu_i_op in {"SLLI", "SRLI", "SRAI"}
+        imm_lower = max(0 if is_shift_op else -2048, imm_bounds[0])
+        imm_upper = min(31 if is_shift_op else 2047, imm_bounds[1])
         self.imm_comp32 = rand.randint(imm_lower, imm_upper) & 0xFFFFFFFF
         self.rd = rand.randint(0, 31)
         self.opcode = get_op_code(self.type, self.type2)
@@ -657,8 +681,9 @@ class Instr:
             # check if a valid register can be used as the base for the load
             reachable_reg = None
             for reg_entry in rand.sample(commited_register_file, k=len(commited_register_file)):
-                reg_value_signed_int = comp32_to_signed_int(reg_entry[1])
-                diff = addr_trgt - reg_value_signed_int
+                # reg_value_signed_int = comp32_to_signed_int(reg_entry[1])
+                # diff = addr_trgt - reg_value_signed_int
+                diff = addr_trgt - reg_entry[1] # mem addresses are unsigned, so no need to convert to signed int
                 imm_lower = max(-2048, imm_bounds[0])
                 imm_upper = min(2047, imm_bounds[1])
                 imm_valid = diff >= imm_lower and diff <= imm_upper
@@ -669,14 +694,15 @@ class Instr:
             found_valid_addr = True
         
         if (attempts >= max_attempts):
-            raise ValueError("Failed to generate a valid load instruction after maximum attempts")
+            raise ValueError("Failed to generate a valid LOAD instruction after maximum attempts")
         
         # self.addr_trgt = addr_trgt
         self.load_type = load_type
         self.funct3 = LOAD_funct3_map[self.load_type]
         self.load_width = load_width
         self.rs1 = reachable_reg
-        self.imm_comp32 = (addr_trgt - comp32_to_signed_int(register_file.regs[reachable_reg].value)) & 0xFFFFFFFF
+        # self.imm_comp32 = (addr_trgt - comp32_to_signed_int(register_file.regs[reachable_reg].value)) & 0xFFFFFFFF
+        self.imm_comp32 = (addr_trgt - register_file.regs[reachable_reg].value) & 0xFFFFFFFF
         self.rd = rand.randint(0, register_file.num_regs-1)
         self.opcode = get_op_code(self.type, self.type2)
         self.bits = f"{self.imm_comp32:012b}{self.rs1:05b}{self.funct3:03b}{self.rd:05b}{self.opcode:07b}"
@@ -703,6 +729,7 @@ class Instr:
             store_width = STORE_ops_byte_write_sizing_map[store_type]
             # guarantee mem_alignment
             addr_trgt = addr_trgt - (addr_trgt % store_width)
+            print(f"mem aligned addr_trgt: {addr_trgt:#010x}")
             # check if entire store width is within address range
             store_within_range = False
             if address_range[0] <= addr_trgt <= address_range[1]:
@@ -712,8 +739,9 @@ class Instr:
             # check if a valid register can be used as the base for the store
             reachable_reg = None
             for reg_entry in rand.sample(commited_register_file, k=len(commited_register_file)):
-                reg_value_signed_int = comp32_to_signed_int(reg_entry[1])
-                diff = addr_trgt - reg_value_signed_int
+                # reg_value_signed_int = comp32_to_signed_int(reg_entry[1])
+                # diff = addr_trgt - reg_value_signed_int
+                diff = addr_trgt - reg_entry[1] # mem addresses are unsigned, so no need to convert to signed int
                 imm_lower = max(-2048, imm_bounds[0])
                 imm_upper = min(2047, imm_bounds[1])
                 imm_valid = diff >= imm_lower and diff <= imm_upper
@@ -724,14 +752,15 @@ class Instr:
             found_valid_addr = True
         
         if (attempts >= max_attempts):
-            raise ValueError("Failed to generate a valid store instruction after maximum attempts")
+            raise ValueError(f"Failed to generate a valid STORE instruction after maximum attempts")
         
         # self.addr_trgt = addr_trgt
         self.store_type = store_type
         self.funct3 = STORE_funct3_map[self.store_type]
         self.store_width = store_width
         self.rs1 = reachable_reg
-        self.imm_comp32 = (addr_trgt - comp32_to_signed_int(register_file.regs[reachable_reg].value)) & 0xFFFFFFFF
+        # self.imm_comp32 = (addr_trgt - comp32_to_signed_int(register_file.regs[reachable_reg].value)) & 0xFFFFFFFF
+        self.imm_comp32 = (addr_trgt - register_file.regs[reachable_reg].value) & 0xFFFFFFFF
         #  = rand.randint(0, register_file.num_regs-1)
         self.rs2 = rand.choice(list(register_file.committed_regs))
         self.opcode = get_op_code(self.type, self.type2)
@@ -859,7 +888,8 @@ class Instr:
             instr_address_range: tuple[int, int],
             pc: int,
             max_attempts: int,
-            imm_bounds: tuple[int, int] = (-1e10, 1e10)
+            imm_bounds: tuple[int, int] = (-1e10, 1e10),
+            rs1_reg:int = None
             ):
         commited_register_file = register_file.get_committed_reg_file()
         assert len(commited_register_file) > 0, "No committed registers available"
@@ -872,9 +902,11 @@ class Instr:
             attempts += 1
             # addr_trgt = rand.choice([addr for start, end in instr_address_range for addr in range(start, end + 1)])
             addr_trgt = rand.randint(instr_address_range[0], instr_address_range[1])
+            print(f"addr_trgt: 0x{addr_trgt:08X}")
             jump_addr_width = 4
             # guarantee mem_alignment
             addr_trgt = addr_trgt - (addr_trgt % jump_addr_width)
+            print(f"addr_trgt: 0x{addr_trgt:08X}")
             # check if entire jump address width is within a valid address range
             jump_within_range = False
             if instr_address_range[0] <= addr_trgt <= instr_address_range[1]:
@@ -882,35 +914,52 @@ class Instr:
                     jump_within_range = True
             if not jump_within_range: continue
             if addr_trgt == pc: continue # prevent infinite loop
-            # check if a valid register can be used as the base for the jump
-            reachable_reg = None
-            print(f"\nRandomizing JALR instruction, looking for reachable register for addr: {addr_trgt}")
-            print(f"instr_address_range: {instr_address_range}")
-            for reg_entry in rand.sample(commited_register_file, k=len(commited_register_file)):
-                print(f"  Checking register {reg_entry[0]} with value {reg_entry[1]}")
-                reg_value_signed_int = comp32_to_signed_int(reg_entry[1])
-                diff = addr_trgt - reg_value_signed_int
+
+            if rs1_reg is not None:
+                if rs1_reg not in register_file.committed_regs:
+                    raise ValueError(f"Provided rs1_reg {rs1_reg} is not a committed register")
+                # reg_value_signed_int = comp32_to_signed_int(register_file.regs[rs1_reg].value)
+                diff = addr_trgt - register_file.regs[rs1_reg].value
                 imm_lower = max(-2048, imm_bounds[0])
                 imm_upper = min(2047, imm_bounds[1])
                 imm_valid = diff >= imm_lower and diff <= imm_upper
-                # imm_valid = diff >= -2048 and diff < 2048
-                if imm_valid:
-                    print(f"Found!, with diff: {diff}")
-                    reachable_reg = reg_entry[0]
-                    break
-            if reachable_reg is None: continue
+                print(f"reg_value unsigned: {register_file.regs[rs1_reg].value}")
+                if not imm_valid:
+                    raise ValueError(f"Provided rs1_reg {rs1_reg} with value 0x{register_file.regs[rs1_reg].value:08X} cannot reach target address 0x{addr_trgt:08X} (diff: {diff}) with immediate bounds {imm_bounds}")
+                reachable_reg = rs1_reg
+            else:
+                # check if a valid register can be used as the base for the jump
+                reachable_reg = None
+                print(f"\nRandomizing JALR instruction, looking for reachable register for addr: 0x{addr_trgt:08X}")
+                assert len(instr_address_range) == 2, "instr_address_range must be a tuple of (start, end)"
+                print(f"instr_address_range: 0x{instr_address_range[0]:08X} - 0x{instr_address_range[1]:08X}")
+                for reg_entry in rand.sample(commited_register_file, k=len(commited_register_file)):
+                    print(f"  Checking register {reg_entry[0]} with value 0x{reg_entry[1]:08X}")
+                    # reg_value_signed_int = comp32_to_signed_int(reg_entry[1])
+                    # diff = addr_trgt - reg_value_signed_int
+                    diff = addr_trgt - reg_entry[1] # addr are treated as unsigned, so we can use the raw value for diff
+                    imm_lower = max(-2048, imm_bounds[0])
+                    imm_upper = min(2047, imm_bounds[1])
+                    imm_valid = diff >= imm_lower and diff <= imm_upper
+                    # imm_valid = diff >= -2048 and diff < 2048
+                    if imm_valid:
+                        print(f"Found!, with diff: {diff}")
+                        reachable_reg = reg_entry[0]
+                        break
+                if reachable_reg is None: continue
             found_valid_addr = True
         
         print(f"  Using register {reachable_reg}\n")
         # sys.exit()
         
         if (attempts >= max_attempts):
-            raise ValueError("Failed to generate a valid load instruction after maximum attempts")
+            raise ValueError("Failed to generate a valid JALR instruction after maximum attempts")
         
         # self.addr_trgt = addr_trgt
         self.funct3 = 0b000
         self.rs1 = reachable_reg
-        self.imm_comp32 = (addr_trgt - comp32_to_signed_int(register_file.regs[reachable_reg].value)) & 0xFFFFFFFF
+        # self.imm_comp32 = (addr_trgt - comp32_to_signed_int(register_file.regs[reachable_reg].value)) & 0xFFFFFFFF
+        self.imm_comp32 = (addr_trgt - register_file.regs[reachable_reg].value) & 0xFFFFFFFF
         self.rd = rand.randint(0, register_file.num_regs-1)
         self.opcode = get_op_code(self.type, self.type2)
         self.bits = f"{self.imm_comp32:012b}{self.rs1:05b}{self.funct3:03b}{self.rd:05b}{self.opcode:07b}"
@@ -921,7 +970,8 @@ class Instr:
         assert self.type2 == "LUI", "Invalid instruction type2"
         imm_lower = max(-1 * (2 ** 31), imm_bounds[0])
         imm_upper = min((2 ** 31) - 1, imm_bounds[1])
-        self.imm_comp32 = ((rand.randint(imm_lower, imm_upper) >> 12) << 12) & 0xFFFFFFFF
+        # self.imm_comp32 = ((rand.randint(imm_lower, imm_upper) >> 12) << 12) & 0xFFFFFFFF
+        self.imm_comp32 = (((bounded_normal_ints(imm_lower, imm_upper) & 0xFFFFFFFF) >> 12) << 12) & 0xFFFFFFFF
         self.rd = rand.randint(0, 31)
         self.opcode = get_op_code(self.type, self.type2)
         imm_31_12 = self.imm_comp32 >> 12 & 0xFFFFF
@@ -934,7 +984,7 @@ class Instr:
         # self.imm_comp32 = ((rand.randint(-1 * (2 ** 31), (2 ** 31) - 1) >> 12) << 12) & 0xFFFFFFFF
         imm_lower = max(-1 * (2 ** 31), imm_bounds[0])
         imm_upper = min((2 ** 31) - 1, imm_bounds[1])
-        self.imm_comp32 = ((rand.randint(imm_lower, imm_upper) >> 12) << 12) & 0xFFFFFFFF
+        self.imm_comp32 = (((bounded_normal_ints(imm_lower, imm_upper) & 0xFFFFFFFF) >> 12) << 12) & 0xFFFFFFFF
         self.rd = rand.randint(0, 31)
         self.opcode = get_op_code(self.type, self.type2)
         imm_31_12 = self.imm_comp32 >> 12 & 0xFFFFF
@@ -949,8 +999,13 @@ class Instr:
                 max_attempts: int,
                 # exclude_type3_set: set[str] = None
                 prob_dict = None,
-                imm_bounds: tuple[int, int] = (-1e10, 1e10)
+                imm_bounds: tuple[int, int] = (-1e10, 1e10),
+                rs1_reg: int = None,
+                data_addr_range: tuple[int, int] = None,
+                u_imm_bounds: tuple[int, int] = (-1e10, 1e10)
         ):
+        if data_addr_range is None:
+            data_addr_range = memory.full_addr_range
         self.randomize_type3(prob_dict)
         if self.type3 == "ALU_R":
             self.randomize_alu_r_instr(register_file.committed_regs)
@@ -959,18 +1014,17 @@ class Instr:
         elif self.type3 == "LOAD":
             self.randomize_load_instr(register_file, memory.valid_address_ranges, max_attempts, imm_bounds)
         elif self.type3 == "STORE":
-            # self.randomize_store_instr(register_file, memory.valid_address_ranges, max_attempts)
-            self.randomize_store_instr(register_file, memory.full_addr_range, max_attempts, imm_bounds)
+                self.randomize_store_instr(register_file, data_addr_range, max_attempts, imm_bounds)
         elif self.type3 == "BRANCH":
             self.randomize_branch_instr(register_file, instr_address_range, pc, max_attempts, imm_bounds)
         elif self.type3 == "JAL":
             self.randomize_jal_instr(register_file, instr_address_range, pc, max_attempts, imm_bounds)
         elif self.type3 == "JALR":
-            self.randomize_jalr_instr(register_file, instr_address_range, pc, max_attempts, imm_bounds)
+            self.randomize_jalr_instr(register_file, instr_address_range, pc, max_attempts, imm_bounds, rs1_reg)
         elif self.type3 == "LUI":
-            self.randomize_lui_instr(imm_bounds)
+            self.randomize_lui_instr(u_imm_bounds)
         elif self.type3 == "AUIPC":
-            self.randomize_auipc_instr(imm_bounds)
+            self.randomize_auipc_instr(u_imm_bounds)
         else:
             raise ValueError("Invalid instruction type or type2")
 
@@ -1020,13 +1074,14 @@ class Instr:
         elif self.type2 == "LUI":
             instr_name = "LUI"
             operand_1 = f"x{self.rd}"
-            operand_2 = f"{comp32_to_signed_int(self.imm_comp32)}"
+            # operand_2 = f"{comp32_to_signed_int(self.imm_comp32)}"
+            operand_2 = f"{self.imm_comp32 >> 12 & 0xFFFFF}"
         elif self.type2 == "AUIPC":
             instr_name = "AUIPC"
             operand_1 = f"x{self.rd}"
-            operand_2 = f"{comp32_to_signed_int(self.imm_comp32)}"
+            operand_2 = f"{self.imm_comp32 >> 12 & 0xFFFFF}"
 
-        result = ""
+        result = "    "
         assert instr_name is not None, "Instruction name is None"
         if operand_1 is not None:
             result += f"{instr_name} {operand_1}"
@@ -1373,7 +1428,10 @@ class Program:
                                      working_instr_range: tuple[int, int] = None,
                                     #  exclude_type3_set: set[str] = None
                                     prob_dict = None,
-                                    imm_bounds: tuple[int, int] = (-1e10, 1e10)
+                                    imm_bounds: tuple[int, int] = (-1e10, 1e10),
+                                    rs1_reg: int = None,
+                                    data_addr_range: tuple[int, int] = None,
+                                    u_imm_bounds: tuple[int, int] = (-1e10, 1e10)
                                      ) -> Instr:
         instr = Instr()
         if working_instr_range is None:
@@ -1385,9 +1443,13 @@ class Program:
             working_instr_range,
             max_attempts,
             prob_dict,
-            imm_bounds
+            imm_bounds,
+            rs1_reg,
+            data_addr_range,
+            u_imm_bounds=u_imm_bounds
         )
         return instr
+    
 
     def register_r_op(self, instr: Instr):
         rs1_value = self.register_file.get_reg_value(instr.rs1)
@@ -1449,10 +1511,12 @@ class Program:
     def register_instr(self, instr: Instr, debug: int = 0):
         if debug >= 1:
             print(f"Executing instruction: {instr.gen_assembly_str()}")
-            print(f"PC before execution: {self.pc}")
+            print(f"PC before execution: 0x{self.pc:08X}")
         if debug >= 2:
             print(f"Register file before execution: {self.register_file.print_register_state()}")
-            print(f"Memory valid range before execution: {self.memory.valid_address_ranges}")
+            # print(f"Memory valid range before execution: {self.memory.valid_address_ranges}")
+            print("Memory valid ranges before execution:")
+            self.memory.print_valid_address_ranges()
         if debug >= 3:
             print(f"Memory state before execution: {self.memory.print_memory_state()}")
 
@@ -1470,14 +1534,15 @@ class Program:
     
     def grab_next_instr_index(self) -> int:
         if self.pc < self.instr_addr_range[0] or self.pc > self.instr_addr_range[1]:
-            print(f"PC {self.pc} out of instruction memory range {self.instr_addr_range}, halting execution")
+            print(f"PC 0x{self.pc:08X} out of instruction memory range {self.instr_addr_range}, halting execution")
             return -1
-        if self.pc + 4 > self.instr_addr_range[1]:
-            print(f"PC {self.pc} points to instruction that would go out of instruction memory range {self.instr_addr_range}, halting execution")
+        # if self.pc + 4 > self.instr_addr_range[1]:
+        if self.pc + 3 > self.instr_addr_range[1]:
+            print(f"PC 0x{self.pc:08X} points to instruction that would go out of instruction memory range {self.instr_addr_range}, halting execution")
             return -1
         instr_index = (self.pc - self.instr_addr_range[0]) // 4
         if instr_index >= len(self.instructions):
-            print(f"PC {self.pc} points to instruction index {instr_index} which is out of range of loaded instructions, halting execution")
+            print(f"PC 0x{self.pc:08X} points to instruction index {instr_index} which is out of range of loaded instructions, halting execution")
             return -2
         return instr_index
 
@@ -1498,16 +1563,19 @@ class Program:
     #         instr_index = self.grab_next_instr_index()
     #         assert instr_index >= 0, "PC out of range after executing instruction"
 
-    def gen_rand_program_seq(self, 
-                             num_instr: int, 
-                             max_attempts: int, 
-                             debug: int = 0, 
-                             append: bool = True,
-                             frwd_instr_range_offset: int = 0,
-                             prob_dict = None,
-                             imm_bounds: tuple[int, int] = (-1e10, 1e10),
-                             max_cntrl_flow_gap: int = 0
-                            ):
+    def gen_rand_program_seq(
+        self, 
+        num_instr: int, 
+        max_attempts: int, 
+        # debug: int = 0, 
+        # append: bool = True,
+        frwd_instr_range_offset: int = 0,
+        prob_dict = None,
+        imm_bounds: tuple[int, int] = (-1e10, 1e10),
+        # max_cntrl_flow_gap: int = 0
+        data_addr_range: tuple[int, int] = None,
+        u_imm_bounds: tuple[int, int] = (-1e10, 1e10)
+        ):
         assert (num_instr == 1 or prob_dict is not None, 
             "ENSURE num_instr > 1, cant generate unsafe (register based) accesses (load, store, jalr)")
         instr_list = []
@@ -1515,21 +1583,59 @@ class Program:
             if instr_num + frwd_instr_range_offset < num_instr:
                 working_instr_range = (
                     self.get_valid_instr_addr_range()[0],
-                    self.get_valid_instr_addr_range()[1] + instr_num + frwd_instr_range_offset * 4
+                    self.get_valid_instr_addr_range()[1] + (instr_num + frwd_instr_range_offset) * 4
                 )
-                instr = self.gen_random_instr_given_state(max_attempts, working_instr_range, prob_dict, imm_bounds)
+                instr = self.gen_random_instr_given_state(max_attempts, working_instr_range, prob_dict, imm_bounds, data_addr_range=data_addr_range, u_imm_bounds=u_imm_bounds)
             else:
-                instr = self.gen_random_instr_given_state(max_attempts, None, prob_dict, imm_bounds)
+                instr = self.gen_random_instr_given_state(max_attempts, None, prob_dict, imm_bounds, data_addr_range=data_addr_range, u_imm_bounds=u_imm_bounds)
             instr_list.append(instr)
+        return instr_list
 
-        if debug >= 1:
-            print(f"Generated random instruction sequence:")
-            print_to_file("generated_instructions.txt", "\nGenerated random instruction sequence:\n", append)
-            for instr in instr_list:
-                print(instr.gen_assembly_str())
-                print_to_file("generated_instructions.txt", instr.gen_assembly_str() + "\n", append)
-
+    def add_instr_seq(
+        self,
+        instr_list: list[Instr],
+        debug: int = 0,
+        append: bool = True
+    ):
+        # if debug >= 1:
+        #     print(f"Generated random instruction sequence:")
+        #     print_to_file("generated_instructions.txt", "\nGenerated random instruction sequence:\n", append)
+        #     for instr in instr_list:
+        #         print(instr.gen_assembly_str())
+        #         print_to_file("generated_instructions.txt", instr.gen_assembly_str() + "\n", append)
+        for instr in instr_list:
+            print_to_file("asms/intermediate/generated_instructions.s", instr.gen_assembly_str() + "\n", append)
         self.instructions.extend(instr_list)
+    
+    def gen_rand_program_seq_and_add(
+        self, 
+        num_instr: int, 
+        max_attempts: int, 
+        # debug: int = 0, 
+        # append: bool = True,
+        frwd_instr_range_offset: int = 0,
+        prob_dict = None,
+        imm_bounds: tuple[int, int] = (-1e10, 1e10),
+        # max_cntrl_flow_gap: int = 0
+        u_imm_bounds: tuple[int, int] = (-1e10, 1e10)
+    ):
+        instr_list = self.gen_rand_program_seq(
+            num_instr, 
+            max_attempts, 
+            # debug=debug, 
+            # append=append,
+            frwd_instr_range_offset=frwd_instr_range_offset, 
+            prob_dict=prob_dict, 
+            imm_bounds=imm_bounds,
+            # max_cntrl_flow_gap=max_cntrl_flow_gap,
+            u_imm_bounds=u_imm_bounds
+        )
+        self.add_instr_seq(
+            instr_list
+            # debug=debug, 
+            # append=append
+        )
+    
 
     def exec(self, max_cycles: int = 100, debug: int = 0):
         # for instr in self.instructions:
@@ -1552,12 +1658,129 @@ class Program:
         if debug >= 0:
             print("----------------------------------------")
             print(f"Final state after execution:")
-            print(f"PC: {self.pc}")
-            print(f"Register file: {self.register_file.print_register_state()}")
-            print(f"Memory valid range: {self.memory.valid_address_ranges}")
+            # print(f"PC: {self.pc}")
+            print(f"PC: 0x{self.pc:08X}")
+            self.register_file.print_register_state()
+            print("Valid Data Address Ranges:")
+            self.memory.print_valid_address_ranges()
             if debug >= 2:
                 print(f"Memory state: {self.memory.print_memory_state()}")
+    
+    def gen_and_exec_frwd_cntrl_instr(
+            self, 
+            type3: str = None, 
+            frwd_instr_frwd_offset_range: Tuple[int, int] = (1,1), 
+            max_attempts: int = 100, 
+            debug: int = 0
+        ):
+        assert type3 in cntrl_set, "Invalid type for forward control instruction"
+        assert frwd_instr_frwd_offset_range[0] > 0, "min_frwd_offset must be greater than 0 (case of 0 means infinite loop)"
+        assert frwd_instr_frwd_offset_range[1] > 0, "max_frwd_offset must be greater than 0"
 
+        # add AUIPC and ADDI instr's to store pc to a register, and use as rs1 in JALR instr
+        if type3 == "JALR":
+            print(f"initial pc: {self.pc:#010x}")
+            # auipc_instr = self.gen_random_instr_given_state(
+            #     max_attempts = 0,
+            #     working_instr_range = (self.pc + 4, self.pc + 4 + 3),
+            #     prob_dict = {"AUIPC"},
+            #     imm_bounds = (4, 4)
+            # )
+            auipc_dest_reg = rand.randint(1, 31)
+            auipc_instr = create_auipc_instr(rd=auipc_dest_reg, imm_comp32=0)
+            addi_instr = create_alu_i_instr(alu_i_op="ADDI", rd=auipc_dest_reg, rs1=auipc_dest_reg, imm_comp32=8)
+            self.register_instr(auipc_instr, debug=-1)
+            print(f"pc intermediate: {self.pc:#010x}")
+            self.register_instr(addi_instr, debug=-1)
+            self.add_instr_seq([auipc_instr, addi_instr])
+
+            print(f"Added AUIPC instruction to store PC for JALR instruction")
+
+        # instr = self.gen_random_instr_given_state(max_attempts)
+        old_pc = self.pc
+        old_instr_index = (self.pc - self.instr_addr_range[0]) // 4
+        # assert old_pc == self.instr_addr_range[1] + 4, f"Old PC {old_pc:#010x} is not pointed to the very next instruction after the last instruction in the program (expected {self.instr_addr_range[1] + 4:#010x}), cannot generate forward control instruction"
+        # gen a forward cntrl instr with random offset
+        frwd_offset = rand.randint(frwd_instr_frwd_offset_range[0], frwd_instr_frwd_offset_range[1])
+        print(f"self.pc: 0x{self.pc:08X}, old_instr_index: {old_instr_index}")
+        print(f"frwd_offset: {frwd_offset}")
+        print(f"working instr range: 0x{(self.pc + frwd_offset * 4):08X} to 0x{self.pc + 3 + frwd_offset * 4:08X}")
+        instr = self.gen_random_instr_given_state(
+            max_attempts = max_attempts,
+            working_instr_range = (self.pc + frwd_offset * 4, self.pc + 3 + frwd_offset * 4),
+            prob_dict = {type3},
+            imm_bounds = (frwd_offset * 4, frwd_offset * 4),
+            rs1_reg = auipc_dest_reg if type3 == "JALR" else None
+        )
+        # self.instructions.append(instr)
+        if debug >= 1:
+            print(f"Generated forward control instruction: {instr.gen_assembly_str()}")
+        self.register_instr(instr, debug=-1)
+        self.add_instr_seq([instr])
+        new_pc = self.pc
+        new_instr_index = (new_pc - self.instr_addr_range[0]) // 4
+        assert new_pc > old_pc, "New PC is less or equal than old PC after executing forward control instruction"
+        if debug >= 1:
+            print(f"Old PC: 0x{old_pc:08X}, Old Instr Index: {old_instr_index}")
+            print(f"New PC: 0x{new_pc:08X}, New Instr Index: {new_instr_index}")
+
+        # determine if there was a forward jump/branch, and if so, fill program the gap with random instructions
+        filler_instr_count = new_instr_index - old_instr_index - 1
+        if filler_instr_count > 0:
+            filler_instr_list = self.gen_rand_program_seq(
+                num_instr=filler_instr_count,
+                max_attempts=max_attempts,
+                frwd_instr_range_offset=0,
+                prob_dict=safe_set,
+                imm_bounds=(-200, 200)
+            )
+            self.add_instr_seq(filler_instr_list, debug=debug)
+            if debug >= 1:
+                print(f"Added {filler_instr_count} filler instructions to fill the gap between old and new PC")
+        
+    def gen_and_exec_mem_instr(
+            self, 
+            type3: str = None, 
+            max_attempts: int = 100, 
+            imm_bounds:int = (-1e10, 1e10),
+            debug: int = 0,
+            data_addr_range: tuple[int, int] = None
+        ):
+        assert type3 in mem_set, f"Invalid type for memory instruction: {type3}"
+
+        # set up base address in a register for memory instruction
+        found_base_addr_reg = False
+        for reg_pair in self.register_file.get_committed_reg_file():
+            if reg_pair[1] == self.memory.base_addr:
+                found_base_addr_reg = True
+                base_addr_reg = reg_pair[0]
+                break
+        if not found_base_addr_reg:
+            print("writing base addr into register file")
+            base_addr_reg = rand.randint(1, 31)
+            lui_imm = self.memory.base_addr >> 12 << 12
+            addi_imm = self.memory.base_addr & 0xFFF
+            lui_instr = create_lui_instr(rd=base_addr_reg, imm_comp32=lui_imm)
+            addi_instr = create_alu_i_instr(alu_i_op="ADDI", rd=base_addr_reg, rs1=base_addr_reg, imm_comp32=addi_imm)
+            self.register_instr(lui_instr, debug=-1)
+            self.register_instr(addi_instr, debug=-1)
+            self.add_instr_seq([lui_instr, addi_instr])
+
+        print(f"base_addr_reg: x{base_addr_reg}, value: 0x{self.register_file.get_reg_value(base_addr_reg):08X} vs 0x{self.memory.base_addr:08X}")
+        # guarantee's mem instr can be generated assuming range is not too high, and max_attempts is not too low, but
+        # does not guarantee that instr will use "base_addr_reg" as rs1, but it is likely to be used
+        mem_instr = self.gen_random_instr_given_state(
+            max_attempts=max_attempts,
+            working_instr_range=None,
+            prob_dict={type3},
+            imm_bounds=imm_bounds,
+            rs1_reg=base_addr_reg,
+            data_addr_range=data_addr_range
+        )
+        if debug >= 1:
+            print(f"Generated forward control instruction: {mem_instr.gen_assembly_str()}")
+        self.register_instr(mem_instr, debug=-1)
+        self.add_instr_seq([mem_instr])
         
 
 def grab_instrs_from_bin(path: str, max_num: int) -> list[str]:
@@ -1574,64 +1797,3 @@ def grab_instrs_from_bin(path: str, max_num: int) -> list[str]:
         print(f"Grabbed maximum number of instructions ({max_num}) from binary file ({path})")
     return instrs
 
-if __name__ == "__main__":
-    program = Program(
-        instr_mem_space_byte_size=0x10000,
-        instr_mem_base_addr=0x80000000,
-        data_mem_size=0x10000,
-        data_mem_base_addr=0x80010000
-    )
-
-    # load initial instructions and execute them
-    init_instr_str_seq = grab_instrs_from_bin("bins/init_py.bin", 100)
-    init_instr_seq = [create_instr_from_bin(instr_str) for instr_str in init_instr_str_seq]
-    program.instructions.extend(init_instr_seq)
-    print(f"Program instruction length: {len(program.instructions)}\n")
-    program.exec(max_cycles=2000, debug=0)
-
-    # remove later
-    print("\nExiting after initalization, change later")
-    sys.exit()
-
-    safe_set = set(InstrType3) - {"LOAD", "STORE", "JALR"}
-
-    # delete file
-    with open("generated_instructions.txt", "w") as f:
-        f.write("")
-
-    print("\nNow generating and executing random instruction sequence...\n")
-    for _ in range(1):
-        program.gen_rand_program_seq(
-            num_instr=50, 
-            max_attempts=100, 
-            debug=2,
-            append=True,
-            frwd_instr_range_offset=4,
-            prob_dict={"ALU_R": 0.3, "ALU_I": 0.5, "BRANCH": 0, "JAL": 0, "LUI": 0.05, "AUIPC": 0.05},
-            imm_bounds=(-200, 200)
-            )
-        print("\nNow executing the generated random instruction sequence...\n")
-        program.exec(max_cycles=2000, debug=1)
-        program.gen_rand_program_seq(
-            num_instr=1,
-            max_attempts=100,
-            debug=2,
-            frwd_instr_range_offset=0,
-            prob_dict={"LOAD", "STORE", "JALR"},
-            imm_bounds=(-200, 200)
-        )
-        # program.exec(max_cycles=2000, debug=1)
-        # print("\nNow executing the generated random instruction sequence...\n")
-
-        
-    # program.exec(max_cycles=2000, debug=1)    
-
-    # NOTE: Currently, our jumps/branches only go backwards
-
-
-
-
-
-
-
-    
