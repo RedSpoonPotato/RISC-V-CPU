@@ -167,12 +167,14 @@ def get_alu_i_op_from_bin_32(bin_32: str) -> str:
     elif funct3 == 0b001:
         return "SLLI"
     elif funct3 == 0b101:
-        if int(imm_str[0:8], 2) == 0x00:
+        # if int(imm_str[0:8], 2) == 0x00:
+        if int(imm_str[0:7], 2) == 0x00:
             return "SRLI"
-        elif int(imm_str[0:8], 2) == 0x20:
+        # elif int(imm_str[0:8], 2) == 0x20:
+        elif int(imm_str[0:7], 2) == 0x20:
             return "SRAI"
         else:
-            raise ValueError("Invalid SR ALU I-type instruction")
+            raise ValueError(f"Invalid SR ALU I-type instruction with imm_str {imm_str[0:7]}, for instr: {bin_32}")
     elif funct3 == 0b010:
         return "SLTI"
     elif funct3 == 0b011:
@@ -506,7 +508,7 @@ class Memory:
         assert self.base_addr <= addr < self.base_addr + self.size, f"Address out of bounds: {addr:#010x}, while memory range is {self.base_addr:#010x} - {self.base_addr + self.size - 1:#010x}"
         self.data[addr - self.base_addr].write(value)
         # insert/conjoin valid address ranges
-        if not self.valid_address_ranges:
+        if len(self.valid_address_ranges) == 0:
             self.valid_address_ranges.append((addr, addr))
         else:
             for i, (start, end) in enumerate(self.valid_address_ranges):
@@ -514,45 +516,34 @@ class Memory:
                     prev_start = -2
                     prev_end = -2
                     if i > 0:
-                        prev_start = self.valid_address_ranges[i-1][0]
-                        prev_end   = self.valid_address_ranges[i-1][1]
+                        prev_start, prev_end = self.valid_address_ranges[i-1]
                     if prev_end == addr - 1 and start == addr + 1:
-                        self.valid_address_ranges.insert(
-                            i-1, 
-                            (prev_start, end)
-                        )
+                        self.valid_address_ranges.insert(i-1, (prev_start, end))
                         self.valid_address_ranges.pop(i)
-                        self.valid_address_ranges.pop(i+1)
+                        # self.valid_address_ranges.pop(i+1)
+                        self.valid_address_ranges.pop(i)
                         break
                     elif prev_end == addr - 1:
-                        self.valid_address_ranges.insert(
-                            i-1, 
-                            (prev_start, addr)
-                        )
+                        self.valid_address_ranges.insert(i-1, (prev_start, addr))
                         self.valid_address_ranges.pop(i) 
                         break
                     elif start == addr + 1:
-                        self.valid_address_ranges.insert(
-                            i, 
-                            (addr, end)
-                        )
+                        self.valid_address_ranges.insert(i, (addr, end))
                         self.valid_address_ranges.pop(i+1) 
+                        break
+                    else:
+                        self.valid_address_ranges.insert(i, (addr, addr))
                         break
                 if start <= addr <= end:
                     break
                 elif i == len(self.valid_address_ranges)-1:
                     if addr == end + 1:
-                        self.valid_address_ranges.insert(
-                            i,
-                            (start, addr)
-                        )
+                        self.valid_address_ranges.insert(i, (start, addr))
                         self.valid_address_ranges.pop(i+1)
                         break
                     else:
-                        self.valid_address_ranges.insert(
-                            i,
-                            (addr, addr)
-                        )
+                        # self.valid_address_ranges.insert(i, (addr, addr))
+                        self.valid_address_ranges.insert(i+1, (addr, addr))
                         break
 
     # not very efficient with use of write_byte
@@ -1498,7 +1489,7 @@ class Program:
     
     def register_jalr_instr(self, instr: Instr):
         self.register_file.commit_reg(instr.rd, comp32_add(self.pc, 4))
-        self.pc = comp32_add(self.pc, instr.imm_comp32)
+        self.pc = comp32_add(self.register_file.get_reg_value(instr.rs1), instr.imm_comp32)
     
     def register_lui_instr(self, instr: Instr):
         self.register_file.commit_reg(instr.rd, instr.imm_comp32)
@@ -1758,7 +1749,7 @@ class Program:
         if not found_base_addr_reg:
             print("writing base addr into register file")
             base_addr_reg = rand.randint(1, 31)
-            lui_imm = self.memory.base_addr >> 12 << 12
+            lui_imm = (self.memory.base_addr + 0x800) >> 12 << 12 # acccounting for when lower 12 bits get interpretted as negative in addi
             addi_imm = self.memory.base_addr & 0xFFF
             lui_instr = create_lui_instr(rd=base_addr_reg, imm_comp32=lui_imm)
             addi_instr = create_alu_i_instr(alu_i_op="ADDI", rd=base_addr_reg, rs1=base_addr_reg, imm_comp32=addi_imm)
@@ -1766,6 +1757,7 @@ class Program:
             self.register_instr(addi_instr, debug=-1)
             self.add_instr_seq([lui_instr, addi_instr])
 
+        assert self.register_file.get_reg_value(base_addr_reg) == self.memory.base_addr
         print(f"base_addr_reg: x{base_addr_reg}, value: 0x{self.register_file.get_reg_value(base_addr_reg):08X} vs 0x{self.memory.base_addr:08X}")
         # guarantee's mem instr can be generated assuming range is not too high, and max_attempts is not too low, but
         # does not guarantee that instr will use "base_addr_reg" as rs1, but it is likely to be used

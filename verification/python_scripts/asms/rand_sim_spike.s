@@ -27,3706 +27,3598 @@ mem_init_loop:
     li x20, 0xBB
     li x21, 0xCC
 
-    ADD x1, x18, x18
-    SLTIU x14, x15, -113
-    LUI x17, 1048561
-    OR x21, x13, x14
-    LUI x17, 1048567
-    SRA x14, x13, x17
-    SLT x6, x14, x15
-    SLTIU x31, x10, 6
-    SRA x18, x10, x0
-    SRL x16, x19, x17
-    LUI x9, 1048573
-    ORI x9, x0, 198
-    SRLI x17, x11, 0
-    XOR x0, x10, x21
-    SRL x20, x12, x15
-    SLLI x21, x17, 30
-    AUIPC x0, 7
-    SRAI x13, x20, 2
-    BEQ x19, x20, 36
-    SLTU x8, x14, x10
-    AUIPC x30, 11
-    AUIPC x30, 9
-    SLT x1, x7, x1
-    XOR x15, x18, x16
-    ADDI x28, x16, 39
-    XORI x19, x11, -148
-    SRL x30, x13, x9
-    ADDI x31, x31, 168
-    OR x24, x0, x15
-    SRL x16, x17, x12
-    ADDI x29, x15, 98
-    SLTI x8, x20, 0
-    XORI x17, x11, -63
-    XORI x26, x17, -180
-    ORI x1, x9, 14
-    SRLI x26, x5, 4
-    LUI x30, 1048560
-    SUB x24, x6, x0
-    SUB x27, x7, x11
-    LUI x4, 524304
-    ADDI x4, x4, 256
-    LH x6, -154(x27)
-    XOR x11, x4, x29
-    SRA x11, x17, x27
-    SLTIU x15, x30, 134
-    AUIPC x20, 22
-    BNE x8, x30, 32
-    SLL x3, x1, x17
-    SLLI x10, x20, 26
-    SLTU x6, x11, x7
-    SLLI x11, x31, 12
-    SLTI x9, x20, -151
-    SLL x13, x31, x26
-    ANDI x15, x27, -41
-    SRAI x6, x15, 0
-    XOR x4, x21, x11
-    SRA x23, x8, x7
-    SLLI x7, x30, 21
-    SLTIU x13, x27, -32
-    SLL x19, x14, x24
-    XORI x11, x18, 3
-    SRA x12, x17, x31
-    SRAI x5, x27, 26
-    LUI x19, 524304
-    ADDI x19, x19, 256
-    LBU x21, 203(x19)
-    LUI x12, 1048570
-    OR x28, x31, x4
-    SUB x2, x14, x4
-    XOR x9, x22, x24
-    AUIPC x30, 1048552
-    SLLI x20, x5, 28
-    SLL x2, x26, x26
-    ADD x7, x16, x14
-    SUB x30, x20, x11
-    AUIPC x3, 42
-    AUIPC x13, 4
-    SLTIU x20, x12, -58
-    SRAI x17, x18, 6
-    SRL x31, x7, x4
-    SRLI x9, x24, 23
-    ADDI x20, x31, 96
-    LUI x7, 19
-    SLL x30, x13, x27
-    SLTI x2, x2, -32
-    ANDI x12, x12, 153
-    SLLI x10, x23, 9
-    SLTIU x16, x31, -165
-    XORI x6, x10, 32
-    SLL x0, x23, x30
-    SRAI x16, x7, 14
-    SRLI x20, x29, 11
-    SLLI x21, x19, 31
-    ANDI x20, x5, -148
-    SRLI x22, x29, 27
-    AUIPC x10, 0
-    ADDI x10, x10, 8
-    JALR x20, 8(x10)
-    SLTU x14, x5, x16
-    SW x2, 1884(x19)
-    SLTU x19, x3, x0
-    ADD x25, x18, x0
-    XORI x10, x19, -149
-    SUB x23, x19, x5
-    SUB x12, x6, x17
-    SLTI x0, x3, 75
-    ORI x6, x20, -41
-    SLTI x20, x18, -148
-    SLL x14, x11, x6
-    SRAI x9, x28, 25
-    OR x9, x6, x16
-    LUI x2, 1048567
-    XORI x26, x30, 147
-    AUIPC x30, 1
-    SRL x24, x27, x25
-    SLTI x7, x18, 77
-    ANDI x28, x26, -125
-    SLLI x17, x20, 0
-    AND x4, x15, x15
-    SLT x29, x27, x7
-    SUB x13, x11, x6
-    AUIPC x29, 0
-    ADDI x29, x29, 8
-    JALR x19, 12(x29)
-    ADDI x16, x19, 193
-    SRA x2, x16, x17
-    LUI x19, 524304
-    ADDI x19, x19, 256
-    SB x19, 896(x27)
-    SLTU x26, x17, x19
-    SLT x17, x19, x31
-    SLL x15, x18, x21
-    LUI x12, 1048569
-    SLTIU x16, x29, -179
-    ADDI x16, x9, 173
-    XORI x0, x2, 104
-    AUIPC x3, 2
-    SLL x19, x24, x2
-    SLL x28, x23, x16
-    XOR x7, x11, x9
-    XOR x4, x16, x0
-    ORI x24, x9, -159
-    SLL x24, x27, x25
-    ANDI x15, x1, 32
-    SLTIU x17, x9, -74
-    SLT x3, x29, x31
-    SRLI x21, x1, 21
-    SRLI x18, x3, 27
-    SRL x2, x5, x19
-    SLTI x0, x30, 128
-    SRLI x18, x10, 3
-    SLTU x24, x22, x13
-    SRAI x0, x1, 7
-    ORI x12, x24, -71
-    SRLI x5, x2, 24
-    OR x26, x6, x13
-    SLL x24, x1, x31
-    SRLI x1, x15, 15
-    AND x17, x7, x19
-    XOR x28, x27, x18
-    BEQ x8, x18, 8
-    XORI x23, x24, -3
-    SRLI x26, x29, 30
-    SRLI x24, x30, 17
-    SLTU x30, x11, x2
-    SLTI x10, x20, -106
-    SLTIU x26, x27, 59
-    ADD x12, x18, x12
-    AUIPC x6, 6
-    SUB x11, x16, x25
-    AND x25, x25, x22
-    LUI x17, 1048561
-    LUI x18, 524304
-    ADDI x18, x18, 256
-    LBU x15, -103(x27)
-    SUB x30, x7, x28
-    ADD x16, x14, x13
-    ADD x17, x15, x8
-    ORI x16, x24, 139
-    SUB x23, x1, x2
-    SLL x22, x22, x19
-    SLTIU x10, x5, 26
-    SRL x17, x24, x12
-    SLTI x27, x21, 67
-    ORI x31, x27, -25
-    XORI x15, x17, -93
-    XORI x17, x30, -118
-    BLTU x31, x29, 20
-    SUB x10, x14, x29
-    SLLI x1, x14, 0
-    ADD x28, x29, x10
-    SLL x31, x11, x31
-    XOR x9, x27, x14
-    ANDI x21, x20, 33
-    ADDI x1, x6, 135
-    XORI x21, x18, -165
-    ADDI x8, x9, 89
-    XOR x6, x13, x14
-    AND x25, x10, x13
-    ORI x10, x13, -96
-    SLL x12, x24, x24
-    ADD x14, x27, x29
-    SLL x5, x6, x26
-    ADDI x10, x24, -80
-    LBU x11, 97(x18)
-    ANDI x10, x9, -22
-    SRL x24, x23, x12
-    ADDI x23, x9, -34
-    SRA x3, x5, x14
-    AUIPC x25, 1048556
-    SRL x29, x17, x25
-    XOR x8, x24, x4
-    SLT x11, x16, x4
-    AND x22, x7, x30
-    LUI x27, 0
-    XORI x19, x10, 138
-    SLT x11, x9, x5
-    ANDI x18, x30, -95
-    XORI x16, x11, 173
-    SRLI x29, x21, 20
-    XORI x26, x28, 166
-    SLTIU x13, x7, -99
-    ADDI x8, x1, 184
-    ORI x28, x31, 160
-    SLTIU x7, x10, -24
-    OR x11, x7, x22
-    SRL x27, x7, x16
-    SLTI x20, x19, 105
-    AND x8, x12, x19
-    XOR x24, x26, x21
-    ADD x9, x4, x14
-    SLTIU x2, x23, 190
-    SLTU x10, x7, x7
-    SUB x9, x12, x15
-    ADDI x1, x19, 24
-    SLLI x13, x20, 23
-    ADDI x26, x25, -197
-    SUB x16, x26, x22
-    AUIPC x18, 7
-    SRL x20, x3, x13
-    XOR x11, x14, x4
-    SLLI x31, x20, 13
-    AUIPC x17, 0
-    ADDI x17, x17, 8
-    JALR x20, 28(x17)
-    ORI x7, x22, 71
-    SLT x7, x3, x6
-    SLTU x11, x18, x20
-    SLL x17, x11, x22
-    AND x7, x14, x26
-    XORI x3, x2, -151
-    ANDI x20, x16, 104
-    SRA x9, x25, x30
-    XORI x6, x23, -17
-    SLL x17, x15, x8
-    ADD x5, x24, x2
-    SRLI x10, x25, 29
-    SRLI x4, x10, 26
-    SLTIU x23, x5, -179
-    SLL x27, x23, x27
-    SLL x13, x4, x18
-    LUI x29, 524304
-    ADDI x29, x29, 256
-    LH x7, 22(x29)
-    SLTIU x29, x19, 99
-    SLTI x29, x12, 124
-    ADD x2, x4, x20
-    SRL x2, x11, x7
-    ADD x27, x5, x23
-    SLLI x31, x4, 26
-    ANDI x30, x9, 193
-    SLT x17, x29, x2
-    SRAI x0, x8, 28
-    ORI x24, x11, 63
-    SLL x27, x0, x11
-    ANDI x13, x7, -173
-    ADDI x23, x31, 28
-    SLT x20, x24, x2
-    ADD x20, x24, x1
-    SLL x6, x3, x29
-    SRLI x10, x12, 23
-    XOR x4, x6, x2
-    SLTI x4, x10, 2
-    BLT x8, x17, 32
-    SRAI x18, x3, 3
-    AUIPC x10, 11
-    SLTI x31, x10, 65
-    SUB x16, x1, x7
-    OR x29, x6, x28
-    SLTU x14, x22, x6
-    ADDI x15, x9, 41
-    SRLI x25, x12, 5
-    SLTI x23, x17, -45
-    OR x9, x18, x10
-    AUIPC x18, 1048565
-    LUI x13, 1048572
-    SLT x6, x30, x4
-    XOR x11, x21, x16
-    SLTIU x24, x6, 137
-    LUI x21, 524304
-    ADDI x21, x21, 256
-    LBU x27, 196(x21)
-    XORI x10, x22, -58
-    AUIPC x17, 1048561
-    XORI x15, x25, 49
-    SUB x15, x16, x0
-    ORI x22, x1, -60
-    BEQ x26, x14, 32
-    ANDI x9, x4, -48
-    SRL x10, x19, x2
-    AND x26, x7, x13
-    OR x6, x29, x25
-    SLTI x12, x11, 91
-    SRA x2, x18, x26
-    SLL x9, x6, x27
-    SH x31, 468(x21)
-    ORI x19, x21, -127
-    SLLI x18, x10, 9
-    ANDI x1, x9, -174
-    ORI x11, x24, -147
-    ADDI x23, x27, 175
-    LUI x17, 6
-    SUB x17, x31, x2
-    SRL x1, x31, x17
-    AND x18, x12, x5
-    AND x28, x2, x7
-    XORI x30, x16, 121
-    ADDI x10, x20, 192
-    SLTIU x19, x4, 18
-    ADDI x1, x31, -67
-    AUIPC x2, 1048572
-    AND x8, x14, x12
-    OR x6, x27, x16
-    XOR x2, x13, x11
-    AND x16, x4, x1
-    ORI x16, x17, 159
-    SRA x24, x6, x26
-    SLTI x1, x23, -28
-    SRLI x23, x8, 0
-    SRLI x25, x7, 7
-    SRA x29, x30, x5
-    AUIPC x20, 0
-    ADDI x20, x20, 8
-    JALR x12, 20(x20)
-    AND x1, x13, x25
-    SRA x20, x6, x19
-    XOR x20, x8, x19
-    SRA x6, x31, x8
-    AUIPC x20, 1048571
-    AND x13, x11, x26
-    ADDI x26, x15, 113
-    ADDI x18, x18, 101
-    ANDI x4, x26, 138
-    LUI x1, 1048564
-    SUB x4, x1, x20
-    SLT x22, x20, x8
-    SLTIU x15, x25, -37
-    SLTI x3, x8, -3
-    SUB x8, x20, x0
-    SLLI x25, x14, 21
-    SLT x21, x2, x19
-    SLT x30, x21, x30
-    SLTU x11, x22, x25
-    SRLI x17, x4, 1
-    SUB x24, x20, x19
-    AND x21, x31, x29
-    XOR x0, x17, x9
-    XORI x9, x19, -184
-    LUI x3, 524304
-    ADDI x3, x3, 256
-    SB x31, 116(x3)
-    SLTI x8, x25, 38
-    SLTU x5, x3, x12
-    AND x1, x24, x4
-    SLL x22, x20, x5
-    XORI x12, x1, 88
-    SRAI x13, x23, 14
-    SLT x14, x2, x8
-    ADD x8, x8, x31
-    SRL x8, x25, x1
-    SLT x28, x20, x25
-    ADD x12, x29, x10
-    SLT x20, x27, x23
-    LUI x22, 1048563
-    SRAI x17, x18, 7
-    SRA x5, x12, x24
-    SUB x16, x15, x2
-    SLL x20, x1, x28
-    SLTU x23, x23, x22
-    SLLI x31, x24, 17
-    SRAI x8, x17, 22
-    SRAI x5, x23, 10
-    BEQ x6, x14, 24
-    ANDI x26, x19, -180
-    SLTU x4, x16, x16
-    SRAI x7, x10, 21
-    XOR x1, x15, x24
-    ADD x17, x10, x31
-    SRL x23, x6, x19
-    LUI x15, 1048565
-    XORI x11, x20, -36
-    ADDI x9, x22, 174
-    ADDI x27, x21, -39
-    SLTIU x5, x19, 169
-    ADD x15, x26, x3
-    SLL x10, x29, x16
-    LBU x29, 142(x3)
-    SLTI x12, x17, -158
-    SLTU x12, x10, x15
-    OR x24, x10, x9
-    ANDI x16, x22, 188
-    SLLI x1, x16, 15
-    ADD x12, x13, x3
-    SRAI x0, x4, 7
-    ANDI x28, x0, -134
-    OR x27, x1, x25
-    XORI x25, x27, 74
-    ADD x5, x1, x6
-    AUIPC x25, 0
-    ADDI x25, x25, 8
-    JALR x14, 28(x25)
-    ADDI x17, x2, -112
-    XOR x1, x1, x8
-    SLL x22, x29, x3
-    SLTI x4, x19, 138
-    SLT x16, x6, x3
-    SLT x24, x16, x28
-    ORI x4, x18, -176
-    SLL x1, x11, x30
-    AUIPC x6, 7
-    LB x14, 191(x15)
-    SRAI x14, x23, 16
-    SLT x30, x11, x16
-    SRA x31, x6, x30
-    SLTU x6, x9, x17
-    ADD x3, x6, x9
-    LUI x19, 0
-    SLTIU x25, x16, -13
-    SLLI x7, x26, 26
-    SLL x29, x10, x29
-    SRA x12, x12, x1
-    ADD x4, x0, x10
-    SLTIU x20, x27, -121
-    SRAI x23, x31, 30
-    XORI x16, x12, 116
-    SRL x19, x8, x1
-    AUIPC x19, 0
-    ADDI x19, x19, 8
-    JALR x19, 24(x19)
-    LUI x9, 7
-    SUB x5, x22, x19
-    SLLI x31, x20, 10
-    SUB x16, x26, x18
-    SLTI x13, x19, -51
-    ORI x17, x11, -19
-    AUIPC x18, 1048559
-    XORI x1, x15, -80
-    SRAI x14, x5, 5
-    ANDI x12, x1, -111
-    XOR x3, x24, x22
-    XOR x22, x12, x3
-    XORI x4, x27, -9
-    SRL x24, x9, x13
-    AND x10, x26, x4
-    AND x31, x11, x9
-    SLTIU x11, x12, -79
-    SLLI x16, x9, 3
-    LHU x20, 224(x15)
-    SRAI x31, x15, 7
-    ADD x1, x9, x20
-    SLL x9, x11, x5
-    SRAI x1, x28, 12
-    SRAI x24, x17, 28
-    AUIPC x30, 1048555
-    SRA x31, x1, x5
-    SRA x22, x24, x6
-    LUI x3, 1048565
-    SLL x15, x19, x11
-    ANDI x17, x26, -113
-    SRA x21, x20, x20
-    AUIPC x3, 1048575
-    SRA x27, x18, x29
-    SLTU x25, x3, x12
-    SUB x15, x0, x15
-    SRLI x14, x8, 4
-    SRA x6, x9, x25
-    SRL x31, x6, x18
-    ADD x6, x22, x23
-    SRA x11, x24, x22
-    XOR x16, x22, x28
-    SLL x26, x30, x2
-    SRA x31, x29, x12
-    SLLI x30, x1, 22
-    BEQ x30, x13, 28
-    SLT x3, x7, x31
-    SLTU x6, x18, x0
-    AUIPC x5, 6
-    LUI x17, 1
-    SRA x23, x29, x11
-    SLTIU x7, x3, -112
-    ORI x7, x5, 33
-    SLTU x2, x22, x21
-    SLTIU x27, x27, 106
-    ORI x24, x2, 79
-    SLT x27, x10, x7
-    LUI x24, 524304
-    ADDI x24, x24, 256
-    SB x8, 615(x24)
-    SUB x20, x26, x7
-    ORI x4, x22, -131
-    SLTI x16, x7, 112
-    XORI x24, x26, -70
-    SLT x31, x17, x22
-    SLL x21, x9, x30
-    SRLI x26, x2, 31
-    SUB x28, x22, x6
-    ADD x3, x15, x30
-    ORI x15, x3, -72
-    SLTU x28, x4, x21
-    SRAI x7, x17, 20
-    SLT x12, x21, x9
-    ADDI x22, x11, -12
-    SLL x9, x31, x15
-    SLLI x31, x28, 24
-    XORI x18, x2, -189
-    SLTU x25, x1, x2
-    SLTU x1, x22, x0
-    AND x19, x9, x1
-    SUB x11, x9, x21
-    AND x8, x22, x21
-    SRL x8, x31, x20
-    ADDI x25, x31, -122
-    LUI x1, 1
-    ADD x27, x15, x25
-    SRL x2, x2, x31
-    SLT x21, x19, x14
-    BEQ x27, x29, 24
-    OR x27, x20, x27
-    XORI x12, x10, 109
-    LUI x9, 524304
-    ADDI x9, x9, 256
-    LHU x1, 204(x9)
-    AUIPC x26, 1048566
-    AND x19, x18, x25
-    SLTI x28, x21, 103
-    SRL x11, x10, x29
-    XOR x15, x25, x22
-    SLTIU x29, x15, 72
-    SRAI x8, x23, 2
-    OR x20, x15, x10
-    SLL x9, x4, x7
-    SRL x28, x8, x5
-    LUI x30, 1048574
-    LUI x8, 1048571
-    SRL x22, x0, x7
-    SRAI x18, x26, 14
-    OR x14, x16, x4
-    SLT x31, x14, x28
-    SLLI x6, x6, 9
-    SRL x15, x13, x31
-    SLTIU x17, x14, -68
-    ADDI x24, x28, 42
-    SRA x10, x4, x24
-    SRLI x26, x8, 6
-    SLTI x19, x15, 65
-    BEQ x31, x25, 12
-    ANDI x27, x17, -93
-    AND x12, x23, x22
-    ADDI x8, x27, 194
-    SRLI x4, x24, 2
-    SLT x5, x28, x20
-    SRL x4, x31, x10
-    ORI x21, x1, 50
-    OR x1, x31, x14
-    SLL x13, x31, x6
-    SLLI x26, x11, 27
-    SLL x23, x11, x26
-    SUB x27, x10, x29
-    SUB x12, x24, x11
-    ANDI x3, x12, -110
-    LUI x27, 524304
-    ADDI x27, x27, 256
-    SW x13, 1384(x27)
-    AUIPC x29, 0
-    ADDI x29, x29, 8
-    JALR x24, 24(x29)
-    SLTI x14, x16, 117
-    SLL x24, x0, x27
-    SUB x8, x11, x11
-    ANDI x14, x6, -117
-    AND x16, x28, x14
-    SLL x6, x28, x5
-    OR x31, x11, x27
-    LBU x28, 49(x31)
-    SLLI x8, x4, 9
-    SRLI x13, x13, 9
-    ORI x20, x12, -122
-    SLLI x16, x6, 21
-    ANDI x16, x27, -34
-    SLT x16, x29, x9
-    SLLI x3, x13, 10
-    SLL x12, x15, x27
-    ADDI x19, x30, 88
-    SLTU x27, x20, x2
-    SRLI x16, x29, 31
-    SLTI x17, x31, 186
-    SRL x30, x27, x12
-    AUIPC x19, 16
-    SRAI x29, x16, 20
-    XOR x8, x31, x9
-    SLLI x31, x14, 25
-    ADD x0, x10, x28
-    ADDI x7, x1, 126
-    XOR x5, x26, x17
-    AUIPC x18, 0
-    ADDI x18, x18, 8
-    JALR x8, 20(x18)
-    SRL x16, x11, x19
-    AUIPC x10, 0
-    LUI x8, 1048565
-    SRA x19, x17, x17
-    SRL x6, x25, x7
-    SRLI x5, x11, 13
-    LUI x27, 1048559
-    ORI x18, x17, 39
-    AUIPC x26, 2
-    SLTIU x7, x27, -172
-    AND x27, x27, x13
-    ADDI x17, x15, 157
-    OR x23, x2, x13
-    ANDI x4, x20, -9
-    SRL x28, x9, x0
-    SLLI x0, x8, 23
-    OR x3, x6, x27
-    ANDI x23, x13, 133
-    LUI x14, 8
-    SRLI x0, x25, 30
-    ADDI x17, x27, -161
-    LUI x20, 524304
-    ADDI x20, x20, 256
-    LBU x19, 221(x20)
-    ADD x8, x10, x29
-    ADDI x23, x1, -177
-    ORI x23, x8, 10
-    SLTI x7, x29, -78
-    SRLI x2, x27, 1
-    ADDI x29, x17, 33
-    ADD x20, x3, x0
-    SLT x4, x12, x2
-    AND x23, x12, x23
-    LUI x2, 1048574
-    AUIPC x29, 0
-    ADDI x29, x29, 8
-    JALR x31, 4(x29)
-    SLTIU x26, x24, -65
-    LUI x11, 524304
-    ADDI x11, x11, 256
-    SH x16, 934(x11)
-    ADDI x23, x25, -35
-    SRL x19, x19, x6
-    AUIPC x12, 1048549
-    AUIPC x30, 0
-    ADDI x30, x30, 8
-    JALR x15, 36(x30)
-    XOR x20, x31, x27
-    SRLI x26, x30, 31
-    SLTI x26, x22, 68
-    XOR x21, x19, x3
-    SLLI x5, x26, 25
-    ADDI x21, x21, 19
-    ADD x13, x21, x14
-    SLTU x29, x5, x21
-    SRA x8, x29, x28
-    SRLI x26, x31, 6
-    SUB x4, x30, x14
-    ANDI x11, x5, 158
-    SRAI x18, x12, 31
-    ADD x12, x3, x3
-    LUI x2, 524304
-    ADDI x2, x2, 256
-    SB x5, 1474(x2)
-    SUB x20, x23, x26
-    SLT x15, x3, x15
-    AND x11, x25, x15
-    AUIPC x0, 2
-    XORI x21, x9, -90
-    SRLI x22, x0, 31
-    SRL x2, x9, x18
-    ADDI x5, x24, -176
-    ANDI x4, x30, 73
-    ANDI x2, x3, -124
-    SRL x15, x28, x29
-    ORI x21, x10, 171
-    LUI x11, 1048571
-    ADDI x8, x24, 60
-    XOR x25, x26, x15
-    SRLI x27, x13, 15
-    ORI x31, x23, 128
-    AUIPC x1, 1048569
-    SUB x3, x1, x4
-    XOR x8, x10, x31
-    XORI x22, x30, 165
-    SLT x27, x8, x7
-    ORI x10, x4, 166
-    XOR x28, x16, x23
-    SLT x4, x27, x10
-    SLT x4, x15, x19
-    XOR x19, x26, x9
-    SRLI x2, x29, 13
-    ADD x26, x7, x14
-    SLLI x13, x2, 3
-    XOR x26, x21, x20
-    XORI x2, x16, -72
-    OR x11, x19, x18
-    AND x8, x24, x20
-    SRLI x24, x26, 30
-    AUIPC x30, 7
-    SRL x20, x5, x8
-    BLTU x4, x3, 32
-    ADD x7, x3, x23
-    SLL x10, x2, x13
-    OR x3, x31, x22
-    SLT x13, x19, x22
-    SLTI x2, x7, -169
-    SRL x10, x11, x3
-    SRLI x16, x31, 19
-    SRA x26, x21, x13
-    ADDI x13, x9, 109
-    OR x7, x27, x30
-    SLLI x13, x8, 12
-    XORI x18, x12, -130
-    ANDI x27, x14, 108
-    SLL x8, x0, x9
-    ORI x2, x0, -190
-    SLT x26, x8, x4
-    LUI x19, 524304
-    ADDI x19, x19, 256
-    SB x31, 1950(x19)
-    SRLI x28, x1, 27
-    AND x9, x23, x23
-    SLL x24, x21, x6
-    LUI x24, 1048572
-    AND x2, x14, x27
-    LUI x24, 1048564
-    LUI x16, 1048572
-    SRA x3, x13, x6
-    LUI x29, 1048575
-    SRA x26, x19, x0
-    SLLI x28, x8, 5
-    SLTI x24, x21, -97
-    BEQ x6, x2, 8
-    LW x21, 76(x26)
-    LUI x16, 1048571
-    ANDI x12, x1, 2
-    AUIPC x10, 28
-    SLTIU x2, x24, 9
-    LUI x13, 1048559
-    SLTIU x26, x0, -85
-    SRAI x14, x29, 1
-    SLTI x4, x5, 138
-    SLTIU x12, x1, -134
-    SLTIU x19, x10, -177
-    LUI x12, 9
-    ADDI x21, x30, -154
-    ORI x25, x13, 73
-    XORI x20, x16, 70
-    JAL x26, 4
-    SLTI x11, x15, 192
-    OR x30, x24, x30
-    ADDI x24, x8, -37
-    SRA x16, x14, x29
-    SLLI x28, x15, 19
-    XOR x29, x2, x27
-    SUB x19, x20, x14
-    SLTI x28, x21, 185
-    SLT x24, x30, x19
-    SLT x7, x16, x14
-    XOR x0, x22, x5
-    SLT x12, x5, x17
-    SLTU x18, x13, x9
-    SRLI x25, x2, 23
-    SLL x2, x1, x9
+    SRAI x26, x18, 8
+    ADDI x22, x5, 63
+    SRLI x3, x13, 23
+    LUI x26, 2
+    AND x16, x14, x0
+    SLTU x8, x12, x17
+    ADDI x28, x15, 170
+    SRL x22, x6, x18
+    SRL x21, x19, x19
+    LUI x12, 1048563
+    AUIPC x26, 0
+    ADDI x26, x26, 8
+    JALR x31, 36(x26)
+    ORI x27, x16, 78
+    SRL x23, x15, x8
+    SUB x4, x20, x19
+    ADD x6, x31, x5
+    XOR x27, x13, x10
+    ANDI x10, x8, 43
+    AND x18, x22, x20
+    SLLI x2, x11, 22
+    SRLI x12, x13, 14
+    SLTIU x30, x6, -109
+    XORI x29, x26, 45
+    SUB x25, x10, x30
+    XORI x6, x17, 58
+    ADDI x3, x30, -115
+    XORI x7, x17, -136
+    SUB x13, x18, x18
+    LUI x20, 13
+    SLT x29, x10, x12
+    ANDI x11, x26, 129
+    SLT x11, x3, x5
+    ANDI x0, x17, 9
+    SRAI x20, x10, 21
     LUI x30, 524304
     ADDI x30, x30, 256
-    LH x23, 98(x30)
-    ANDI x14, x19, 8
-    XOR x11, x2, x10
-    SLT x14, x13, x31
-    ANDI x27, x28, 138
-    ANDI x2, x10, -33
-    JAL x21, 40
-    SRLI x23, x6, 24
-    AND x22, x23, x28
-    OR x14, x18, x29
-    SRAI x1, x1, 4
-    ORI x0, x10, -116
-    SRL x9, x31, x25
-    SRA x15, x18, x16
-    LUI x26, 17
-    SLLI x13, x25, 13
-    ADDI x0, x6, 164
-    SLTU x27, x2, x1
-    XORI x14, x7, -62
-    SLTU x0, x13, x1
-    ANDI x9, x2, -163
-    AND x20, x17, x30
-    ADDI x25, x17, -156
-    OR x12, x14, x3
-    SLT x24, x30, x6
-    SRLI x9, x7, 0
-    XOR x8, x6, x9
-    SB x4, 1532(x20)
-    SLLI x17, x21, 18
-    AUIPC x21, 1048548
-    SLLI x26, x8, 31
-    OR x8, x9, x4
-    AUIPC x17, 1048565
-    SRA x14, x1, x12
-    ANDI x18, x22, 31
-    SLLI x25, x4, 25
-    SRAI x1, x24, 29
-    AUIPC x23, 1048559
-    LUI x31, 1048573
-    ORI x6, x1, 112
-    SLTU x27, x27, x19
-    AUIPC x7, 0
-    ADDI x7, x7, 8
-    JALR x9, 24(x7)
-    SUB x0, x6, x1
-    XOR x14, x30, x4
-    SLTI x6, x15, -9
-    SRL x19, x13, x10
-    SRL x20, x8, x7
-    SLT x28, x0, x2
-    SW x4, 356(x20)
-    LUI x17, 1048562
-    OR x25, x7, x21
-    ADD x3, x19, x17
-    SLTI x25, x20, 180
-    SRLI x29, x29, 3
-    OR x3, x8, x14
-    SRLI x30, x2, 13
-    ANDI x14, x14, -48
-    ADD x15, x16, x15
-    AND x8, x15, x18
-    SUB x21, x17, x26
-    OR x29, x20, x29
-    XOR x23, x10, x26
-    XORI x11, x23, 182
-    SLT x19, x21, x4
-    SLT x1, x30, x1
-    SLTU x24, x8, x8
-    SRA x21, x22, x4
-    SLT x3, x8, x21
-    ADDI x15, x15, 105
-    AUIPC x24, 1048573
-    OR x3, x18, x13
-    SRLI x17, x24, 27
-    JAL x21, 12
-    OR x29, x25, x28
-    OR x6, x8, x27
-    ADD x4, x26, x29
-    SRA x10, x10, x0
-    LUI x25, 18
-    SLTIU x17, x4, 180
-    SRL x21, x23, x2
-    SLLI x12, x24, 2
-    AND x19, x20, x7
-    SRL x22, x31, x25
-    SRL x11, x15, x22
-    LUI x3, 4
-    SRAI x14, x27, 24
-    XOR x4, x23, x24
-    SRLI x14, x6, 23
-    ANDI x10, x22, -23
-    SLT x26, x10, x0
-    SRLI x24, x27, 8
-    SB x20, 1828(x20)
-    SLTIU x28, x8, 193
-    XOR x10, x8, x6
-    SLTU x9, x2, x22
-    SRL x31, x23, x8
-    SUB x31, x23, x22
-    LUI x3, 1048561
-    OR x25, x6, x19
-    SLLI x10, x31, 7
-    ORI x8, x24, -1
-    SUB x0, x24, x7
-    ANDI x29, x18, -172
-    XORI x29, x24, 87
-    ADDI x22, x1, -11
-    LUI x1, 1048573
-    SRL x7, x24, x5
-    OR x28, x28, x25
-    SRLI x27, x12, 24
-    AND x31, x20, x7
-    ANDI x29, x23, -12
-    XOR x3, x23, x10
-    XORI x27, x12, -155
-    AUIPC x30, 1048551
-    OR x9, x14, x1
-    LUI x24, 1048568
-    OR x6, x0, x4
-    ORI x1, x26, -70
-    SLTI x19, x15, -159
-    SRL x20, x6, x4
-    SLTIU x16, x12, -200
-    ORI x24, x22, 181
-    XOR x2, x0, x17
-    ANDI x2, x27, 189
-    AUIPC x29, 0
-    ADDI x29, x29, 8
-    JALR x11, 32(x29)
-    SRLI x11, x28, 3
-    SLTIU x8, x15, 160
-    ANDI x0, x17, 4
-    SLL x2, x15, x24
-    AUIPC x21, 13
-    SRL x24, x19, x7
-    SLLI x4, x15, 28
-    SLL x20, x5, x8
-    SLT x19, x14, x18
-    SLTI x20, x24, -98
-    SLLI x21, x19, 23
-    SLTU x5, x18, x28
-    LUI x21, 524304
-    ADDI x21, x21, 256
-    LHU x3, 72(x21)
-    OR x31, x1, x17
-    AUIPC x5, 1048572
-    ORI x14, x28, 18
-    AUIPC x15, 6
-    XORI x11, x5, -127
-    SRA x20, x14, x27
-    SUB x17, x8, x26
-    OR x18, x2, x17
-    AND x25, x24, x3
-    SRL x29, x12, x17
-    AUIPC x22, 1048556
-    SUB x9, x9, x17
-    XORI x0, x7, 137
-    SLTI x10, x28, 198
-    SLT x6, x2, x14
-    AND x1, x19, x9
-    ADD x11, x22, x20
-    XOR x29, x17, x5
-    OR x20, x23, x7
-    SRAI x13, x26, 19
-    AUIPC x5, 1048572
-    BLT x12, x28, 36
-    SLLI x13, x18, 12
-    AND x28, x8, x8
-    SUB x6, x11, x7
-    SLTI x18, x1, 58
-    SLTIU x6, x20, -144
-    ADD x15, x21, x26
-    ORI x1, x27, 148
-    SRLI x9, x20, 5
-    SLL x22, x30, x0
-    SRAI x5, x7, 16
-    LBU x9, 189(x15)
-    XOR x17, x3, x27
-    SRA x0, x13, x21
-    SLTIU x16, x3, -168
-    SLLI x16, x6, 16
-    XORI x7, x2, -115
-    XORI x26, x19, 186
-    ANDI x13, x5, -75
-    OR x1, x31, x17
-    SLT x17, x23, x9
-    ADD x15, x14, x2
-    SLTU x10, x20, x11
-    ORI x29, x23, 199
-    LUI x10, 1048560
-    SLTIU x14, x12, 25
-    SRL x7, x29, x28
-    SUB x26, x27, x25
-    AUIPC x25, 0
-    ADDI x25, x25, 8
-    JALR x9, 16(x25)
-    SRA x10, x22, x6
-    SUB x29, x21, x20
-    SRA x15, x0, x17
-    SLT x5, x17, x18
-    ADD x4, x15, x13
-    SRLI x12, x1, 14
-    SRL x22, x23, x27
-    ORI x23, x3, -120
-    SRLI x22, x7, 12
-    XORI x0, x22, -18
-    XOR x8, x4, x27
-    XORI x3, x14, -62
-    SRAI x22, x3, 11
-    SRLI x28, x9, 24
-    SLL x28, x31, x6
-    SH x26, 554(x21)
-    SLLI x23, x2, 13
-    OR x9, x7, x25
-    SRA x29, x26, x4
-    ADD x22, x24, x27
-    SLTI x5, x5, 129
-    XOR x15, x28, x4
-    ADD x30, x19, x9
-    AUIPC x31, 1
-    SRA x13, x0, x8
-    SRLI x18, x6, 31
-    AND x18, x4, x6
-    ADDI x3, x14, 36
-    SLL x22, x20, x12
-    ADDI x8, x11, 50
-    SLTIU x20, x25, -76
-    ADDI x30, x15, 102
-    LUI x10, 1048570
-    SLTU x8, x7, x13
-    SUB x14, x18, x22
-    SUB x16, x4, x8
-    LUI x12, 1048568
-    AUIPC x1, 1048554
-    SUB x29, x5, x3
-    XOR x31, x14, x12
-    ANDI x19, x25, 46
-    BEQ x29, x10, 12
-    SB x0, 1012(x21)
-    SRL x0, x0, x5
-    OR x25, x17, x29
-    ADDI x24, x16, -176
-    SRAI x6, x3, 4
-    SRL x29, x9, x30
-    SLLI x5, x1, 19
-    SLLI x2, x29, 0
-    ADDI x12, x21, -143
-    ADD x28, x22, x26
-    SUB x21, x6, x22
-    XORI x5, x27, 146
-    XOR x2, x12, x12
-    SRL x17, x14, x10
-    ADD x19, x26, x9
-    XOR x4, x24, x23
-    OR x23, x8, x2
-    SRL x20, x30, x18
-    AUIPC x13, 6
-    AUIPC x2, 0
-    ADDI x2, x2, 8
-    JALR x15, 40(x2)
-    SLTI x23, x28, -120
-    SRAI x24, x21, 30
-    AND x3, x25, x21
-    SRLI x2, x29, 29
-    XORI x22, x29, -57
-    SLLI x1, x21, 17
-    XORI x22, x2, 180
-    ANDI x12, x27, 198
-    SLTU x5, x3, x3
-    SRA x12, x17, x30
-    SRAI x7, x11, 16
-    AND x4, x25, x11
-    SRA x21, x6, x12
-    ADD x27, x12, x3
-    XORI x17, x4, -179
-    ADDI x4, x14, -45
-    SLT x27, x29, x0
-    SLTU x20, x0, x2
-    AND x17, x10, x31
-    SLT x8, x1, x14
-    XORI x0, x10, 173
-    AND x28, x26, x27
-    ANDI x1, x11, -135
-    SLTIU x6, x4, -185
-    SRA x3, x21, x20
-    SLTIU x4, x26, 200
-    SH x26, 1588(x21)
-    SRL x22, x8, x4
-    SLTI x10, x29, -165
-    AUIPC x4, 12
-    SLTIU x18, x19, -198
-    SLTU x15, x14, x27
-    SLL x6, x20, x3
-    SLLI x5, x5, 31
-    SRLI x11, x6, 12
-    XOR x4, x23, x9
-    SLT x0, x25, x31
-    SLTIU x17, x6, -70
-    AND x29, x18, x9
-    AUIPC x12, 0
-    ADDI x12, x12, 8
-    JALR x12, 12(x12)
-    ORI x11, x6, -84
-    SRA x27, x1, x25
-    XORI x2, x10, -137
-    SRA x9, x16, x30
-    OR x17, x23, x5
-    SLLI x6, x28, 11
-    AUIPC x5, 4
-    SLTIU x10, x23, -5
-    SLLI x0, x15, 10
-    SH x14, 1024(x21)
-    SRAI x7, x24, 19
-    SRAI x29, x24, 13
-    SLTU x12, x23, x3
-    ANDI x28, x7, -46
-    SLLI x24, x9, 13
-    ADD x25, x7, x13
-    XOR x12, x4, x9
-    AND x15, x11, x29
-    SLTI x25, x19, -107
-    JAL x29, 16
-    ANDI x23, x18, 130
-    SLTIU x21, x17, -183
-    SLL x4, x30, x31
-    SLT x2, x31, x5
-    SRLI x27, x27, 0
-    AND x25, x29, x4
-    ADD x13, x27, x29
-    ANDI x20, x2, 145
-    AUIPC x24, 1048553
-    ORI x29, x5, -72
-    OR x29, x27, x6
-    ORI x18, x29, -43
-    SRLI x9, x2, 2
-    ADD x5, x17, x22
-    ORI x27, x27, -51
-    ADDI x16, x5, -174
-    SLLI x5, x6, 23
-    SLTI x9, x31, 45
-    SB x9, 1562(x21)
-    AND x20, x19, x5
-    XOR x11, x9, x20
-    ADDI x2, x6, 5
-    XORI x2, x22, 130
-    ANDI x18, x27, -99
-    SLL x14, x16, x2
-    SLL x0, x17, x19
-    AUIPC x5, 1048566
-    XORI x27, x27, -40
-    LUI x20, 1048567
-    SRLI x20, x0, 5
-    XORI x25, x0, -61
-    SRAI x16, x13, 17
-    SLLI x26, x0, 25
-    SRAI x15, x25, 17
-    AUIPC x2, 3
-    LUI x19, 1048566
-    LUI x3, 1048557
-    SUB x11, x14, x26
-    XORI x17, x4, 10
-    AUIPC x30, 0
-    ADDI x30, x30, 8
-    JALR x25, 8(x30)
-    SRA x21, x18, x24
-    SLT x8, x22, x9
-    SLTU x7, x11, x14
-    OR x4, x23, x10
-    ADDI x9, x4, 105
-    ANDI x3, x4, -117
-    ANDI x2, x30, 149
-    ADD x18, x2, x10
-    SRAI x24, x4, 3
-    LUI x22, 2
-    SLTIU x8, x2, 145
-    SRAI x24, x19, 26
-    XORI x12, x18, -33
-    SLTI x5, x18, -60
-    SLL x11, x11, x29
-    SRL x17, x23, x31
-    ADDI x28, x6, 30
-    ORI x3, x13, -25
-    ADDI x28, x3, -172
-    ADD x10, x28, x19
-    AND x14, x9, x26
-    SB x9, 1019(x21)
-    AND x3, x28, x15
-    SUB x30, x6, x18
-    LUI x6, 1048567
-    ADDI x1, x28, -83
-    AND x9, x29, x25
-    SLTIU x3, x23, 36
-    SLTI x11, x2, -180
-    ORI x30, x14, -114
-    AUIPC x2, 14
-    ADD x5, x2, x9
-    SLL x7, x20, x2
-    ADD x29, x30, x22
-    SRLI x22, x15, 0
-    SRLI x22, x18, 11
-    ADDI x0, x0, 38
-    SLTIU x9, x28, -142
-    LUI x15, 1048569
-    ORI x0, x24, 156
-    ADDI x22, x28, 130
-    SLTIU x18, x29, 184
-    AUIPC x17, 1048574
-    LUI x29, 1048550
-    OR x13, x22, x28
-    SLTIU x26, x5, -28
-    SRA x21, x11, x3
-    BGE x4, x8, 32
-    SRL x3, x26, x17
-    SLTIU x17, x25, 51
-    ADD x15, x29, x22
-    SLTU x3, x2, x27
-    SUB x4, x30, x15
-    SLTIU x11, x16, -166
-    SLLI x19, x28, 14
-    SLTU x2, x8, x30
-    SW x4, 1956(x21)
-    SRA x2, x29, x27
-    ADDI x31, x11, 49
-    XOR x15, x17, x1
-    SRLI x6, x30, 23
-    OR x15, x31, x15
-    ANDI x0, x29, -199
-    AND x8, x6, x14
-    ORI x22, x5, -193
-    SLTU x20, x5, x14
-    ADD x21, x20, x30
-    SRL x14, x11, x25
-    SRL x3, x30, x9
-    SLTI x15, x24, 79
-    SLT x5, x9, x17
-    ADDI x9, x2, 170
-    AND x27, x19, x25
-    SLT x9, x0, x21
-    AND x9, x13, x21
-    SRA x18, x30, x8
-    SLTI x7, x21, 55
-    SLTU x25, x23, x24
-    SLL x19, x19, x10
-    AUIPC x17, 1048569
-    SUB x26, x27, x22
-    ADDI x19, x19, -82
-    SLTI x15, x17, -17
-    SUB x18, x25, x4
-    XOR x10, x15, x12
-    LUI x31, 3
-    SLTIU x10, x19, -183
-    SUB x8, x31, x29
-    XOR x19, x27, x25
-    ORI x29, x31, -160
-    AND x1, x18, x31
-    JAL x25, 36
-    AND x8, x5, x17
-    ADD x15, x18, x28
-    ANDI x0, x8, -28
-    AUIPC x3, 15
-    AUIPC x13, 14
-    SUB x6, x4, x20
-    SLLI x18, x21, 12
-    SUB x0, x26, x8
-    AND x28, x28, x14
-    SUB x29, x2, x11
-    OR x16, x14, x1
-    SRL x0, x4, x5
-    SRAI x19, x10, 13
-    OR x22, x7, x28
-    AND x6, x31, x20
-    ANDI x21, x28, 89
-    SLLI x9, x5, 21
-    LUI x3, 25
-    SLL x5, x27, x22
-    SRL x4, x20, x15
-    ANDI x15, x4, 12
-    SRA x0, x31, x0
-    SLL x30, x27, x31
-    SRA x6, x7, x14
-    ORI x15, x16, -57
-    SB x28, 949(x21)
-    SLTU x28, x16, x25
-    SLTIU x4, x2, -68
-    SRL x24, x3, x24
-    SRL x31, x15, x0
-    XORI x30, x11, 28
-    ADDI x16, x25, 125
-    SLT x22, x29, x6
-    AUIPC x7, 1048555
-    SRLI x29, x0, 5
-    SRLI x16, x1, 14
-    SLLI x26, x12, 27
-    ADD x30, x16, x24
-    SUB x4, x7, x30
+    SH x30, 526(x30)
+    AUIPC x16, 1048561
+    ADDI x12, x16, 190
+    OR x25, x16, x6
+    ADD x4, x21, x19
+    SUB x24, x7, x29
+    SLTIU x24, x22, -65
+    SLTI x29, x18, 66
+    SLTI x24, x4, -157
+    SUB x26, x7, x30
+    XORI x14, x25, -133
+    SUB x13, x22, x29
+    AUIPC x23, 1048563
+    SRAI x18, x19, 29
+    ANDI x5, x13, 97
+    XORI x10, x3, -199
+    SLT x17, x26, x19
+    SRLI x23, x17, 6
+    SLTI x11, x30, -15
+    SLLI x21, x6, 26
+    SLTI x23, x30, -24
+    ORI x29, x14, -119
+    SLLI x20, x24, 0
+    SRA x7, x12, x18
+    SLL x19, x25, x14
+    ANDI x7, x21, 9
+    SLTIU x1, x16, 105
+    SLT x18, x4, x14
+    BLTU x16, x11, 32
+    ANDI x12, x5, -97
+    ORI x20, x16, -174
+    SH x18, 1536(x30)
+    SRLI x20, x23, 14
+    LUI x9, 1048574
+    ADD x5, x1, x6
+    SRL x30, x8, x3
+    ADD x23, x21, x18
+    OR x26, x20, x19
+    SLTU x9, x6, x25
+    SUB x10, x10, x12
+    OR x30, x16, x5
+    XORI x25, x12, 80
+    LUI x26, 1048566
+    SRLI x26, x18, 30
+    SUB x19, x14, x8
+    ADDI x25, x25, -5
+    OR x22, x29, x19
+    ANDI x7, x11, 64
+    SUB x10, x24, x1
+    SRL x3, x7, x4
+    XORI x2, x0, -47
+    LUI x30, 1048569
+    SLTIU x4, x12, -166
     AUIPC x24, 0
     ADDI x24, x24, 8
-    JALR x15, 4(x24)
-    SRL x11, x10, x29
-    XORI x10, x16, 158
-    SLTI x23, x23, 15
-    SLTU x23, x0, x24
-    SLLI x31, x29, 3
-    SW x23, 2020(x21)
-    ORI x12, x30, -167
-    ANDI x19, x9, -52
-    ANDI x28, x31, -141
-    SLTIU x8, x25, -79
-    XORI x7, x12, 177
-    ADDI x1, x25, 117
-    ORI x9, x7, -46
-    SRLI x29, x26, 31
-    SRLI x1, x3, 5
-    ADDI x2, x26, -111
-    SLL x4, x22, x3
-    ANDI x23, x13, 72
-    ANDI x23, x20, -70
-    SRL x1, x29, x13
-    SRA x20, x15, x11
-    XORI x26, x11, 113
-    SLLI x26, x22, 20
-    OR x8, x8, x13
-    XOR x17, x8, x0
-    ADDI x4, x15, 188
-    AUIPC x22, 1048556
-    SLLI x31, x11, 6
-    AUIPC x18, 3
-    SLTIU x20, x15, 118
-    OR x29, x13, x18
-    SLTI x24, x14, -96
-    SRL x0, x25, x21
-    SLT x18, x11, x15
-    AND x3, x7, x11
-    SLLI x13, x6, 5
-    AUIPC x14, 1048572
-    SLTI x3, x25, 28
-    OR x8, x26, x3
-    SLLI x21, x6, 6
-    ORI x0, x14, 32
-    JAL x14, 40
-    LUI x15, 15
-    ORI x5, x14, -84
-    SRA x25, x29, x0
-    XORI x12, x15, 21
-    XOR x1, x15, x19
-    SLTI x1, x7, 78
-    SRLI x8, x14, 24
-    ADD x18, x28, x15
-    AND x18, x14, x24
-    SRL x9, x21, x0
-    XORI x1, x12, 186
-    SH x1, 1308(x21)
-    SRL x23, x24, x25
-    ORI x23, x21, -23
-    ADD x12, x0, x24
-    XOR x0, x21, x8
-    SRLI x14, x17, 13
-    ANDI x31, x7, 86
-    LUI x19, 1
-    SRAI x15, x24, 22
-    AND x1, x25, x15
-    SLT x29, x24, x17
-    ANDI x2, x21, 91
-    SRLI x14, x4, 24
-    SRLI x26, x29, 22
-    SLTI x7, x18, -138
-    XORI x21, x3, 107
-    SRL x26, x15, x22
-    AND x20, x23, x28
-    SRA x13, x16, x13
-    OR x27, x21, x5
-    SLLI x6, x22, 6
-    LUI x6, 1048570
-    JAL x30, 28
-    ORI x14, x14, 77
-    ADD x14, x6, x18
-    ADD x21, x25, x30
-    SRL x14, x11, x4
-    OR x8, x3, x3
-    SRAI x10, x10, 16
-    SLTU x24, x27, x22
-    OR x10, x20, x18
-    ORI x12, x21, -91
-    SLTI x18, x6, 10
-    SLTIU x25, x21, -148
-    SLLI x9, x2, 14
-    SLTI x8, x4, -80
-    SLTU x1, x27, x29
-    SLTIU x13, x24, 45
-    ORI x22, x16, -179
-    XORI x9, x27, 70
-    ADD x28, x21, x0
-    ORI x0, x12, 48
-    SLL x1, x5, x28
-    SUB x3, x3, x20
-    SLTIU x9, x15, -145
-    ADDI x0, x7, -17
-    SRA x5, x9, x13
-    ANDI x4, x31, 55
-    SW x21, 1476(x21)
-    XORI x31, x23, -145
-    ORI x14, x23, 144
-    AUIPC x4, 1048569
-    SRL x26, x11, x25
-    SRA x19, x11, x18
-    SLT x1, x9, x16
-    OR x23, x23, x31
-    SRA x4, x31, x2
-    SLLI x26, x10, 4
-    ADD x3, x1, x31
-    XORI x18, x17, -23
-    LUI x14, 1
-    SLLI x28, x24, 4
-    SLTIU x31, x26, 15
-    SRA x31, x29, x30
-    AND x25, x10, x3
-    SRLI x2, x2, 5
-    ORI x2, x10, 143
-    OR x30, x17, x14
-    SRA x12, x3, x11
-    ORI x19, x22, 164
-    SLL x12, x30, x6
-    OR x24, x18, x21
-    SLTU x2, x7, x27
-    LUI x6, 1048566
-    ORI x11, x15, -84
-    XORI x31, x11, -16
-    AND x22, x6, x17
-    SUB x5, x12, x9
-    BLTU x19, x29, 8
-    ANDI x16, x20, -120
-    SRA x16, x4, x7
-    XORI x19, x18, -136
-    SLTI x7, x23, 63
-    SLTIU x9, x19, 43
-    SLLI x0, x1, 31
-    ADDI x28, x3, -20
-    OR x18, x9, x15
-    AUIPC x5, 1048563
-    SRAI x14, x29, 26
-    SUB x23, x8, x0
-    XOR x6, x16, x23
-    SLTI x9, x25, 118
-    SH x6, 1764(x21)
-    SLT x5, x18, x3
-    SRAI x10, x12, 3
-    OR x26, x28, x29
-    SRAI x5, x5, 0
-    SLT x11, x24, x19
-    AND x19, x12, x16
-    SRL x10, x7, x5
-    XORI x12, x11, 23
-    SRL x3, x5, x10
-    AUIPC x0, 2
-    SRAI x1, x20, 3
-    SUB x26, x22, x25
-    SRLI x19, x4, 3
-    XOR x27, x26, x29
-    SUB x1, x21, x5
-    SRA x12, x12, x9
-    SRL x23, x9, x31
-    SLL x30, x2, x30
-    BNE x26, x25, 16
-    SLTI x14, x24, 192
-    SLTU x31, x25, x17
-    SLL x30, x20, x26
-    ADDI x15, x30, 176
-    SLTU x23, x25, x15
-    SW x21, 1948(x21)
-    SLLI x25, x13, 10
-    SLLI x20, x28, 18
-    SLTU x25, x1, x9
-    SRA x31, x1, x27
-    SRA x9, x29, x12
-    SLTU x4, x23, x18
-    SLTIU x18, x26, 153
-    OR x5, x31, x30
-    XOR x10, x2, x17
-    SRAI x19, x22, 22
-    XOR x26, x15, x17
-    LUI x27, 1048570
-    AUIPC x5, 1048575
-    AND x17, x11, x26
-    XORI x30, x25, -128
-    SLTIU x11, x19, -120
-    SUB x10, x14, x4
-    XORI x15, x31, -157
-    OR x19, x20, x27
-    SRAI x9, x27, 23
-    SLTI x27, x14, -192
-    XORI x20, x19, -177
-    JAL x28, 20
-    SRA x21, x25, x26
-    SLLI x27, x5, 22
-    AUIPC x21, 1048570
-    SUB x8, x4, x9
-    SLLI x18, x11, 5
-    AUIPC x20, 12
-    SUB x21, x2, x29
-    ANDI x11, x5, -144
-    ANDI x0, x10, 77
-    ADD x29, x19, x29
-    SLL x6, x8, x15
-    SRL x9, x20, x19
-    LW x28, 0(x21)
-    OR x4, x24, x1
-    SRL x30, x18, x17
-    ORI x0, x29, 8
-    SRAI x4, x31, 4
-    LUI x29, 9
-    OR x25, x27, x12
-    LUI x3, 41
-    ADD x25, x5, x13
-    XOR x29, x29, x4
-    SLLI x5, x26, 21
-    SLT x2, x5, x29
-    SRAI x31, x31, 26
-    ORI x4, x4, -49
-    SRL x2, x16, x20
-    AND x7, x17, x9
-    AND x30, x7, x2
-    AND x9, x9, x9
-    SLTU x18, x15, x22
-    XORI x0, x12, -160
-    SLTI x11, x15, -12
-    SLT x13, x9, x24
-    ANDI x15, x0, 148
-    ADDI x7, x25, 152
-    ADD x7, x28, x31
-    OR x31, x11, x28
-    SLTIU x28, x17, 134
-    XOR x3, x10, x17
-    SRL x16, x22, x23
-    XORI x21, x0, -190
-    SLTU x20, x17, x7
-    JAL x29, 4
-    ADD x2, x23, x0
-    XORI x0, x21, -92
-    ORI x16, x15, 73
-    SLL x7, x12, x31
-    SRL x20, x31, x5
-    AUIPC x12, 1
-    ORI x24, x0, 93
-    AND x8, x2, x29
-    SH x11, 314(x21)
-    SLTI x23, x31, 59
-    SRAI x1, x21, 7
-    SLTI x4, x14, -133
-    XORI x25, x16, -90
-    SLT x16, x21, x8
-    SLTI x26, x31, 176
-    SRL x16, x10, x12
-    SLTI x30, x24, -53
-    SLL x18, x3, x30
-    SLTI x11, x6, 191
-    SRA x7, x3, x23
-    XOR x7, x1, x24
-    SRAI x31, x0, 16
-    LUI x22, 1048575
-    SRLI x15, x27, 1
-    SUB x28, x30, x22
-    SRAI x12, x3, 27
-    AND x22, x19, x9
-    SRLI x1, x5, 7
-    SUB x31, x21, x28
-    SLTI x16, x9, -10
-    ADD x26, x29, x24
-    SUB x25, x15, x2
-    ORI x11, x11, -95
-    ADD x13, x3, x21
-    AND x22, x15, x11
-    SUB x29, x25, x14
-    SRAI x27, x20, 20
-    ADD x13, x20, x3
-    JAL x11, 28
-    XORI x8, x20, 54
-    XOR x15, x12, x13
-    ORI x18, x11, 155
-    SLTI x24, x12, -198
-    OR x13, x11, x10
-    XOR x29, x3, x26
-    OR x7, x3, x5
-    XORI x6, x17, -170
-    SRL x9, x5, x29
-    SRLI x29, x23, 0
-    AUIPC x21, 4
-    ANDI x26, x1, 9
-    SLTI x5, x22, -109
-    SRA x5, x12, x4
-    ADDI x26, x24, 9
-    ANDI x23, x10, 149
-    XOR x11, x26, x12
-    SLLI x29, x30, 30
-    XORI x30, x29, -16
-    LUI x8, 5
-    XORI x27, x12, 17
-    SRL x6, x16, x26
-    SLLI x28, x14, 29
-    SUB x12, x0, x31
-    SUB x31, x13, x19
-    LB x0, 7(x21)
-    SRA x17, x9, x1
-    SLLI x2, x9, 27
-    AUIPC x16, 10
-    ANDI x28, x30, 25
-    ANDI x28, x26, -74
-    SLL x7, x9, x19
-    OR x16, x3, x12
-    SRAI x27, x10, 27
-    SLTU x5, x0, x15
-    XORI x2, x15, 130
-    ORI x11, x21, 18
-    SLTU x18, x21, x19
-    AUIPC x11, 1048564
-    ADDI x25, x10, 125
-    SRL x28, x29, x11
-    ANDI x12, x20, 2
-    OR x7, x28, x31
-    ADD x26, x13, x15
-    LUI x30, 7
-    AND x15, x4, x0
-    ANDI x17, x1, -191
-    SRA x4, x16, x15
-    ANDI x9, x14, -151
-    ANDI x26, x23, 127
-    SLTI x24, x16, 18
-    SLT x30, x26, x25
-    SRL x4, x0, x21
-    SLLI x19, x4, 24
-    SLLI x7, x12, 22
-    AUIPC x7, 1048574
-    ADD x17, x13, x13
-    SRL x12, x17, x30
-    ANDI x5, x25, 109
-    LUI x17, 1048570
-    AUIPC x1, 0
-    ADDI x1, x1, 8
-    JALR x15, 32(x1)
-    SUB x21, x25, x16
-    LUI x10, 6
-    AUIPC x12, 24
-    ADD x23, x17, x23
-    SLTU x14, x27, x28
-    ADDI x14, x25, 65
-    XORI x5, x8, -149
-    SLTIU x30, x26, 46
-    SLTIU x16, x26, -27
-    SLTI x20, x17, 44
-    SLTI x6, x28, -27
-    SLL x22, x9, x28
-    SLT x11, x12, x23
-    XOR x16, x28, x15
-    SLTI x15, x10, 105
-    AND x8, x4, x0
-    SRL x4, x1, x2
-    SUB x22, x31, x12
-    SUB x9, x6, x26
-    SUB x21, x31, x25
-    ADDI x17, x26, -36
-    ADDI x18, x14, -22
-    SRLI x28, x31, 2
-    ORI x8, x9, -5
-    SLT x12, x31, x15
-    XORI x13, x8, -84
-    SH x27, 1110(x21)
-    SRA x30, x12, x22
-    AND x14, x13, x21
-    ADDI x1, x21, 21
-    ADD x15, x7, x15
-    OR x5, x22, x1
-    LUI x28, 1048555
-    XORI x22, x10, 77
-    SRL x11, x14, x10
-    SLTIU x15, x8, -77
-    SRL x11, x23, x25
-    SLTIU x4, x23, 22
-    SLTI x6, x26, 198
-    BGEU x19, x0, 28
-    SRA x30, x17, x9
-    SUB x5, x21, x22
-    XORI x31, x4, 16
-    SLTU x15, x28, x17
-    SLL x0, x8, x8
-    XOR x14, x0, x20
-    XOR x7, x21, x27
-    AND x13, x3, x21
-    SLLI x21, x21, 26
-    SRAI x15, x3, 3
-    SRLI x28, x1, 18
-    SLTI x12, x12, 153
-    XORI x5, x12, -63
-    LBU x23, 194(x21)
-    SUB x5, x19, x0
-    SLTI x16, x2, -176
-    SUB x5, x10, x20
-    XOR x8, x23, x9
-    XORI x6, x19, 19
-    AND x0, x30, x25
-    XOR x28, x31, x0
-    SRA x25, x18, x12
-    AUIPC x30, 1048565
-    SRAI x25, x16, 29
-    SUB x26, x21, x15
-    SLTU x24, x27, x10
-    ANDI x16, x17, 12
-    SUB x20, x6, x16
-    SRLI x8, x15, 23
-    SLTIU x4, x12, 43
-    SRLI x3, x26, 26
-    SLLI x29, x16, 22
-    XOR x29, x14, x20
-    XORI x23, x7, -45
-    AUIPC x9, 1048575
-    AUIPC x13, 1048570
-    XORI x27, x11, -161
-    SRA x31, x12, x4
-    SUB x9, x18, x4
-    SRL x5, x2, x16
-    SRLI x12, x0, 16
-    ORI x15, x5, 76
-    OR x28, x27, x27
-    SRA x24, x11, x23
-    SLT x12, x17, x30
-    OR x23, x11, x17
-    OR x28, x22, x18
-    SUB x11, x22, x5
-    JAL x5, 28
-    ANDI x9, x27, 152
-    SRLI x3, x8, 0
-    AND x2, x3, x5
-    AUIPC x18, 1048563
-    ORI x29, x23, -186
-    SRLI x15, x31, 27
-    SUB x29, x8, x29
-    XOR x27, x2, x31
-    SRA x17, x25, x24
-    ADD x21, x24, x29
-    SRAI x27, x20, 10
-    ADD x20, x3, x0
-    SRLI x23, x16, 25
-    SLLI x20, x7, 9
-    SLL x25, x14, x28
-    SW x20, 972(x21)
-    ADD x25, x4, x18
-    XORI x10, x22, -89
-    ADD x10, x29, x10
-    SLT x31, x1, x12
-    SRA x29, x8, x23
-    SLTIU x13, x12, 186
-    AUIPC x17, 7
-    SLTIU x8, x6, 29
-    SLTI x2, x26, 87
-    XORI x20, x2, 169
-    LUI x22, 1048566
-    SLTIU x1, x19, 109
-    ORI x28, x14, -51
-    SRAI x24, x14, 8
-    SRL x9, x26, x28
-    ORI x20, x20, -178
-    SLTIU x15, x28, 120
-    SLLI x16, x12, 15
-    ANDI x23, x4, -20
-    SLTU x20, x2, x26
-    XOR x24, x18, x20
-    AND x31, x8, x8
-    ADD x29, x24, x7
-    SLL x28, x19, x31
-    AUIPC x18, 0
-    ADDI x18, x18, 8
-    JALR x30, 20(x18)
-    ANDI x9, x16, -60
-    XOR x11, x17, x31
-    SRAI x24, x14, 3
-    SRAI x28, x22, 15
-    ADDI x22, x2, -57
-    OR x28, x22, x10
-    AND x24, x26, x23
-    ADD x3, x23, x24
-    SLL x26, x27, x25
-    SLL x0, x8, x0
-    AUIPC x10, 1048570
-    SRAI x11, x19, 10
-    SW x2, 1236(x21)
-    SUB x13, x4, x27
-    XOR x4, x7, x12
-    SRL x19, x29, x13
-    ADDI x4, x26, -49
-    ORI x6, x24, -83
-    SRL x11, x4, x29
-    SLLI x3, x23, 27
-    XOR x31, x21, x0
-    SLTU x22, x25, x0
-    AUIPC x14, 0
-    ADDI x14, x14, 8
-    JALR x20, 40(x14)
-    SRLI x12, x29, 20
-    XORI x21, x12, -142
-    SRAI x1, x31, 12
-    SLLI x0, x1, 0
-    SLT x7, x15, x17
-    XORI x22, x21, -3
-    SLTIU x25, x13, -42
-    AUIPC x7, 1048571
-    AUIPC x7, 4
-    LUI x29, 13
-    SUB x0, x29, x20
-    XORI x19, x19, -58
-    SRA x15, x5, x13
-    ADDI x26, x12, -182
-    XOR x5, x6, x27
-    XORI x7, x19, 76
-    AND x24, x0, x5
-    LUI x18, 1048570
-    AUIPC x2, 5
-    SLTIU x17, x30, -149
-    AND x1, x8, x30
-    ADD x24, x3, x2
-    SRL x31, x2, x7
-    LH x31, 46(x21)
-    SUB x29, x5, x12
-    ADDI x14, x5, 161
-    SLTIU x4, x8, 64
-    ADD x8, x31, x1
-    ADD x25, x0, x12
-    XOR x30, x16, x24
-    ADD x13, x29, x23
-    SRLI x24, x18, 0
-    OR x14, x21, x11
-    ADD x7, x15, x19
-    ADD x9, x13, x17
-    AND x20, x25, x23
-    LUI x24, 1048560
-    SRL x5, x20, x3
-    AUIPC x8, 0
-    ADDI x8, x8, 8
-    JALR x3, 16(x8)
-    SRA x28, x1, x21
-    AUIPC x17, 1048575
-    XORI x20, x27, -35
-    ADD x13, x19, x18
-    ANDI x4, x13, 19
-    SLTI x3, x19, 127
-    SH x6, 24(x21)
-    SLTI x14, x21, -108
-    OR x0, x30, x19
-    SLTU x17, x25, x1
-    SLTIU x30, x30, 17
-    XOR x16, x16, x2
-    ADD x7, x0, x23
-    SLL x9, x19, x26
-    SRAI x28, x8, 5
-    SLT x4, x27, x18
-    AND x29, x31, x13
-    LUI x7, 1048575
-    AND x23, x26, x19
-    LUI x26, 1048570
-    AND x12, x6, x17
-    SUB x17, x22, x5
-    ANDI x7, x6, -43
-    SRAI x7, x27, 10
-    SUB x22, x23, x23
-    AUIPC x6, 1048565
-    BGE x17, x7, 8
-    OR x3, x24, x5
-    AND x13, x0, x24
-    ANDI x6, x9, 151
-    SRLI x20, x7, 26
-    ADDI x13, x31, -67
-    SLL x12, x5, x28
-    XORI x21, x2, 34
-    SRA x22, x9, x0
-    SRLI x8, x6, 21
-    SRLI x25, x1, 19
-    AND x21, x12, x18
-    SLLI x5, x4, 0
-    OR x23, x31, x10
-    SLTIU x18, x12, 32
-    SLT x20, x29, x21
-    SRLI x1, x9, 27
-    LHU x9, 148(x21)
-    SRL x0, x13, x16
-    ANDI x6, x17, -146
-    XORI x24, x22, 30
-    SRLI x0, x23, 9
-    SRLI x26, x20, 21
-    LUI x30, 1048572
-    SLT x28, x4, x30
-    ORI x15, x29, 181
-    SLTIU x2, x2, 85
-    ADDI x23, x22, -13
-    XOR x31, x10, x18
-    LUI x2, 1048575
-    XORI x23, x17, 60
-    SLTIU x11, x7, -98
-    AND x16, x5, x11
-    ADDI x7, x19, 80
-    AUIPC x21, 1048572
-    JAL x22, 28
-    SLTIU x13, x11, -113
-    OR x3, x16, x4
-    SLT x15, x21, x25
-    LUI x7, 2
-    SRLI x30, x3, 11
-    SRAI x16, x6, 23
-    SLLI x4, x15, 1
-    ORI x4, x26, 17
-    SB x20, 1802(x21)
-    XORI x0, x27, -44
-    SLTI x9, x19, 190
-    ORI x28, x20, -136
-    ANDI x5, x10, -28
-    ADDI x26, x14, -186
-    SRA x14, x27, x29
-    SRL x10, x18, x13
-    BGE x23, x3, 4
-    SLT x4, x10, x26
-    ANDI x9, x31, 40
-    AUIPC x30, 20
-    XOR x25, x23, x27
-    LUI x6, 1048565
-    SRLI x4, x8, 3
-    LHU x23, 198(x21)
-    XORI x2, x0, -82
-    SLLI x7, x29, 31
-    ADDI x15, x26, 21
-    SLTI x14, x25, 131
-    OR x11, x27, x9
-    SLLI x23, x6, 5
-    SRLI x13, x14, 11
-    XOR x28, x5, x22
-    BGE x7, x8, 20
-    SLLI x13, x2, 19
-    ORI x28, x14, -44
-    SLLI x3, x25, 20
-    SUB x10, x23, x8
-    SLT x3, x22, x4
-    SLTI x27, x21, 130
-    LUI x18, 1048574
-    ADD x24, x16, x26
-    SRL x29, x10, x22
-    SLTIU x3, x7, -196
-    SLTU x22, x7, x3
-    ANDI x15, x31, -108
-    SLTI x14, x17, -153
-    ANDI x15, x14, 4
-    ADD x20, x29, x4
-    ADDI x28, x26, 25
-    AND x6, x30, x6
-    SRLI x14, x15, 6
-    ORI x21, x22, -12
-    ANDI x9, x6, -42
-    ADDI x13, x28, 197
-    ADD x30, x26, x16
-    ORI x23, x17, 46
-    SLTIU x22, x5, 171
-    SB x19, 1322(x21)
-    SRLI x0, x10, 6
-    SUB x23, x26, x0
-    XORI x19, x26, -33
-    SRL x29, x14, x29
-    SLTI x8, x17, -162
-    SLTU x29, x10, x9
-    AUIPC x31, 1048566
-    ADD x28, x0, x15
-    OR x0, x1, x28
-    ADDI x15, x1, -113
-    SRAI x2, x25, 26
-    ANDI x1, x14, -131
-    ORI x13, x12, -44
-    SLTU x4, x7, x14
-    XORI x30, x15, 143
-    SLT x5, x11, x27
-    SUB x31, x27, x31
-    ADDI x2, x9, 44
-    AND x23, x0, x4
-    SRLI x2, x27, 13
-    LUI x12, 6
-    SLT x4, x13, x12
-    SLT x7, x16, x26
-    SLLI x10, x16, 5
-    SRAI x6, x18, 6
-    XORI x15, x18, 95
-    SUB x22, x20, x6
-    XORI x22, x1, -186
-    AUIPC x27, 0
-    ADDI x27, x27, 8
-    JALR x8, 32(x27)
-    SRL x3, x10, x24
-    XOR x2, x21, x7
-    ADD x5, x14, x19
-    AUIPC x29, 1048571
-    SLTI x12, x22, -104
-    ADD x14, x2, x17
-    SLLI x16, x2, 9
-    SUB x7, x9, x14
-    AND x15, x25, x31
-    SRL x17, x20, x23
-    SLT x1, x5, x1
-    AUIPC x5, 1048575
-    SLT x19, x6, x26
-    SLTI x21, x6, 46
-    ADDI x22, x25, 101
-    ADD x18, x9, x0
-    AND x21, x24, x22
-    ADD x19, x27, x9
-    ANDI x18, x20, -134
-    XOR x31, x6, x11
-    LUI x4, 1048570
-    SRLI x0, x14, 5
-    SLTIU x15, x4, -11
-    SLT x31, x11, x9
-    LBU x31, 357(x21)
-    SLTIU x29, x28, 16
-    SLLI x14, x15, 1
-    SRLI x27, x28, 20
-    ADD x19, x24, x31
-    ANDI x28, x0, 97
-    SLTU x14, x15, x26
-    SLLI x6, x11, 2
-    SRA x29, x12, x30
-    LUI x10, 0
-    SLL x19, x3, x23
-    ADDI x5, x22, -112
-    ORI x21, x1, 178
-    SLTI x27, x3, -36
-    SRLI x11, x17, 12
-    JAL x2, 28
-    ORI x31, x0, 174
-    ADDI x19, x18, -110
-    ORI x29, x14, -115
-    SRLI x27, x22, 22
-    SRAI x0, x3, 11
-    XOR x28, x8, x31
-    SRA x7, x15, x28
-    ADD x7, x24, x24
-    LH x16, 134(x21)
-    ADDI x3, x8, 136
-    XORI x2, x22, 143
-    OR x2, x5, x0
-    SRA x11, x22, x23
-    AND x6, x10, x29
-    LUI x7, 23
-    SLLI x24, x28, 30
-    SLT x10, x19, x7
-    SUB x24, x8, x4
-    XORI x15, x22, 151
-    SLTIU x22, x20, -73
-    SLLI x1, x12, 5
-    XORI x1, x22, -30
-    SRAI x8, x21, 19
-    AND x5, x0, x30
-    SLTU x24, x5, x6
-    SLTIU x28, x21, -179
-    ANDI x10, x2, 4
-    SRLI x25, x17, 27
-    XOR x19, x12, x4
-    SLTIU x14, x12, 38
-    SLTI x14, x4, 141
-    XOR x22, x19, x11
-    BLT x12, x30, 24
-    SLLI x31, x4, 5
-    XOR x25, x0, x5
-    SUB x24, x7, x21
-    ADD x9, x19, x8
-    SRA x2, x16, x17
-    SUB x2, x24, x21
-    SLT x9, x5, x18
-    SLTI x12, x25, 84
-    OR x28, x16, x9
-    SUB x10, x11, x8
-    AND x14, x11, x5
-    ORI x19, x17, -137
-    ADD x18, x0, x31
-    SLLI x26, x21, 8
-    SLL x29, x17, x29
-    XOR x6, x10, x31
-    SRA x12, x31, x15
-    SLTU x21, x13, x31
-    LUI x3, 0
-    SRL x8, x28, x6
-    LH x28, 48(x21)
-    SLTIU x13, x10, 176
-    SLL x10, x21, x20
-    SLT x13, x16, x21
-    ANDI x0, x6, 186
-    SLT x4, x11, x27
-    SRA x2, x24, x13
-    XORI x9, x21, -178
-    SLTU x10, x18, x1
-    AUIPC x17, 1048571
-    SLTI x15, x29, -6
-    LUI x27, 1048574
-    SRL x20, x15, x1
-    SRLI x17, x11, 25
-    LUI x14, 8
-    SRA x23, x12, x20
-    SRL x23, x30, x18
-    SLTI x31, x27, 195
-    SLTIU x18, x23, 172
-    XOR x15, x0, x11
-    AUIPC x12, 0
-    ADDI x12, x12, 8
-    JALR x30, 32(x12)
-    SRLI x12, x3, 2
-    SRLI x28, x7, 22
-    SLTI x24, x30, -133
-    SLTU x30, x25, x22
-    SRA x13, x2, x12
-    ORI x30, x29, -56
-    OR x17, x23, x14
-    SRLI x14, x0, 7
-    XOR x7, x9, x26
-    SRL x26, x0, x15
-    SRL x10, x25, x14
-    SRL x24, x5, x6
-    SLTI x30, x25, 77
-    XORI x0, x8, 138
-    AND x19, x31, x3
-    SH x23, 546(x21)
-    SRLI x16, x1, 1
-    SRLI x25, x2, 15
-    SLTI x24, x1, 141
-    AUIPC x5, 1
-    SRA x3, x27, x14
-    SRAI x24, x25, 8
-    LUI x20, 1048559
-    SRA x25, x30, x28
-    XORI x0, x14, 39
-    LUI x6, 4
-    SRLI x4, x21, 18
-    SRA x15, x26, x31
-    LUI x6, 1
-    XORI x24, x11, 66
-    XOR x6, x2, x4
-    SLTI x10, x14, -44
-    SLTIU x28, x16, 42
-    SLLI x7, x21, 4
-    SRAI x4, x14, 8
-    LUI x5, 29
-    XOR x21, x21, x15
-    SLL x2, x15, x29
-    SRA x22, x4, x1
-    JAL x24, 36
-    SRA x7, x0, x21
-    LUI x11, 12
-    XOR x26, x10, x2
-    SLT x28, x24, x31
-    SLLI x10, x28, 8
-    OR x1, x6, x8
-    ADDI x12, x22, 116
-    SUB x31, x6, x7
-    LUI x5, 1048570
-    SRLI x17, x10, 0
-    XORI x4, x20, -36
-    SLTI x15, x1, -190
-    SUB x21, x9, x4
-    ADDI x20, x3, -127
-    ADDI x20, x0, 133
-    SRAI x13, x2, 2
-    XOR x15, x25, x6
-    SUB x9, x24, x24
-    SRA x5, x28, x28
-    OR x1, x12, x1
-    AUIPC x22, 1048568
-    SRA x23, x12, x4
-    OR x24, x7, x21
-    SRL x26, x1, x4
-    SLL x22, x1, x12
-    ANDI x7, x22, -83
-    LB x10, 203(x21)
-    ADDI x13, x18, -94
-    LUI x26, 9
-    AUIPC x7, 1
-    OR x0, x31, x3
-    XORI x12, x22, 63
-    SLTIU x4, x28, -59
-    SRLI x5, x21, 7
-    ORI x22, x18, 71
-    SLL x11, x3, x29
-    SRL x15, x23, x18
-    SRAI x30, x3, 24
-    AUIPC x17, 0
-    ADDI x17, x17, 8
-    JALR x5, 36(x17)
-    SUB x6, x2, x12
-    SLLI x29, x13, 13
-    XOR x25, x1, x19
-    AND x2, x6, x10
-    XOR x19, x18, x2
-    SLT x11, x10, x14
-    SLTIU x8, x7, -63
-    ANDI x14, x22, 88
-    ADDI x18, x9, -10
-    SRAI x30, x26, 10
-    SRL x5, x0, x7
-    SLTU x2, x29, x21
-    ORI x3, x20, 21
-    XORI x23, x16, -34
-    LUI x0, 1048571
-    LBU x1, 105(x21)
-    ADD x28, x28, x18
-    XOR x11, x18, x17
-    XOR x13, x15, x5
-    SLTU x18, x24, x28
-    AUIPC x26, 10
-    ANDI x28, x7, 98
-    SLT x7, x23, x19
-    AND x9, x7, x6
-    SRLI x22, x26, 22
-    XORI x9, x29, 171
-    SLTIU x22, x21, -80
-    ADDI x9, x20, 34
-    ORI x10, x20, -19
-    SRA x26, x24, x30
-    SLTIU x2, x13, 23
-    SRAI x21, x22, 11
-    SLT x16, x3, x1
-    SRLI x2, x22, 25
-    SLT x25, x12, x12
-    ANDI x18, x21, -106
-    XOR x12, x22, x13
-    SLT x21, x18, x3
-    SRL x27, x17, x13
-    ADD x28, x21, x29
-    LUI x11, 4
-    OR x6, x29, x0
-    SLTI x31, x2, -165
-    SLLI x18, x16, 0
-    LUI x4, 22
-    ADD x26, x9, x6
-    LUI x1, 1048573
-    XOR x15, x0, x25
-    BGEU x24, x27, 16
-    AUIPC x14, 6
-    SLTIU x4, x28, 15
-    SLTIU x18, x12, 88
-    ADDI x3, x3, -8
-    SRLI x18, x6, 11
-    SRLI x6, x4, 19
-    SRA x10, x0, x4
-    ADD x26, x3, x17
-    ANDI x7, x6, -1
-    ANDI x8, x15, -170
-    ANDI x16, x9, -37
-    XOR x9, x14, x27
-    AND x25, x23, x31
-    ORI x22, x21, 20
-    SRAI x26, x10, 19
-    LW x17, 212(x21)
-    ADDI x29, x18, 113
-    SLLI x7, x31, 10
-    ADDI x6, x31, 12
-    SUB x15, x16, x26
-    OR x16, x28, x28
-    SLTU x31, x19, x14
-    ANDI x0, x2, 158
-    SLTI x27, x4, 130
-    OR x6, x28, x6
-    LUI x22, 3
-    SRLI x14, x17, 11
-    SRAI x4, x4, 6
-    ORI x8, x29, -170
-    OR x12, x3, x1
-    SRLI x9, x24, 28
-    ANDI x9, x1, -60
-    ANDI x18, x5, -170
-    SUB x15, x28, x19
-    LUI x23, 4
-    SLTIU x27, x15, -139
-    SLL x25, x3, x17
+    JALR x13, 32(x24)
+    SLLI x27, x26, 5
+    SLTIU x4, x1, -131
+    SLL x31, x6, x11
+    SLLI x1, x24, 22
+    SLTI x22, x29, 66
+    LUI x27, 13
+    ADD x1, x25, x2
+    SLTU x27, x12, x30
+    ORI x29, x30, -77
+    SRA x6, x8, x0
+    AUIPC x15, 1048575
+    SLT x27, x12, x4
+    SRAI x26, x19, 25
+    ORI x8, x31, 161
+    LUI x5, 524304
+    ADDI x5, x5, 256
+    SB x8, 1315(x5)
+    SLT x28, x24, x3
+    ANDI x16, x16, -37
+    OR x30, x0, x21
+    ADDI x18, x16, 125
+    ADDI x23, x25, -66
+    XOR x9, x7, x8
+    LUI x28, 17
+    SLLI x12, x9, 7
+    SLT x13, x17, x11
+    ADDI x31, x30, -117
+    SRA x23, x27, x28
+    SLLI x26, x3, 24
+    SLTI x10, x28, -174
+    SRL x12, x8, x14
+    AUIPC x29, 0
+    ADDI x29, x29, 8
+    JALR x25, 40(x29)
+    SUB x25, x11, x7
+    XORI x9, x29, 166
+    SLTI x12, x26, 60
+    SRA x25, x27, x13
+    SLTU x3, x25, x17
+    ANDI x2, x0, -1
+    LUI x17, 1048571
+    SLTI x17, x29, 151
+    XOR x23, x27, x12
+    SLLI x23, x21, 2
+    SLTU x30, x19, x18
+    ADD x2, x28, x21
+    AND x9, x19, x6
+    SLTIU x18, x3, 199
+    ADD x24, x28, x23
+    LW x0, 184(x5)
+    ADDI x0, x21, 81
+    AUIPC x9, 1048564
+    XORI x16, x17, 48
+    SUB x29, x2, x22
+    ORI x13, x31, -2
+    ADD x3, x1, x17
+    SRA x23, x26, x8
+    AUIPC x3, 9
+    SLL x13, x8, x8
+    SLTU x18, x5, x0
+    ADD x19, x5, x23
+    ORI x16, x2, 167
+    XOR x28, x31, x16
+    XORI x27, x28, -11
+    SLLI x14, x27, 5
+    SRL x23, x27, x8
+    SLTI x20, x15, -3
+    ADDI x24, x17, 9
+    AUIPC x7, 0
+    ADDI x7, x7, 8
+    JALR x3, 24(x7)
+    ADDI x20, x12, -190
+    AND x5, x1, x26
+    LUI x6, 1048567
+    ADD x11, x16, x28
+    ORI x10, x6, 14
+    SLL x4, x21, x10
+    SRAI x26, x19, 9
+    SLTU x16, x25, x21
+    XORI x16, x11, 10
+    LW x18, 16(x19)
+    XOR x12, x27, x4
+    SLTU x5, x4, x8
+    LUI x18, 1048555
+    ADDI x18, x10, 118
+    AND x31, x14, x4
+    ADDI x1, x26, -49
+    ORI x16, x17, 131
+    SRAI x15, x9, 19
+    AND x1, x30, x13
+    ADDI x12, x29, -38
+    ORI x13, x24, 23
+    SUB x16, x26, x7
+    SLTIU x16, x9, 182
+    SLT x1, x25, x23
+    SUB x3, x22, x8
+    SLTIU x17, x5, 17
+    ADD x28, x24, x0
+    ORI x8, x17, -89
+    SRLI x5, x11, 20
+    AND x23, x8, x2
+    AND x11, x19, x10
+    SLTIU x26, x27, -51
+    ADD x18, x6, x30
     AUIPC x31, 0
     ADDI x31, x31, 8
-    JALR x21, 24(x31)
-    ORI x31, x21, 174
-    SUB x1, x24, x21
-    ORI x0, x3, -143
-    SRAI x1, x20, 17
-    SRLI x2, x12, 20
-    ADD x15, x12, x19
-    LUI x11, 2
-    AND x18, x6, x20
-    SRA x24, x19, x17
-    SLTI x7, x7, 16
-    SRLI x22, x15, 26
-    ORI x24, x18, 67
-    SRAI x0, x27, 1
-    SRA x25, x11, x16
-    ADDI x1, x27, 79
-    SRL x8, x11, x13
-    SLL x17, x10, x5
-    XORI x11, x12, -34
-    LUI x7, 1048561
-    LUI x29, 524304
-    ADDI x29, x29, 256
-    LBU x5, 1562(x29)
-    LUI x4, 21
-    ADDI x21, x21, 79
-    ADD x28, x31, x28
-    SLTU x31, x7, x20
-    SRA x22, x15, x14
-    ORI x7, x20, -47
-    AUIPC x13, 12
-    SLTI x15, x18, -55
-    SRAI x7, x20, 18
-    XORI x8, x29, 83
-    OR x18, x0, x23
-    AUIPC x19, 0
-    ADDI x19, x19, 8
-    JALR x17, 20(x19)
-    AUIPC x28, 1048569
-    SLLI x23, x1, 25
-    SRAI x14, x6, 22
-    SUB x23, x6, x10
-    ORI x6, x14, 33
-    XOR x13, x27, x29
-    SLT x29, x23, x25
-    XORI x23, x14, -30
-    AND x10, x10, x30
-    ADDI x0, x8, -192
-    SLLI x25, x9, 24
-    ORI x28, x2, -148
-    SLTI x11, x14, 93
-    SLTI x22, x4, -79
-    SRA x26, x6, x23
-    SB x15, 1030(x29)
-    ORI x20, x22, -77
-    SLTU x7, x29, x18
-    SLTU x1, x4, x30
-    AUIPC x9, 5
-    SRLI x17, x2, 19
-    OR x17, x22, x26
-    SLLI x8, x29, 6
-    ADD x16, x18, x23
-    SLL x2, x8, x12
-    XORI x30, x10, -60
-    LUI x21, 1048567
-    XOR x12, x17, x9
-    LUI x21, 2
-    OR x25, x13, x24
-    OR x9, x2, x22
-    SLL x31, x20, x29
-    XOR x5, x18, x18
-    ADDI x22, x14, 41
-    ANDI x25, x6, 165
-    SLTI x25, x4, 116
-    SUB x2, x28, x5
-    SLTU x0, x10, x12
-    SLTI x16, x14, -59
-    ORI x9, x22, -46
-    ADDI x17, x22, -61
-    SRL x22, x30, x25
-    SLTU x15, x16, x4
-    SRLI x9, x2, 7
-    SLTU x1, x7, x12
-    XOR x23, x25, x4
-    SLTIU x7, x10, 65
-    BGE x31, x17, 24
-    SRLI x20, x26, 3
-    SLLI x14, x22, 10
-    SRL x17, x23, x26
-    SLTIU x24, x23, -72
-    SLTU x31, x22, x13
-    OR x3, x13, x18
-    LUI x30, 0
-    SW x30, 260(x29)
-    ADDI x25, x18, 182
-    SLTIU x10, x6, 160
-    LUI x13, 1048574
-    AUIPC x4, 1048556
-    AUIPC x3, 8
-    JAL x15, 28
-    XORI x5, x23, -85
-    ANDI x9, x3, -17
-    AUIPC x27, 10
-    SRAI x22, x17, 22
-    AUIPC x6, 15
-    SLLI x24, x27, 17
-    SRAI x28, x31, 16
-    SRA x4, x25, x6
-    SLL x4, x9, x23
-    AUIPC x9, 1048573
-    SLL x23, x18, x19
-    SLLI x24, x23, 0
-    SUB x19, x9, x17
-    SLTI x3, x4, 12
-    OR x8, x22, x31
-    SLL x11, x29, x22
-    ORI x13, x19, 82
-    XORI x16, x13, -168
-    SLL x25, x15, x22
-    XORI x0, x28, 69
-    SRAI x3, x14, 23
-    ADDI x8, x10, -47
-    SW x3, 1928(x29)
-    SRL x17, x31, x28
-    AUIPC x26, 1048558
-    ORI x19, x29, -165
-    ORI x22, x5, 23
-    SRLI x25, x18, 26
-    ADDI x4, x1, -163
-    SLLI x24, x22, 20
-    SLTIU x2, x28, -143
-    ORI x7, x19, -62
-    SLLI x15, x18, 5
-    SLT x20, x23, x20
-    SLL x29, x9, x0
-    SRAI x24, x7, 14
-    SLT x22, x16, x13
-    SRA x24, x30, x25
-    SUB x10, x31, x12
-    SLTI x8, x13, -12
-    SRAI x12, x13, 23
-    SLLI x23, x14, 13
-    SRLI x14, x18, 21
-    JAL x19, 20
-    SLL x2, x14, x12
-    AUIPC x3, 14
-    SLL x8, x23, x6
-    XORI x27, x25, -125
-    ADD x0, x9, x19
-    LUI x17, 27
-    SRL x1, x18, x28
-    SW x22, 1524(x29)
-    XOR x4, x1, x19
-    SLTIU x31, x4, 15
-    ADDI x18, x22, -26
-    SRA x2, x16, x4
-    ORI x14, x4, 176
-    SLTI x29, x21, -44
-    SLTU x29, x18, x23
-    SLT x27, x26, x6
-    SLL x30, x29, x8
-    SLTIU x31, x6, -58
-    SLLI x5, x2, 19
-    SRLI x4, x18, 30
-    SLTI x18, x4, -190
-    SRA x2, x31, x4
-    SLTIU x1, x10, -45
-    SLLI x12, x4, 14
-    AUIPC x28, 0
-    ADDI x28, x28, 8
-    JALR x20, 40(x28)
-    SLTIU x1, x14, 44
-    SUB x6, x24, x17
-    SUB x7, x12, x22
-    ADDI x16, x26, 200
-    ANDI x29, x8, -183
-    SRA x19, x8, x9
-    SLTI x31, x31, 115
-    AUIPC x0, 6
-    XORI x16, x2, 173
-    ADD x31, x31, x2
-    XORI x7, x6, 185
-    ANDI x29, x20, -26
-    LUI x23, 13
-    SRL x14, x18, x25
-    SH x7, 424(x29)
-    ADD x27, x23, x8
-    SLL x0, x8, x15
-    OR x24, x13, x28
-    SLT x20, x16, x3
-    SLT x6, x19, x19
-    SLTIU x25, x9, 30
-    SLT x12, x14, x13
-    SRLI x7, x3, 0
-    SLTU x7, x20, x27
-    ANDI x26, x30, -7
-    SLTIU x10, x15, -148
-    SUB x27, x7, x15
-    SLTIU x12, x28, 18
-    ANDI x6, x4, -37
-    LUI x23, 1048558
-    SUB x24, x6, x16
-    SLTI x3, x17, -113
-    AUIPC x10, 1048573
-    AUIPC x4, 1048556
-    ORI x8, x3, 38
-    OR x15, x13, x20
-    AUIPC x21, 3
-    SRLI x18, x3, 23
-    SRA x30, x13, x19
-    SLTI x28, x1, -122
-    SRLI x14, x23, 19
-    AUIPC x6, 9
-    AND x29, x14, x24
+    JALR x4, 36(x31)
+    AUIPC x28, 14
+    SLTU x4, x10, x4
+    OR x12, x12, x7
+    ADD x29, x4, x16
+    ADDI x15, x11, 58
+    AND x30, x22, x5
+    SRLI x26, x1, 9
+    SLLI x10, x27, 11
+    OR x21, x6, x13
+    SRAI x27, x16, 26
+    SLT x7, x5, x0
+    ORI x23, x30, -188
+    AND x20, x6, x13
+    AUIPC x1, 1048562
+    SLTIU x23, x2, 4
+    SB x31, 123(x19)
+    XORI x26, x13, 124
+    SRL x5, x10, x12
+    SLT x18, x13, x27
+    OR x15, x31, x21
+    LUI x5, 3
+    AUIPC x26, 1048562
+    SUB x23, x12, x20
+    ORI x30, x2, 171
+    SUB x28, x27, x0
+    SLTIU x10, x4, -148
+    ADDI x26, x21, -49
+    ORI x11, x28, -43
+    SUB x23, x18, x2
     AUIPC x10, 0
     ADDI x10, x10, 8
-    JALR x16, 16(x10)
-    ADD x11, x22, x28
-    OR x14, x26, x4
-    SLLI x31, x20, 4
-    LUI x1, 1048567
-    SLTIU x26, x14, 61
-    SRL x5, x16, x1
-    SRAI x25, x25, 1
-    LUI x11, 9
-    LUI x28, 5
-    SLT x10, x23, x28
-    SLTI x0, x26, 51
-    OR x17, x3, x24
-    ORI x17, x23, 19
-    ANDI x17, x0, 31
-    LBU x13, 101(x29)
-    SLT x25, x27, x16
-    ADD x1, x25, x24
-    XORI x14, x29, -76
-    XORI x20, x29, 146
-    SRL x14, x3, x5
-    LUI x28, 1048569
-    ADD x19, x10, x0
-    ADD x11, x5, x15
-    XOR x15, x31, x28
-    ADDI x10, x7, 89
-    ADD x3, x9, x5
-    AUIPC x31, 10
-    SLTI x14, x31, -154
-    SLT x28, x12, x13
-    ANDI x19, x3, -72
-    SRAI x19, x25, 30
-    ADD x16, x9, x7
-    ANDI x3, x17, -90
-    AND x1, x6, x18
-    ORI x21, x18, -138
-    LUI x15, 2
-    SLT x27, x22, x18
-    SRL x14, x5, x3
-    AUIPC x26, 1048565
-    SLLI x13, x11, 8
-    SLLI x27, x25, 27
-    LUI x2, 1
-    SLTIU x22, x14, -125
-    LUI x11, 15
-    XORI x19, x24, 157
-    SRAI x16, x1, 29
-    SRL x5, x2, x19
-    AND x2, x27, x16
-    BNE x31, x5, 32
-    SLLI x8, x3, 17
-    XORI x24, x15, 112
-    AUIPC x5, 5
-    ORI x11, x29, 153
-    SLTI x31, x2, 128
-    SRL x23, x4, x30
-    ADD x14, x5, x13
-    SLL x7, x7, x23
-    OR x25, x2, x28
-    LUI x0, 1048561
-    SLTU x14, x1, x23
-    ADDI x3, x20, -126
-    ADDI x13, x6, -150
-    SLLI x17, x19, 23
-    AND x24, x18, x30
-    SRL x31, x18, x26
-    SRL x20, x28, x30
-    SLTIU x20, x24, -179
-    SRLI x30, x14, 2
-    SRA x4, x13, x10
-    OR x18, x21, x5
-    SRA x24, x24, x20
-    SRL x23, x22, x25
-    SRAI x17, x14, 6
-    ANDI x4, x30, -189
-    LUI x9, 1048575
-    SB x14, 527(x29)
-    LUI x21, 1048572
-    XOR x6, x12, x30
-    SLL x23, x25, x9
-    SLTI x31, x14, 50
-    OR x24, x17, x1
-    ANDI x1, x16, -81
-    SLTI x15, x5, -13
-    ANDI x26, x19, 147
-    AUIPC x12, 4
-    SLL x29, x30, x6
-    SLL x23, x13, x4
-    ADD x17, x6, x29
-    AUIPC x6, 19
-    SUB x16, x16, x7
-    SRLI x12, x22, 29
-    AUIPC x24, 1048559
-    OR x27, x30, x19
-    ORI x14, x31, 145
-    SLTI x25, x26, -131
-    SLT x30, x3, x12
-    SLLI x1, x30, 3
-    ADD x25, x27, x23
-    ORI x19, x20, 154
-    XOR x22, x9, x15
-    SLL x28, x24, x20
-    SLLI x23, x12, 27
-    AUIPC x30, 0
-    ADDI x30, x30, 8
-    JALR x20, 36(x30)
-    SLTIU x17, x20, 90
-    SRLI x1, x27, 25
-    OR x22, x17, x9
-    XORI x5, x8, 154
-    XORI x10, x26, -6
-    SLT x15, x21, x0
+    JALR x13, 4(x10)
+    SLL x1, x18, x16
+    SLT x6, x25, x30
+    XORI x22, x28, -43
+    XORI x13, x17, -131
+    SLTIU x20, x24, 88
+    SUB x25, x4, x10
+    SLL x23, x29, x30
+    SLTIU x29, x19, -176
+    SLTU x1, x7, x9
+    ANDI x20, x11, -69
+    ANDI x31, x0, -196
+    AUIPC x12, 1048564
+    ORI x15, x15, -106
+    LUI x12, 0
+    SRLI x2, x27, 16
+    SLTU x5, x0, x3
+    SLT x14, x0, x9
+    SRA x5, x28, x20
+    ADD x23, x31, x15
+    LBU x22, 175(x19)
+    SRAI x30, x1, 27
+    SLLI x15, x20, 27
+    ADDI x30, x3, 78
+    SLTIU x23, x10, -52
+    SRA x5, x28, x11
+    ORI x19, x25, 138
+    SLT x26, x18, x2
+    SLL x9, x0, x15
+    SLTIU x18, x6, -12
+    SRLI x28, x27, 1
+    SLTI x10, x17, 83
+    SLTI x25, x17, -90
+    SLL x6, x7, x3
+    ADDI x10, x5, 125
+    SLTI x3, x10, -54
+    AUIPC x25, 10
+    SUB x16, x2, x16
+    LUI x24, 10
+    SLLI x16, x7, 29
+    SRL x2, x31, x0
+    AND x31, x25, x12
+    SUB x4, x31, x4
+    SRLI x6, x2, 28
+    SLTI x12, x11, -5
+    SUB x25, x22, x1
+    SRLI x12, x1, 28
+    OR x21, x22, x22
+    SLTU x30, x18, x22
+    LUI x9, 1048574
+    XOR x1, x5, x4
+    SRAI x18, x2, 29
+    AUIPC x20, 0
+    ADDI x20, x20, 8
+    JALR x20, 24(x20)
+    ORI x21, x25, -47
+    ORI x17, x4, -165
+    SLTIU x7, x11, -172
+    SLT x24, x21, x13
+    ANDI x21, x5, 114
+    AND x12, x9, x22
+    SRAI x27, x28, 17
+    SLTIU x29, x31, 131
+    SLT x21, x21, x0
+    LUI x5, 524304
+    ADDI x5, x5, 256
+    LW x23, 128(x5)
+    ADDI x16, x26, -75
+    ADD x31, x13, x4
+    SLT x30, x5, x27
+    AUIPC x12, 1048561
+    LUI x9, 0
+    XOR x0, x17, x3
+    ANDI x2, x12, 53
+    SRAI x30, x7, 7
+    OR x24, x23, x1
+    SUB x23, x16, x28
     LUI x0, 1048569
-    AUIPC x24, 1048564
-    XORI x28, x26, 71
-    SUB x27, x0, x24
-    SLL x2, x1, x22
-    LBU x31, 159(x29)
-    SRL x19, x20, x3
-    XOR x17, x22, x3
-    SRA x12, x13, x19
-    ANDI x2, x2, -179
-    SRAI x28, x20, 3
-    AUIPC x8, 10
-    ORI x14, x27, -110
-    ADD x22, x20, x19
-    ADD x4, x21, x18
-    OR x19, x23, x23
-    LUI x9, 11
-    SRA x0, x17, x29
-    SUB x28, x16, x27
-    ADDI x13, x8, -92
-    XORI x26, x30, -125
-    SRA x12, x20, x25
-    AUIPC x6, 1048564
-    XORI x30, x31, 31
-    OR x15, x20, x5
-    ANDI x1, x31, 193
-    SRAI x9, x8, 0
-    SRA x16, x8, x23
-    ORI x27, x11, 166
-    SLTIU x25, x4, 1
-    SRA x25, x17, x1
-    OR x21, x21, x19
-    SRL x17, x15, x0
-    SLTI x18, x12, 63
-    ADDI x31, x8, -124
-    SLTI x16, x20, 10
-    SLT x1, x7, x13
-    SLT x22, x23, x18
-    LUI x27, 1048571
-    SLTIU x16, x18, -169
-    LUI x20, 24
-    SLTI x30, x8, 4
-    LUI x21, 8
-    SRLI x23, x17, 4
-    JAL x17, 32
-    LUI x31, 1048573
-    ADD x18, x28, x25
-    ANDI x17, x24, -37
-    SLTIU x26, x22, -83
-    SRAI x27, x5, 0
-    AUIPC x28, 1048557
-    OR x27, x22, x9
-    ADDI x26, x6, -77
-    ADDI x6, x30, 130
-    XORI x7, x17, 193
-    SW x28, 216(x29)
-    SRLI x22, x18, 25
-    ADDI x22, x10, -118
-    OR x8, x15, x7
-    AUIPC x28, 2
-    LUI x4, 1048561
-    SLT x28, x16, x10
-    AUIPC x4, 0
-    ADDI x4, x4, 8
-    JALR x15, 32(x4)
-    ADD x14, x13, x27
-    SLTIU x17, x5, -39
-    SLTIU x2, x17, 75
-    SLTI x2, x29, -155
-    SLTI x1, x31, -156
-    SUB x18, x11, x11
-    XORI x2, x9, 152
-    ADD x16, x13, x12
-    OR x23, x29, x20
-    SLTIU x17, x13, 1
-    XORI x9, x23, 76
-    XORI x1, x30, 84
-    SRL x4, x5, x10
-    SLL x6, x28, x29
-    ADD x27, x6, x6
-    AUIPC x6, 1048550
-    SLTI x23, x2, 161
-    XOR x11, x28, x22
-    SH x26, 1392(x29)
-    ADDI x4, x29, -112
-    SLTI x11, x9, -73
-    ADD x4, x26, x13
-    OR x25, x25, x9
-    SLL x26, x4, x8
-    SRLI x26, x29, 24
-    ADDI x3, x8, 15
-    SLL x11, x9, x12
-    LUI x18, 3
-    SLL x1, x4, x22
-    SRAI x7, x5, 30
-    SLLI x6, x15, 28
-    SUB x25, x6, x10
-    AND x5, x14, x26
-    ADD x24, x6, x21
-    SRLI x14, x11, 30
-    SRAI x12, x27, 5
-    SRL x15, x1, x12
-    AUIPC x11, 13
-    SLT x30, x0, x26
-    OR x20, x20, x23
-    AND x4, x23, x13
-    SLL x6, x13, x21
-    SLTIU x31, x16, 19
-    ADD x5, x26, x28
-    OR x21, x3, x21
-    JAL x1, 32
-    SLLI x10, x28, 31
-    SRA x6, x18, x19
-    XORI x20, x1, 139
-    ORI x28, x31, -123
-    AND x15, x4, x7
-    SRA x5, x5, x7
-    ADD x14, x25, x25
-    SLTU x2, x5, x23
-    ADD x27, x3, x20
-    AUIPC x7, 1048572
-    SLTU x22, x3, x7
-    XORI x17, x7, -23
-    XORI x28, x23, 188
-    ANDI x26, x8, -156
-    SLTU x21, x15, x13
-    ADDI x2, x0, 76
-    SLL x1, x6, x17
-    ANDI x24, x17, 144
-    ADDI x23, x9, 145
-    ADDI x25, x21, -55
-    SLL x20, x28, x4
-    AND x28, x27, x29
-    SUB x6, x27, x8
-    SW x12, 496(x29)
-    ORI x7, x7, 183
-    XOR x21, x4, x21
-    SLTU x26, x7, x6
-    ORI x31, x20, -133
-    SLT x28, x12, x6
-    LUI x20, 11
-    SLTIU x3, x25, -47
-    XORI x15, x2, -47
-    AUIPC x25, 1048561
-    SUB x13, x11, x31
-    SUB x31, x27, x0
-    SLLI x19, x13, 7
-    JAL x15, 12
-    SRAI x31, x24, 26
-    XOR x10, x19, x21
-    SRL x0, x10, x20
-    SRLI x19, x16, 10
-    SLL x3, x13, x2
-    SLLI x8, x8, 11
-    ADDI x30, x30, 78
-    ADD x19, x8, x3
-    ADD x8, x29, x21
-    SLL x17, x29, x7
-    ORI x2, x20, -89
-    LH x17, 200(x29)
-    XOR x25, x25, x21
-    XOR x0, x19, x11
-    AUIPC x18, 25
-    SLT x0, x1, x21
-    XORI x14, x30, 98
-    SLLI x22, x28, 11
-    SLL x0, x24, x20
-    AND x2, x7, x18
-    SLTI x23, x8, -167
-    ADD x2, x3, x7
-    AND x18, x19, x11
-    OR x7, x16, x14
-    OR x3, x3, x17
-    ANDI x4, x19, -198
-    AND x16, x15, x13
-    SUB x16, x21, x0
-    SLTI x30, x3, 200
-    XORI x17, x0, -51
-    SRLI x2, x31, 6
-    AND x3, x25, x4
-    SLLI x26, x7, 28
-    SLTIU x31, x7, 25
-    AND x13, x21, x25
-    JAL x31, 32
-    ORI x6, x30, -23
-    SLTI x30, x31, -65
-    SUB x22, x2, x13
-    ORI x10, x19, 62
-    SRL x16, x25, x23
-    SRL x14, x14, x27
-    SLT x2, x4, x21
-    ANDI x1, x20, 36
-    ORI x25, x22, -180
-    ORI x3, x22, 89
-    XOR x3, x9, x31
-    SLLI x8, x23, 31
-    SUB x16, x23, x29
-    XOR x19, x1, x26
-    SLTU x26, x11, x14
-    SLTIU x2, x29, -188
-    ADDI x16, x20, 194
-    SLL x21, x2, x30
-    XORI x10, x7, -79
-    XOR x2, x1, x10
-    ADDI x22, x22, -132
-    SUB x25, x5, x1
-    ORI x17, x24, -141
-    SLLI x15, x11, 12
-    SLTIU x8, x0, -38
-    SRL x0, x2, x8
-    LHU x11, 12(x29)
-    XORI x12, x26, 139
-    LUI x6, 27
-    AND x29, x24, x2
-    SRA x21, x2, x0
-    ADD x26, x16, x29
-    SLTI x19, x18, 165
-    SRL x13, x12, x4
-    SRLI x24, x26, 31
-    AUIPC x3, 6
-    SRLI x17, x0, 0
-    SUB x5, x25, x5
-    ADD x26, x2, x30
-    ADD x28, x29, x15
-    SRA x3, x19, x21
-    SRLI x28, x19, 2
-    SUB x10, x19, x31
-    SLTU x16, x29, x28
-    AUIPC x18, 1048565
-    ADDI x26, x3, 15
-    SRL x23, x12, x23
-    SLTI x20, x30, 73
-    AUIPC x5, 1048570
-    SRL x12, x5, x28
-    AUIPC x21, 1
-    ANDI x25, x13, 198
-    SLTIU x3, x8, 14
-    BGEU x12, x10, 20
-    AND x12, x12, x16
-    SRLI x1, x5, 27
-    SLL x4, x28, x9
-    AND x13, x29, x2
-    SLTI x20, x8, 105
-    LUI x10, 1048548
-    SRL x16, x18, x8
-    AUIPC x26, 22
-    AND x2, x16, x24
-    XOR x16, x8, x24
-    SLL x0, x3, x24
-    SLT x9, x22, x3
-    SW x28, 1872(x29)
-    ORI x9, x5, 45
-    SRLI x1, x20, 18
-    XOR x20, x29, x3
-    AND x1, x6, x18
-    XOR x22, x3, x2
-    SRA x9, x16, x17
-    SLTIU x2, x11, 62
-    SLTIU x7, x25, -136
-    SRL x13, x8, x8
-    SLLI x13, x23, 22
-    SRAI x3, x22, 19
-    ADD x27, x20, x8
-    ORI x20, x30, 33
-    BEQ x24, x15, 28
-    SLTU x27, x23, x11
-    AND x30, x5, x0
-    ANDI x19, x4, -161
-    SLL x26, x25, x23
-    SUB x7, x24, x6
-    SRA x29, x5, x6
-    AND x13, x11, x27
-    SRL x29, x10, x30
-    SRA x1, x28, x5
-    SRA x7, x20, x16
-    ANDI x25, x2, -5
-    SLL x21, x28, x28
-    SUB x0, x29, x7
-    LUI x14, 1048556
-    SW x24, 1128(x29)
-    SLTI x3, x14, -65
-    SRL x10, x7, x9
-    XOR x29, x20, x30
-    XORI x22, x19, -160
-    SLTI x26, x27, 191
-    AND x6, x31, x22
-    XOR x23, x0, x15
-    XORI x25, x15, 183
-    SLL x24, x13, x26
-    SLT x2, x11, x24
-    SRL x31, x23, x0
-    SRLI x1, x17, 30
-    SRAI x22, x20, 13
-    SUB x6, x11, x15
-    SLL x17, x24, x26
-    XOR x3, x11, x30
-    AND x4, x12, x5
-    LUI x1, 1048565
-    ADD x30, x8, x8
-    XOR x26, x29, x30
-    ADD x24, x24, x23
-    OR x8, x10, x18
-    JAL x30, 12
-    SRA x27, x23, x9
-    SRL x6, x8, x30
-    SLL x17, x16, x6
-    SLT x15, x10, x28
-    SRLI x22, x31, 12
-    SRAI x11, x22, 17
-    SUB x5, x6, x5
-    ORI x20, x25, 9
-    ORI x26, x12, -67
-    XORI x25, x10, -91
-    LUI x17, 1048566
-    SLL x25, x1, x19
-    SRL x2, x1, x12
-    SH x0, 722(x29)
-    SLTI x22, x21, 20
-    XOR x3, x7, x0
-    XOR x27, x26, x23
-    SLLI x28, x26, 13
-    XORI x18, x15, -174
-    SLTI x5, x13, -91
-    SLTIU x22, x13, 58
-    XORI x19, x26, 86
-    ORI x9, x26, -96
-    XOR x15, x5, x22
-    SLL x23, x5, x11
-    OR x26, x29, x30
-    SLTU x23, x24, x2
-    SLTIU x25, x16, 174
-    SLT x9, x18, x24
-    XORI x31, x13, 92
+    SLTIU x20, x2, -84
+    ORI x16, x28, 180
+    SRA x27, x26, x12
+    OR x21, x26, x6
+    ADD x17, x18, x20
+    SLT x22, x24, x16
+    ORI x16, x28, -61
+    ADD x19, x16, x31
+    XORI x29, x16, 70
+    LUI x0, 10
+    JAL x9, 12
+    ADD x4, x1, x23
+    ADDI x17, x3, -52
+    LUI x16, 18
+    SRL x22, x16, x24
+    SLTIU x29, x18, 182
+    LW x4, 196(x5)
+    SRL x20, x7, x10
+    SRL x12, x28, x16
+    ANDI x16, x6, -59
+    SUB x6, x0, x13
+    XOR x27, x4, x19
+    SUB x22, x25, x2
+    SLLI x17, x28, 25
+    SLL x8, x18, x3
+    LUI x4, 15
+    SRL x0, x24, x11
+    SLLI x0, x27, 13
+    SLTI x26, x0, -55
+    ORI x22, x1, 177
+    XORI x24, x8, -19
+    XOR x29, x25, x4
+    SLTU x14, x26, x21
+    SRLI x23, x2, 1
+    SUB x25, x0, x25
+    SUB x4, x4, x12
+    AND x31, x9, x4
+    SRA x11, x5, x6
+    XORI x14, x0, -1
+    XORI x14, x1, 55
+    SRLI x24, x12, 31
+    SRAI x12, x21, 28
+    SLTU x30, x22, x26
+    ANDI x2, x18, 33
+    SRL x22, x15, x10
+    XORI x11, x25, -53
+    AUIPC x20, 0
+    ADDI x20, x20, 8
+    JALR x12, 36(x20)
+    ANDI x2, x14, 189
+    SLTI x19, x13, 105
+    ADDI x21, x26, -196
+    SUB x11, x12, x3
+    XORI x21, x18, -13
+    ORI x7, x20, -115
+    SLTIU x23, x4, -113
+    XORI x1, x23, -122
+    LUI x14, 1048568
+    XORI x5, x5, 67
+    XOR x4, x0, x13
+    SLTI x12, x31, -108
+    SRAI x13, x24, 14
+    SRL x1, x30, x9
+    SLLI x31, x1, 30
+    SRAI x14, x7, 6
+    SRLI x14, x6, 25
+    ADDI x28, x15, 41
+    ORI x10, x7, 84
+    SRA x4, x2, x27
+    XORI x5, x25, 138
+    OR x8, x25, x18
+    ADDI x17, x4, 177
+    SRAI x12, x5, 19
+    LUI x1, 524304
+    ADDI x1, x1, 256
+    LH x16, 194(x1)
+    SRA x15, x13, x0
+    ORI x28, x30, -35
+    SLTU x29, x8, x22
+    ORI x6, x12, 172
+    SLL x16, x2, x30
+    SLT x7, x13, x13
+    OR x21, x0, x8
+    SRA x0, x14, x31
+    SLTU x16, x16, x30
+    ADDI x21, x12, -82
+    SUB x3, x26, x8
+    AUIPC x19, 0
+    ADDI x19, x19, 8
+    JALR x5, 4(x19)
+    ADDI x13, x17, -36
+    ANDI x7, x28, -25
+    XOR x25, x27, x20
+    ANDI x19, x13, -103
+    SRL x9, x9, x24
+    SLT x16, x30, x28
+    ORI x29, x0, 148
+    ANDI x5, x21, -49
+    SW x10, 484(x1)
+    ORI x5, x3, -47
+    ADDI x9, x28, 147
+    ADD x0, x6, x18
+    SRL x15, x29, x7
+    XORI x13, x29, 91
+    ANDI x4, x11, 158
+    SLLI x17, x4, 8
+    ANDI x7, x23, -109
+    SRLI x14, x25, 28
+    ADDI x25, x30, -102
+    SLL x6, x31, x24
+    SLT x10, x8, x26
+    ANDI x15, x29, 26
+    SRA x15, x29, x0
+    SLTIU x11, x6, 1
+    LUI x7, 1048575
+    ORI x15, x26, -44
+    ADDI x15, x15, -54
+    AUIPC x9, 0
+    LUI x19, 26
+    AUIPC x21, 0
+    ADDI x21, x21, 8
+    JALR x20, 32(x21)
+    AND x29, x19, x0
+    SUB x23, x8, x5
+    SLLI x17, x19, 26
+    SRL x22, x22, x16
+    XOR x6, x11, x28
+    OR x6, x20, x28
+    LUI x20, 44
+    SRA x27, x26, x10
+    ANDI x24, x25, 172
+    SRLI x15, x1, 2
+    AUIPC x10, 1048561
+    ADDI x21, x11, -68
+    SRAI x23, x7, 19
+    AND x26, x5, x30
+    XORI x11, x4, 44
+    SLTIU x20, x5, 14
+    XORI x14, x3, 162
+    SRA x29, x15, x9
+    SLLI x27, x14, 21
+    ORI x7, x3, 189
+    SUB x6, x9, x25
+    LB x13, 165(x1)
+    SLT x28, x25, x22
+    OR x5, x13, x11
+    SUB x0, x27, x6
+    ANDI x28, x16, 42
+    OR x5, x12, x4
+    AUIPC x28, 3
+    SLTI x29, x19, -55
+    ADD x5, x22, x24
+    SLTI x6, x18, -105
+    ADDI x27, x12, -100
+    SRLI x5, x0, 5
+    XOR x14, x26, x22
+    SLTI x18, x7, 144
+    SRA x28, x29, x27
+    OR x24, x7, x24
+    LUI x24, 1048575
+    SRA x19, x19, x21
+    JAL x29, 24
+    ORI x12, x22, 154
+    ADD x24, x11, x15
+    SRLI x5, x21, 3
+    SLLI x23, x4, 15
+    SUB x17, x15, x12
+    ADD x18, x5, x18
+    SLTI x5, x22, 93
+    ANDI x3, x29, 192
+    SRL x28, x2, x4
+    SLT x22, x18, x28
+    SRAI x5, x17, 2
+    SRL x28, x15, x12
+    SUB x3, x20, x24
+    SRL x24, x0, x0
+    ADDI x17, x6, 57
+    SRLI x15, x10, 3
+    SRAI x31, x5, 21
+    SH x11, 930(x1)
+    ADD x17, x23, x28
+    ADD x23, x18, x9
+    SLTU x1, x12, x13
+    SRA x16, x4, x21
+    OR x15, x16, x28
+    AUIPC x8, 7
+    LUI x29, 1048567
+    LUI x5, 1048566
+    SLL x17, x0, x27
+    SRLI x27, x24, 5
+    SRL x28, x24, x7
+    SLTIU x7, x24, 93
+    SRLI x17, x15, 7
+    SLTI x10, x28, 37
+    SRAI x24, x25, 11
+    ADD x24, x8, x26
+    ADDI x3, x9, -183
+    JAL x26, 12
+    LUI x14, 1048573
+    SLTU x22, x7, x9
+    XORI x6, x5, 56
+    SLL x24, x10, x27
+    ORI x17, x0, 56
+    SUB x23, x10, x4
+    ANDI x1, x1, -80
+    SLLI x13, x13, 2
+    OR x24, x12, x13
+    LUI x30, 524304
+    ADDI x30, x30, 256
+    SB x30, 1559(x30)
+    SLT x3, x29, x19
+    SUB x29, x7, x20
+    ANDI x4, x6, 15
+    LUI x17, 12
+    SLLI x4, x22, 26
+    SLTIU x26, x21, -195
+    JAL x9, 4
+    XOR x24, x1, x16
+    LUI x22, 1048547
+    XOR x22, x9, x8
+    ADD x24, x10, x29
+    LHU x0, 194(x30)
+    OR x10, x7, x5
+    ADDI x30, x18, 101
+    ADDI x19, x2, 25
+    AUIPC x26, 0
+    ADDI x26, x26, 8
+    JALR x28, 12(x26)
+    SLTI x4, x12, 30
+    ADD x25, x14, x5
+    ADDI x24, x29, 179
+    LUI x21, 4
+    XOR x8, x25, x8
+    XOR x9, x8, x17
+    AUIPC x28, 1048559
+    SRAI x19, x20, 20
+    AUIPC x6, 0
+    LUI x13, 524304
+    ADDI x13, x13, 256
+    LB x28, 192(x13)
+    SLT x23, x19, x21
+    SLTI x26, x20, 173
+    SLLI x16, x12, 28
+    SRAI x2, x20, 26
+    SLLI x23, x30, 8
+    SLLI x12, x28, 20
+    SRA x31, x16, x14
+    ADDI x18, x8, -182
+    SRLI x29, x10, 8
+    ADD x0, x11, x1
+    AUIPC x10, 1048570
+    LUI x17, 1048575
+    SRAI x21, x30, 27
+    XORI x8, x1, 193
+    ORI x23, x11, -155
+    AUIPC x27, 1048573
+    SLT x27, x6, x2
+    SRAI x9, x17, 19
+    SRAI x27, x0, 9
+    ANDI x12, x9, -69
+    ADD x13, x5, x1
+    SRL x27, x12, x6
+    AND x21, x6, x13
+    SRL x25, x17, x18
+    JAL x1, 4
+    ANDI x23, x21, 178
+    SLTI x1, x28, 170
+    XORI x8, x29, -52
+    LUI x1, 1048567
+    SLTU x20, x2, x30
+    SLT x4, x22, x15
+    XORI x4, x20, -195
+    XOR x15, x4, x1
+    ANDI x30, x29, 94
+    SLTU x24, x28, x29
+    SRA x22, x24, x28
+    SLLI x30, x1, 10
+    ADDI x11, x18, 160
+    SRA x24, x20, x4
+    SRLI x23, x0, 9
+    ADD x17, x15, x17
+    LUI x22, 524304
+    ADDI x22, x22, 256
+    SH x15, 630(x22)
+    SLL x31, x28, x23
+    LUI x9, 13
+    SLL x19, x21, x10
+    ADDI x10, x22, -131
+    SUB x2, x23, x27
+    ADDI x1, x11, -185
+    SLTU x8, x13, x28
+    SLTU x19, x7, x15
+    AUIPC x18, 7
+    SRAI x9, x25, 3
+    SLLI x17, x16, 7
+    AUIPC x27, 7
+    ANDI x3, x30, -127
+    SRAI x7, x4, 24
+    LUI x0, 1048570
+    SRL x27, x6, x15
+    LUI x31, 4
+    XORI x10, x3, 83
+    SLTU x7, x23, x7
+    SLTU x10, x2, x13
+    SLTIU x9, x5, -153
+    SRA x11, x10, x20
+    BEQ x16, x26, 24
+    SLT x27, x16, x0
+    OR x4, x19, x4
+    SLTIU x15, x1, -88
+    LUI x21, 19
+    AUIPC x16, 1048572
+    SRA x30, x12, x26
+    ADDI x11, x2, 137
+    AND x20, x11, x18
+    SRAI x29, x2, 26
+    ADDI x16, x28, -20
+    SLT x5, x22, x30
+    LUI x17, 4
+    SH x9, 1882(x22)
+    OR x5, x4, x8
+    SRAI x4, x2, 7
+    SRAI x10, x18, 24
+    SLT x13, x1, x18
+    AND x0, x22, x25
+    AUIPC x24, 1
+    JAL x27, 36
+    ANDI x4, x23, 179
+    SLTI x17, x7, 99
+    XOR x29, x11, x5
+    ADDI x20, x8, 172
+    AUIPC x12, 1048554
+    AUIPC x7, 1048573
+    SLT x24, x23, x19
+    SLLI x9, x28, 0
+    ADDI x29, x30, 5
+    SLL x16, x29, x26
+    OR x5, x30, x14
+    ADD x20, x23, x21
+    XORI x5, x1, 4
+    AND x12, x28, x29
+    SUB x4, x10, x27
+    SLL x30, x5, x6
+    SLTI x30, x27, -28
+    SRLI x19, x24, 21
+    SLTIU x4, x9, 26
+    SRL x10, x19, x10
+    ADD x31, x1, x19
+    SRL x5, x2, x19
+    SLLI x26, x26, 26
+    XOR x30, x1, x16
+    ORI x27, x26, -151
+    AUIPC x9, 19
+    LUI x21, 14
+    LHU x14, 58(x22)
+    AND x15, x31, x4
+    LUI x20, 1048573
+    SRA x27, x26, x28
+    AUIPC x16, 5
+    SRAI x21, x1, 18
+    SLT x24, x18, x3
+    SLL x31, x21, x31
+    SLL x29, x28, x18
+    SRAI x0, x26, 22
+    AND x11, x1, x9
+    SLTU x13, x16, x12
+    SLTIU x31, x29, -70
+    LUI x28, 7
+    LUI x7, 1048563
+    SRA x23, x27, x30
+    SLLI x1, x24, 6
+    OR x0, x3, x16
+    SLL x0, x20, x1
+    SRA x23, x7, x31
+    SLTI x26, x6, 95
+    ADD x13, x28, x31
+    LUI x31, 1048572
+    SLTI x22, x2, -112
+    BEQ x30, x17, 16
+    ADD x16, x8, x30
+    SLLI x21, x25, 16
+    XORI x22, x25, 77
+    SRAI x23, x7, 6
+    SLL x20, x7, x4
+    AUIPC x3, 3
+    LUI x19, 524304
+    ADDI x19, x19, 256
+    LBU x3, 207(x19)
+    XORI x19, x16, 72
+    SRLI x3, x20, 23
+    SLTU x24, x2, x15
+    ADDI x31, x26, 109
+    ANDI x29, x31, 33
+    ANDI x19, x18, 2
+    ADD x19, x4, x7
+    ANDI x19, x16, 184
+    XORI x23, x10, 7
+    SLT x24, x6, x12
+    SLTU x4, x18, x24
+    SLLI x25, x11, 20
+    SLLI x29, x17, 18
+    XOR x18, x27, x21
+    LUI x16, 0
+    SRAI x31, x1, 6
+    JAL x11, 12
+    ANDI x21, x29, -195
+    ORI x18, x8, -72
+    XOR x5, x10, x5
+    ANDI x22, x15, 63
+    OR x3, x1, x7
+    SLTI x3, x5, -127
+    SLTI x29, x27, -194
+    SRA x24, x24, x24
+    SLTIU x15, x15, -58
+    SLTI x23, x1, -194
+    SRL x21, x29, x1
+    SRA x11, x0, x29
+    SUB x18, x14, x4
+    XOR x30, x13, x14
+    LUI x18, 524304
+    ADDI x18, x18, 256
+    SW x9, 1004(x18)
+    SLT x31, x0, x8
+    ADD x4, x10, x11
+    SLL x3, x13, x27
+    XOR x20, x21, x4
+    SLTU x23, x3, x15
+    SRLI x12, x23, 27
+    SLTI x24, x25, -35
+    SRAI x14, x21, 4
+    SLTI x7, x11, -39
+    ANDI x26, x30, 152
+    AUIPC x15, 1048573
+    ANDI x12, x14, -105
+    SRLI x18, x24, 28
+    XORI x17, x6, -17
+    AUIPC x12, 0
+    ADDI x12, x12, 8
+    JALR x0, 12(x12)
+    SRAI x8, x5, 27
+    SLL x29, x4, x9
+    XOR x27, x21, x23
+    SRL x12, x31, x6
+    SRA x7, x23, x25
+    SLTIU x19, x2, 75
+    SRLI x2, x12, 5
+    AUIPC x29, 1048568
+    SRL x24, x11, x5
+    LUI x15, 524304
+    ADDI x15, x15, 256
+    LB x27, 174(x15)
+    SLTIU x23, x2, 148
+    XORI x20, x7, 125
+    AUIPC x8, 9
+    SLLI x26, x29, 31
+    ORI x11, x26, 109
+    ADDI x9, x2, -60
+    SRAI x16, x28, 8
+    SLTIU x12, x26, 37
+    SLLI x0, x25, 29
+    SRAI x30, x26, 24
+    AUIPC x28, 0
+    ADDI x28, x28, 8
+    JALR x3, 32(x28)
+    AND x11, x9, x13
+    LUI x2, 0
+    SLTIU x16, x0, -48
+    ANDI x2, x19, 54
+    SRLI x30, x9, 16
+    SRLI x0, x12, 14
+    ADD x26, x2, x11
+    SUB x16, x1, x20
+    ORI x8, x16, -93
+    SRAI x23, x24, 14
+    SUB x2, x27, x6
+    SRLI x27, x13, 28
+    SRAI x5, x30, 25
+    SLTU x5, x2, x16
+    SH x3, 2036(x15)
+    ANDI x7, x28, -52
+    OR x16, x10, x27
+    SRLI x8, x24, 23
+    SLLI x7, x1, 1
+    SLTI x9, x1, -190
+    AUIPC x2, 1048567
+    ANDI x0, x13, 187
+    ANDI x23, x2, 31
+    ORI x2, x8, -195
+    LUI x29, 1048536
+    XORI x30, x2, -107
+    SLT x24, x26, x6
+    SLTU x22, x15, x0
+    ORI x13, x2, -123
+    SLTIU x27, x29, 199
+    SUB x13, x15, x17
+    ORI x2, x20, 170
+    ADDI x29, x28, -87
+    ADDI x23, x19, -69
+    SLTIU x12, x9, 117
+    ADDI x26, x18, -60
+    AUIPC x17, 2
+    AUIPC x19, 0
+    ADDI x19, x19, 8
+    JALR x15, 16(x19)
+    SRA x7, x15, x24
+    SRAI x9, x21, 10
+    SLTI x17, x7, 156
+    LUI x6, 3
+    SLL x29, x5, x6
+    SRL x0, x28, x18
+    SRL x6, x1, x21
+    SRLI x15, x4, 19
+    AUIPC x12, 15
+    XOR x17, x9, x25
+    ORI x12, x19, -24
+    AND x22, x1, x17
+    SLLI x15, x6, 15
+    OR x18, x23, x30
+    SLTIU x12, x13, -51
+    ANDI x18, x12, 181
+    AND x29, x30, x23
+    ADD x7, x24, x30
+    ADDI x30, x9, 62
+    ADD x25, x27, x10
+    SRA x15, x16, x22
+    OR x29, x29, x8
+    LUI x9, 524304
+    ADDI x9, x9, 256
+    LB x16, 161(x9)
+    SLL x26, x31, x4
+    SUB x6, x16, x3
+    SLL x12, x19, x30
+    LUI x16, 1048574
+    ORI x10, x20, 160
+    SRAI x20, x2, 2
+    ANDI x9, x20, 186
+    ADD x25, x6, x9
+    OR x7, x25, x7
+    SRLI x0, x23, 19
+    ADDI x12, x31, 130
+    XOR x30, x8, x20
+    SLL x1, x15, x28
+    XORI x23, x9, -150
+    AND x1, x1, x31
+    OR x30, x29, x6
+    SLTIU x24, x3, -90
+    SRLI x2, x6, 6
+    OR x2, x18, x27
+    XORI x19, x11, -157
+    SLLI x24, x24, 3
+    XOR x28, x10, x17
+    SLL x29, x28, x11
+    AND x11, x6, x3
+    SRAI x2, x20, 8
+    XOR x19, x17, x16
+    ADD x25, x30, x25
+    SUB x26, x2, x9
+    LUI x29, 1048564
+    SLLI x25, x21, 5
+    AUIPC x12, 7
+    AUIPC x16, 1048571
+    SLTU x18, x7, x29
+    SLLI x19, x11, 28
+    BGEU x17, x2, 20
+    XOR x10, x8, x23
+    SLT x4, x22, x3
+    SLTI x9, x11, 106
+    SRA x22, x18, x29
+    ADDI x15, x2, -71
+    SRAI x16, x23, 27
+    SLTU x20, x14, x21
+    AND x15, x25, x28
+    LUI x19, 1048563
+    AUIPC x8, 2
+    SRAI x16, x13, 11
+    SLT x17, x28, x9
+    AND x16, x21, x0
+    SLTU x7, x17, x17
+    ADDI x20, x18, 132
+    ADDI x4, x4, 128
+    LUI x20, 524304
+    ADDI x20, x20, 256
+    LB x17, 132(x20)
+    AUIPC x7, 6
+    ORI x8, x13, 185
+    OR x15, x14, x7
+    SLTIU x21, x30, -183
+    ORI x21, x15, 83
+    ADD x26, x31, x16
+    SLTU x31, x11, x11
+    XOR x4, x22, x28
+    ORI x22, x24, -55
+    OR x31, x22, x30
+    XOR x18, x14, x21
+    BGEU x15, x7, 36
+    SLTU x11, x17, x7
+    XOR x16, x25, x23
+    SRA x25, x29, x22
+    SLT x22, x14, x30
+    SLT x6, x13, x30
+    SRLI x26, x17, 12
+    SLTIU x7, x31, -38
+    ORI x11, x5, 189
+    ANDI x15, x14, 173
+    ADD x21, x11, x11
+    XOR x7, x11, x14
+    SLLI x0, x21, 8
+    LUI x15, 1048554
+    ANDI x6, x18, 71
+    LB x8, 93(x20)
+    SRA x1, x17, x29
+    ORI x25, x26, 106
+    SRLI x28, x3, 25
+    AUIPC x21, 5
+    SLTU x14, x1, x23
+    ADDI x28, x13, -22
+    SRAI x17, x25, 4
+    ADDI x20, x28, 190
+    ADDI x24, x25, 147
+    LUI x8, 1
+    ADDI x23, x10, -90
+    SLLI x29, x23, 13
+    SLL x27, x6, x11
+    SLTI x5, x7, 94
+    SUB x19, x22, x2
+    XOR x10, x20, x12
+    SRA x22, x14, x13
+    AUIPC x9, 7
+    SLTU x12, x21, x20
+    JAL x11, 20
+    SLT x22, x6, x20
+    ANDI x18, x13, 182
+    SLL x12, x0, x29
+    SLTIU x3, x18, 53
+    SLT x26, x31, x11
+    SLL x0, x29, x6
+    SLTU x24, x29, x13
+    ADD x14, x8, x10
+    SRA x11, x7, x0
+    ADDI x1, x10, 125
+    SLTIU x0, x2, -163
+    SLLI x3, x30, 9
+    OR x8, x30, x13
+    ADDI x22, x23, 74
+    ADD x15, x15, x22
+    ADDI x0, x24, 53
+    SLL x29, x16, x22
+    SLTIU x3, x12, -142
+    SLL x10, x9, x13
+    XORI x5, x11, -43
+    SLL x25, x30, x28
+    OR x0, x1, x20
+    LUI x17, 5
+    XORI x2, x8, 32
+    LUI x10, 524304
+    ADDI x10, x10, 256
+    SB x5, 154(x10)
+    AUIPC x31, 17
+    SUB x22, x20, x27
+    XORI x6, x20, 119
+    SRL x30, x20, x12
+    OR x17, x16, x27
+    SLTI x12, x19, -150
+    ORI x13, x30, 96
+    SUB x4, x0, x30
+    SRAI x15, x2, 29
+    AUIPC x0, 15
+    SRA x28, x11, x31
+    XORI x15, x7, 142
+    SRAI x15, x17, 7
+    SUB x25, x31, x1
+    ADDI x0, x13, 40
+    XORI x11, x12, -178
+    AUIPC x30, 9
+    SRLI x27, x27, 18
+    ANDI x24, x1, 19
+    AUIPC x0, 1048566
+    XORI x1, x14, -17
+    SLTI x8, x27, -180
+    XOR x8, x29, x7
+    LUI x30, 12
+    SLTI x18, x12, -64
+    OR x26, x16, x22
+    ANDI x7, x22, 102
+    SLTU x26, x11, x23
+    SRL x7, x17, x6
+    ORI x23, x3, 87
+    SLTU x20, x6, x12
+    AUIPC x20, 0
+    ADDI x20, x20, 8
+    JALR x11, 32(x20)
+    AND x10, x10, x2
+    AUIPC x16, 1048574
+    SRL x27, x1, x20
+    SLTIU x22, x27, 170
+    LUI x1, 4
+    SLTI x1, x26, -125
+    SRAI x16, x26, 6
+    SLLI x0, x7, 8
+    SRLI x14, x26, 27
+    ANDI x5, x17, 14
+    SB x8, 1747(x10)
+    SLT x23, x0, x21
+    SRL x18, x21, x22
+    ANDI x8, x30, -105
+    XOR x23, x14, x5
+    ORI x5, x16, -92
+    XOR x22, x22, x26
+    SLTIU x17, x6, -121
+    AND x18, x17, x17
+    SRL x6, x5, x16
+    SLT x31, x11, x9
+    SUB x12, x22, x19
+    ORI x13, x9, 125
+    SLL x19, x0, x29
+    SRAI x0, x12, 26
+    SRA x19, x25, x14
+    SRA x13, x0, x5
+    ADD x29, x12, x14
+    AND x12, x24, x29
+    ADDI x19, x2, 114
+    BGE x27, x3, 20
+    SH x3, 1032(x10)
+    SRA x18, x22, x20
+    XORI x19, x9, -55
+    AUIPC x19, 1048569
+    ANDI x14, x30, 7
+    XOR x26, x30, x30
+    SRA x24, x18, x14
+    SLTIU x18, x2, 63
+    LUI x11, 1048569
+    SRLI x31, x24, 5
+    ORI x5, x14, -8
+    SRLI x16, x24, 16
+    ANDI x27, x26, -32
+    SLT x10, x27, x14
+    LUI x30, 14
+    AUIPC x31, 1048567
+    SLTIU x19, x22, 31
+    ANDI x22, x26, -4
+    ORI x25, x5, -153
+    SRLI x30, x28, 17
+    SRAI x25, x9, 24
+    ADDI x2, x8, -144
+    XOR x9, x21, x30
+    AUIPC x24, 0
+    ADDI x24, x24, 8
+    JALR x15, 40(x24)
+    XOR x28, x4, x20
+    SLT x13, x16, x5
+    LUI x3, 1048558
+    SLT x16, x1, x15
+    XORI x3, x0, -16
+    ANDI x23, x22, 146
+    SRL x21, x26, x6
+    SLL x23, x2, x16
+    ORI x4, x7, 165
+    SRLI x5, x15, 18
+    SLTI x20, x11, -117
+    OR x14, x17, x22
+    SRAI x9, x14, 23
+    AUIPC x31, 22
+    AUIPC x10, 12
+    SLTI x11, x5, 95
+    XOR x10, x23, x8
+    AUIPC x22, 1048556
+    SLL x30, x13, x9
+    ADDI x18, x22, -29
+    SLTIU x3, x25, 41
+    SRA x8, x25, x25
+    SLTI x12, x11, 160
+    ADDI x31, x20, 99
+    SB x28, 1977(x10)
+    SLL x19, x9, x21
+    SLTU x30, x12, x29
+    XOR x31, x27, x8
+    SLLI x12, x1, 31
+    SRAI x15, x11, 11
+    AUIPC x13, 1048570
+    OR x14, x27, x17
+    SLTIU x9, x13, -121
+    SLTIU x2, x16, -92
+    SRAI x13, x13, 23
+    AUIPC x5, 1048563
+    LUI x1, 1
+    SLT x19, x2, x12
+    SLT x14, x13, x28
+    ORI x5, x12, 21
+    LUI x24, 1048566
+    AUIPC x7, 0
+    SRAI x25, x27, 26
+    XOR x18, x10, x18
+    SUB x2, x24, x25
+    ADDI x27, x24, 183
+    SRA x14, x15, x5
+    SLTU x19, x10, x16
+    OR x2, x16, x9
+    OR x15, x15, x16
+    XOR x12, x3, x19
+    SLTU x20, x29, x12
+    ADD x19, x23, x0
+    ADDI x18, x6, -125
+    SLL x25, x16, x12
+    BLT x25, x2, 12
+    SLTI x4, x14, -57
+    SLL x12, x9, x15
+    SUB x18, x24, x16
+    LHU x19, 8(x10)
+    SLL x4, x25, x31
+    SUB x21, x13, x21
+    XOR x27, x11, x28
+    SRAI x8, x25, 31
+    ORI x26, x8, -52
+    SRLI x8, x23, 29
+    SRLI x31, x31, 24
+    SLTIU x13, x3, -141
+    ADD x16, x24, x23
+    SLTU x16, x28, x13
+    ANDI x23, x1, 99
+    SRA x30, x12, x24
+    SRL x1, x0, x4
+    AND x16, x29, x4
+    SRLI x11, x15, 1
+    AUIPC x18, 1048564
+    ADDI x1, x19, 36
+    SLT x10, x3, x9
+    SRL x22, x21, x25
+    SRA x18, x17, x25
+    SRAI x21, x13, 5
+    JAL x24, 24
+    SLTIU x24, x31, -189
+    SLLI x1, x14, 25
+    SUB x31, x15, x22
+    LUI x16, 1048570
+    SRL x21, x14, x24
+    SLLI x26, x13, 7
+    SRLI x25, x12, 1
+    XORI x15, x29, 54
+    ORI x26, x12, -96
+    ADDI x31, x10, -53
+    SUB x7, x26, x26
+    SLTI x31, x11, -187
+    SLTI x1, x6, 159
+    LUI x31, 1048572
+    SLT x25, x15, x4
+    SUB x17, x8, x21
+    ADDI x24, x28, -58
+    LHU x22, 188(x10)
+    AND x31, x20, x16
+    SLLI x6, x8, 20
+    LUI x6, 1
+    LUI x20, 1048571
+    SLL x31, x27, x26
+    SLTIU x3, x8, -146
+    XOR x31, x13, x26
+    ADD x22, x19, x16
+    SLTI x29, x26, 45
+    SLTU x0, x8, x13
+    SLTIU x1, x5, -32
+    SLTU x1, x30, x5
+    SLTIU x5, x10, -91
+    SRA x20, x3, x26
+    OR x1, x11, x21
+    AND x9, x7, x10
+    ANDI x13, x10, -105
+    SLLI x18, x13, 13
+    SLTU x9, x25, x19
+    SRLI x2, x24, 21
+    AUIPC x3, 0
+    ADDI x3, x3, 8
+    JALR x17, 28(x3)
+    SLTIU x12, x12, 85
+    AND x30, x18, x2
+    AND x30, x7, x27
+    LUI x8, 16
+    ANDI x2, x2, -178
+    SRA x17, x2, x31
+    SLL x14, x3, x30
+    ANDI x18, x16, -197
+    AUIPC x29, 7
+    AUIPC x14, 7
+    AUIPC x7, 2
+    SLTU x10, x21, x12
+    ADD x16, x3, x10
+    SLTU x0, x17, x7
+    SLTI x30, x0, -22
+    ADDI x17, x20, -155
+    XORI x25, x14, 59
+    ORI x28, x27, 199
+    SLTIU x20, x22, -120
+    SRLI x18, x5, 10
+    SLLI x2, x3, 11
+    ANDI x30, x28, 178
+    SRAI x2, x18, 29
+    ORI x19, x22, 88
+    LHU x0, 74(x10)
+    ADD x19, x0, x25
+    OR x14, x23, x16
+    SRAI x13, x28, 17
+    SRA x11, x27, x30
+    SLT x1, x3, x31
+    SLLI x22, x21, 8
+    XOR x18, x31, x23
+    SUB x13, x5, x2
+    SUB x10, x5, x3
+    ORI x10, x1, -141
+    SRL x8, x27, x15
+    LUI x4, 1048572
+    SRLI x22, x10, 13
+    SUB x11, x26, x1
+    SLLI x9, x30, 22
+    SLL x31, x17, x23
+    AUIPC x26, 1048563
+    ORI x5, x16, -78
+    SLL x13, x12, x4
+    JAL x15, 28
+    SRA x27, x9, x21
+    OR x17, x14, x17
+    SRAI x1, x2, 12
+    AND x14, x18, x23
+    AND x9, x27, x29
+    ADD x27, x21, x19
+    XOR x0, x28, x14
+    ADDI x5, x14, 133
+    SLTIU x17, x26, -68
+    SLL x8, x20, x30
+    SRA x9, x25, x29
+    SLL x23, x10, x9
+    SH x4, 1112(x10)
+    SLT x24, x25, x31
+    SLL x12, x24, x7
+    XORI x25, x20, -84
+    SRAI x22, x21, 8
+    SLTI x31, x29, 183
+    XORI x11, x30, 159
+    XORI x16, x22, 8
+    OR x2, x11, x1
+    SLTI x11, x17, 28
+    SLT x28, x8, x22
+    SLL x11, x28, x29
+    SUB x6, x11, x17
+    SLL x8, x23, x23
+    OR x4, x26, x12
+    SLTI x10, x2, 45
+    AND x19, x0, x25
+    JAL x31, 24
+    ADD x19, x22, x26
+    SLTIU x24, x31, -168
+    LUI x20, 13
+    SRA x13, x31, x26
+    ADDI x6, x4, -161
+    SLL x3, x25, x28
+    ANDI x2, x22, -1
+    SLT x0, x12, x23
+    SUB x4, x19, x14
+    SLT x19, x21, x22
+    SLT x15, x21, x23
+    ADD x24, x14, x17
+    SLTU x29, x28, x20
+    XORI x9, x11, -130
+    AND x16, x10, x25
+    ADDI x7, x24, 168
+    OR x30, x1, x25
+    SLL x25, x16, x7
+    ADDI x6, x17, 36
+    SW x24, 316(x10)
+    SLTIU x12, x0, 10
+    XOR x14, x16, x10
+    SRLI x0, x3, 15
+    JAL x4, 40
+    ANDI x9, x17, 103
+    SLTI x19, x23, 114
+    OR x21, x22, x9
+    ADD x15, x11, x8
+    SRA x30, x29, x10
+    SRA x3, x20, x17
+    XOR x16, x19, x15
+    AUIPC x18, 1048571
+    AND x26, x10, x26
+    AND x5, x17, x12
+    ORI x1, x1, 64
+    SRLI x2, x25, 16
+    SLTIU x30, x11, 193
+    SRL x16, x14, x10
+    LW x17, 196(x10)
+    SRA x6, x24, x31
+    OR x25, x7, x30
+    SLTI x1, x12, 95
+    SRA x2, x18, x20
+    SLTIU x1, x18, -197
+    SLT x14, x8, x18
+    ANDI x29, x23, -138
+    LUI x2, 1
+    ADD x8, x4, x10
+    LUI x21, 1048560
+    SLTI x28, x31, 91
+    SLL x18, x24, x11
+    SLTU x4, x11, x12
+    ANDI x22, x24, 110
+    SLLI x1, x11, 3
+    JAL x30, 8
+    SLTI x1, x15, 134
+    SLTI x31, x23, -194
+    SRLI x8, x1, 27
+    SLLI x14, x21, 4
+    SRA x14, x11, x1
+    SLTIU x22, x25, 86
+    AND x0, x2, x12
+    XORI x4, x19, 29
+    SLTI x9, x29, -148
+    SLT x12, x18, x5
+    SB x9, 1703(x10)
+    SLL x22, x26, x18
+    AUIPC x3, 14
+    SLT x28, x13, x5
+    SLT x10, x13, x17
+    SLTI x0, x23, 1
+    OR x13, x31, x19
+    LUI x14, 1048549
+    SRL x4, x18, x16
+    LUI x19, 1048572
+    AUIPC x9, 0
+    ADDI x9, x9, 8
+    JALR x8, 28(x9)
+    SLTIU x29, x10, -146
+    SRA x28, x17, x7
+    SLTU x16, x25, x20
+    ADDI x7, x5, -9
+    SUB x24, x27, x2
+    LUI x3, 1048572
+    ORI x31, x31, 130
+    SLTU x7, x23, x7
+    SLT x10, x14, x18
+    ANDI x14, x18, -187
+    OR x1, x22, x10
+    SLTI x30, x27, -95
+    ADDI x4, x2, -32
+    ANDI x3, x14, 78
+    OR x9, x25, x18
+    XORI x9, x24, -108
+    SLTI x17, x23, -21
+    LBU x16, 485(x10)
+    AUIPC x30, 1048555
+    AUIPC x4, 1048559
+    SLLI x21, x13, 12
+    SRAI x28, x14, 3
+    SRAI x24, x15, 5
+    AND x30, x13, x31
+    OR x9, x5, x0
+    SUB x29, x21, x31
+    SLLI x4, x22, 1
+    SRA x9, x13, x4
+    XOR x18, x1, x14
+    SRL x12, x23, x27
+    SLTI x4, x14, 63
+    LUI x4, 4
+    OR x6, x22, x26
+    SRA x2, x13, x22
+    BGEU x17, x19, 4
+    SRL x0, x24, x14
+    SLTI x26, x25, -79
+    SLLI x3, x8, 21
+    SRLI x6, x2, 15
+    SH x4, 1570(x10)
+    SRLI x6, x5, 31
+    SRL x17, x10, x14
+    SRLI x9, x19, 29
+    SRLI x3, x17, 6
+    SUB x31, x5, x0
+    OR x15, x0, x1
+    SLLI x7, x13, 28
+    AUIPC x22, 6
+    SRLI x15, x4, 31
+    SLT x26, x29, x3
+    AND x14, x16, x11
+    ORI x7, x27, 153
+    SRL x6, x25, x1
+    AUIPC x25, 1048572
+    SLLI x24, x13, 30
+    SRA x14, x15, x25
+    AUIPC x27, 4
+    SRLI x20, x5, 25
+    ANDI x5, x13, 120
+    SLL x5, x7, x17
+    ORI x10, x19, -175
+    ORI x30, x29, -37
+    SRL x23, x24, x2
+    SRAI x14, x23, 12
+    XOR x8, x28, x17
+    SRL x1, x21, x15
+    ADD x30, x5, x11
+    ORI x13, x7, 0
+    AUIPC x10, 0
+    ADDI x10, x10, 8
+    JALR x6, 4(x10)
+    SLLI x25, x0, 11
+    SRLI x31, x22, 17
+    OR x26, x27, x11
+    ADD x21, x12, x2
+    ANDI x6, x30, -200
+    AUIPC x13, 20
+    SLL x2, x24, x8
+    SRA x29, x26, x19
+    XORI x9, x21, 42
+    XORI x12, x24, -137
+    SLTI x7, x31, -156
+    XORI x30, x14, 72
+    SRA x12, x15, x25
+    SLTIU x4, x24, 107
+    SRA x12, x10, x21
+    SRAI x19, x14, 1
+    SRAI x25, x7, 18
+    XORI x6, x9, -112
+    SLTI x11, x6, -188
+    LUI x10, 524304
+    ADDI x10, x10, 256
+    SB x26, 1924(x10)
+    SLTI x28, x3, 106
+    SLT x22, x12, x15
+    OR x2, x13, x21
+    ANDI x4, x28, 63
+    SRAI x23, x28, 21
+    SLT x19, x23, x10
+    SRA x20, x4, x2
+    ORI x0, x18, -19
+    ADDI x31, x23, -74
+    SLL x8, x30, x8
+    SUB x23, x29, x24
+    XORI x27, x22, -38
+    SRAI x8, x23, 17
+    AUIPC x30, 1048551
+    OR x4, x19, x28
+    ORI x11, x9, -151
+    ORI x22, x21, -82
+    ADDI x4, x8, -81
+    JAL x21, 20
+    LUI x23, 1048575
+    SLTI x28, x28, 121
+    AUIPC x22, 1048573
+    AND x6, x21, x1
+    XORI x29, x3, -21
+    ADDI x30, x8, -103
+    SLL x16, x11, x3
+    OR x31, x20, x23
+    SLTIU x31, x16, 69
+    ORI x3, x21, 33
+    SLTU x23, x13, x13
+    SRAI x25, x9, 21
+    XOR x30, x1, x25
+    LBU x25, 151(x10)
+    SRAI x31, x12, 25
+    LUI x13, 1048573
+    SLL x3, x18, x23
+    AND x0, x0, x13
+    ADDI x11, x9, -140
+    ORI x16, x25, 47
+    SLTI x4, x29, 131
+    SLLI x19, x21, 27
+    SLTIU x23, x5, 9
+    OR x31, x31, x11
+    SLT x24, x25, x22
+    XOR x27, x18, x22
+    SRL x2, x27, x8
+    LUI x31, 1
+    SRLI x29, x12, 3
+    ADD x25, x13, x25
+    SLTIU x17, x25, -90
+    XOR x18, x11, x21
+    OR x6, x25, x4
+    SLTIU x0, x7, 51
+    SRL x2, x13, x6
+    SLT x9, x20, x19
+    ADD x1, x8, x3
+    SRLI x3, x28, 27
+    SRL x16, x2, x19
+    SRL x8, x19, x21
+    XOR x18, x3, x17
+    LUI x19, 1048575
+    AUIPC x8, 0
+    ADDI x8, x8, 8
+    JALR x31, 40(x8)
+    SLTI x29, x11, 43
+    LUI x5, 6
+    LUI x22, 1
+    SLLI x26, x13, 3
+    XOR x17, x30, x16
+    SUB x12, x31, x22
+    ADDI x20, x1, 49
+    ORI x12, x9, -105
+    SLTU x5, x20, x4
+    SLTU x31, x31, x14
+    SRAI x3, x21, 25
+    ORI x14, x17, 195
+    SLLI x6, x10, 15
+    SLTIU x11, x28, 33
+    LBU x18, 35(x10)
+    SUB x26, x7, x21
+    SRL x0, x24, x3
+    ANDI x29, x24, 173
+    LUI x30, 1048567
+    SLT x6, x22, x23
+    SRLI x12, x30, 19
+    XOR x27, x4, x4
+    OR x26, x30, x5
+    ORI x9, x22, -142
+    AND x29, x19, x22
+    SRAI x18, x30, 18
+    AND x8, x9, x16
+    SLLI x29, x23, 27
+    ANDI x22, x23, 104
+    XOR x26, x12, x17
+    JAL x29, 36
+    OR x3, x19, x0
+    SRLI x17, x28, 23
+    ADDI x26, x8, 143
+    SRAI x30, x9, 17
+    ADD x4, x9, x31
+    SLTI x27, x21, -78
+    SRA x14, x5, x24
+    SLTIU x28, x9, 129
+    AND x25, x30, x10
+    SRL x29, x21, x23
+    XORI x0, x6, -180
+    SLTU x14, x11, x11
+    ADD x25, x0, x2
+    SLTU x21, x2, x11
+    SRA x31, x1, x15
+    SLL x30, x27, x5
+    SLTIU x29, x13, 18
+    XORI x10, x4, -168
+    OR x31, x17, x0
+    OR x24, x4, x24
+    SLTIU x0, x20, 18
+    SRLI x23, x9, 21
+    SB x29, 1072(x10)
+    SRA x1, x11, x9
+    XOR x31, x26, x0
+    LUI x31, 1048569
+    SUB x9, x3, x17
+    LUI x21, 24
+    SUB x17, x11, x15
+    ORI x19, x3, -118
+    SLLI x8, x4, 11
+    SRA x27, x28, x16
+    SRA x19, x22, x7
+    SUB x25, x25, x9
+    OR x17, x21, x18
+    SLTU x13, x1, x3
+    SLLI x24, x18, 20
+    AUIPC x3, 1048557
+    SRL x29, x11, x17
+    SLTU x31, x10, x12
+    SLTU x15, x7, x9
+    SRA x31, x7, x9
+    ADD x12, x12, x1
+    LUI x11, 1048572
+    ADDI x16, x15, -163
+    XORI x27, x4, 162
+    XOR x21, x31, x4
+    SLTI x20, x17, -158
+    SLTU x19, x15, x8
+    XORI x5, x28, 19
+    ORI x25, x26, 181
+    SLT x1, x8, x11
+    SRL x8, x29, x13
+    SLTU x16, x29, x14
+    OR x26, x19, x8
+    BGE x29, x21, 4
+    OR x18, x7, x21
+    XORI x28, x0, -109
+    SLLI x31, x12, 23
+    AND x0, x10, x10
+    ORI x24, x0, 96
+    XOR x1, x16, x20
+    SB x24, 347(x10)
+    AND x0, x30, x25
+    OR x23, x27, x6
+    SLT x8, x12, x4
+    OR x24, x21, x3
+    XOR x20, x25, x8
+    SLTI x13, x11, 32
+    SRAI x10, x0, 21
+    SRL x15, x21, x0
+    ADD x5, x14, x25
+    SLT x20, x29, x8
+    SLTU x0, x7, x7
+    BEQ x19, x18, 36
+    SLTIU x25, x4, -189
+    SLL x11, x19, x3
+    SLTIU x6, x5, 68
+    SUB x21, x30, x25
+    SLTU x29, x9, x28
+    SRL x15, x19, x29
+    ADDI x1, x8, -197
+    SRL x3, x4, x12
+    ADD x14, x25, x30
+    XORI x11, x7, -19
+    SRLI x19, x3, 23
+    LW x9, 252(x10)
+    OR x8, x7, x2
+    ADD x26, x18, x15
+    ADDI x5, x21, 160
+    SLL x21, x21, x9
+    AUIPC x18, 0
+    ADDI x18, x18, 8
+    JALR x10, 28(x18)
+    ADD x8, x6, x0
+    SLT x22, x25, x7
+    ANDI x29, x0, 126
+    OR x31, x9, x13
+    SRLI x17, x10, 6
+    ORI x24, x3, 194
+    XORI x21, x2, -79
+    SLTI x2, x30, 101
+    LUI x22, 9
+    SLTI x4, x3, 7
+    AUIPC x12, 10
+    ANDI x17, x15, 143
+    XOR x22, x5, x27
+    SLT x12, x5, x1
+    ORI x20, x4, -20
+    AUIPC x18, 14
+    SLTIU x5, x10, -83
+    SUB x22, x24, x0
+    OR x18, x4, x8
+    AUIPC x4, 13
+    XORI x0, x25, 55
+    SRA x5, x13, x2
+    ANDI x22, x13, -181
+    ORI x22, x20, -77
+    ANDI x21, x30, 76
+    SLTI x4, x28, 126
+    LUI x26, 524304
+    ADDI x26, x26, 256
+    LB x11, 36(x26)
+    OR x29, x14, x0
+    SRLI x30, x27, 12
+    SRLI x1, x23, 7
+    ADDI x9, x5, -13
+    ORI x27, x12, 97
+    OR x0, x1, x14
+    ADD x20, x12, x19
+    OR x14, x18, x29
+    OR x2, x6, x12
+    OR x10, x8, x3
+    SLLI x10, x16, 2
+    SLTU x20, x0, x6
+    LUI x23, 1048569
+    SLTU x25, x3, x24
+    ANDI x16, x31, -113
+    AND x27, x19, x21
+    XOR x22, x27, x1
+    SLLI x29, x4, 14
+    SRLI x24, x5, 0
+    ANDI x30, x25, -123
+    SUB x15, x3, x30
+    SLLI x28, x30, 24
+    SLTI x5, x31, 185
+    SLL x17, x7, x13
+    LUI x2, 15
+    SRAI x7, x0, 19
+    BEQ x6, x12, 16
+    XOR x17, x11, x26
+    SRA x10, x0, x0
+    ORI x8, x4, 136
+    XOR x4, x10, x19
+    ORI x10, x26, 101
+    SUB x19, x18, x13
+    SLT x0, x15, x3
+    SLTU x22, x31, x15
+    SLTU x10, x10, x31
+    OR x28, x29, x9
+    AUIPC x3, 2
+    XORI x14, x29, -82
+    SLLI x20, x3, 22
+    SLT x7, x12, x13
+    SLLI x12, x25, 25
+    SRLI x17, x4, 28
+    AUIPC x19, 11
+    SRL x13, x16, x21
+    SB x5, 634(x26)
+    SLLI x6, x29, 6
+    LUI x12, 20
+    SLTI x10, x28, -163
+    SLTIU x7, x15, 38
+    SRAI x18, x7, 0
+    XORI x22, x9, 47
+    ADDI x17, x31, -30
+    ADDI x2, x5, -199
+    SLLI x31, x5, 4
+    ORI x10, x20, 185
+    ADDI x31, x16, 78
+    SLLI x4, x16, 14
+    LUI x6, 8
+    SRA x14, x23, x7
+    SRA x3, x2, x13
+    SLTI x20, x1, 89
+    SRL x14, x25, x28
+    LUI x5, 1048555
+    OR x15, x22, x20
+    ADDI x20, x7, -117
+    SLLI x17, x10, 24
+    BGE x15, x27, 32
+    SRLI x6, x14, 4
+    SW x18, 1728(x26)
+    ADDI x20, x16, -102
+    XORI x30, x9, -30
+    ANDI x17, x27, -82
+    ORI x4, x31, -54
+    SRL x0, x22, x5
+    OR x7, x13, x11
+    SLTU x14, x20, x31
+    SRLI x31, x24, 22
+    ADDI x13, x4, -122
+    ADD x12, x18, x2
+    XORI x11, x21, 69
+    SLLI x21, x7, 21
+    SLLI x19, x19, 28
+    XORI x20, x9, 161
+    SLL x17, x3, x2
+    SLLI x16, x9, 30
+    SLTIU x2, x17, 158
+    SRA x3, x20, x13
+    BNE x18, x19, 4
+    XORI x3, x25, 149
+    SLL x11, x13, x1
+    XOR x30, x22, x17
+    SUB x6, x4, x24
+    XOR x21, x4, x11
+    XORI x9, x31, -92
+    SLT x10, x28, x8
+    SLL x31, x30, x31
+    SRLI x27, x2, 12
+    ORI x22, x25, -171
+    SRL x16, x18, x4
+    ADDI x29, x19, -138
+    XORI x1, x14, -10
+    SLTU x2, x16, x11
+    SLL x9, x3, x19
+    ORI x0, x17, 127
+    SLL x16, x27, x14
+    SLTI x19, x16, 83
+    SB x2, 1872(x26)
+    SLTI x26, x17, -136
+    AUIPC x7, 7
+    SRLI x24, x6, 25
+    ANDI x10, x26, 69
+    SRLI x20, x18, 28
+    LUI x22, 1048569
+    ANDI x12, x18, -122
+    XORI x14, x20, -35
+    LUI x1, 1048575
+    ADDI x21, x1, 99
+    ANDI x16, x5, 52
+    SLTIU x23, x21, 197
+    SRA x24, x0, x4
+    SLL x9, x17, x3
+    BNE x30, x5, 32
+    XORI x9, x12, 5
+    SRAI x16, x1, 22
+    SLL x21, x18, x3
+    SRA x13, x7, x27
+    SRAI x9, x28, 1
+    OR x2, x0, x0
+    SRLI x21, x30, 19
+    SLTU x20, x17, x17
+    ANDI x6, x12, 157
+    XOR x19, x25, x23
+    SRAI x1, x28, 22
+    ADD x24, x12, x25
+    ORI x27, x24, 198
+    XORI x26, x4, -25
+    SLLI x22, x19, 16
+    SRLI x22, x23, 16
+    LW x22, 216(x26)
+    SLL x12, x13, x14
+    SLTIU x23, x22, -15
+    SRA x14, x23, x10
+    ANDI x8, x2, 169
+    AND x9, x29, x29
+    SLLI x12, x14, 8
+    SUB x12, x23, x30
+    SLTIU x22, x0, 9
+    SLL x11, x11, x1
+    SLL x0, x17, x2
+    OR x19, x27, x10
+    SRAI x0, x12, 5
+    SRA x11, x23, x20
+    SRLI x8, x1, 8
+    BLTU x2, x20, 20
+    ADD x3, x3, x11
+    SLTIU x7, x28, -83
+    LUI x30, 6
+    SLLI x11, x22, 26
+    SRA x0, x19, x2
+    AUIPC x0, 1048569
+    SLTIU x7, x1, -64
+    XORI x24, x7, 51
+    SLLI x16, x13, 17
+    AUIPC x15, 4
+    SRLI x7, x2, 25
+    SW x27, 1328(x26)
+    ANDI x19, x27, -70
+    AUIPC x28, 1048565
+    ORI x19, x26, -81
+    AUIPC x12, 1048573
+    SLL x27, x0, x28
+    SLLI x24, x15, 9
+    SLTI x18, x28, -18
+    SLTI x4, x21, 191
+    LUI x8, 1048573
     AUIPC x13, 0
     ADDI x13, x13, 8
-    JALR x10, 4(x13)
-    SRAI x28, x29, 10
-    SLL x10, x14, x24
-    SH x23, 1136(x29)
-    LUI x4, 1048564
-    AND x12, x8, x21
-    SLTI x7, x10, -23
-    SRAI x27, x10, 11
-    LUI x2, 1048559
-    AUIPC x27, 1048558
-    SLTU x16, x9, x21
-    SRAI x1, x31, 30
-    ADD x18, x8, x3
-    LUI x11, 7
-    SLLI x8, x15, 3
-    SLTI x24, x5, 189
-    SLTU x31, x19, x30
-    ADDI x0, x3, 35
-    BGE x29, x15, 32
-    XOR x18, x2, x4
-    SLTIU x2, x0, 28
-    SLL x16, x14, x4
-    OR x28, x6, x8
-    SRLI x17, x28, 10
-    LUI x27, 1048567
-    AUIPC x10, 1048548
-    ANDI x8, x3, -37
-    SLTI x16, x28, 149
-    SUB x4, x17, x31
-    SRLI x3, x24, 20
-    ORI x4, x9, 133
-    SRA x5, x25, x27
-    LHU x8, 72(x29)
-    SLTU x13, x20, x4
-    ANDI x31, x9, -45
-    ORI x24, x13, 150
-    SLTU x31, x7, x29
-    SRAI x1, x4, 31
-    ADDI x5, x24, -84
-    SRAI x25, x29, 6
-    OR x27, x8, x30
-    XOR x7, x8, x2
-    SRLI x15, x5, 7
-    XOR x8, x11, x29
-    SLTU x29, x9, x14
-    AUIPC x17, 0
-    ADDI x17, x17, 8
-    JALR x1, 16(x17)
-    AND x1, x24, x24
-    XORI x28, x31, 68
-    ORI x17, x14, -193
-    ORI x25, x16, -111
-    SRAI x10, x1, 11
-    ADDI x14, x23, 190
-    AND x7, x19, x29
-    SLTU x15, x25, x21
-    ORI x23, x28, 34
-    ANDI x0, x22, 111
-    LBU x3, 1236(x29)
-    AUIPC x17, 18
-    SRLI x24, x31, 14
-    ORI x31, x12, 58
-    ORI x28, x0, -4
-    AUIPC x4, 1048574
-    SUB x6, x29, x9
-    SRLI x15, x31, 7
-    SLL x13, x13, x27
-    XOR x0, x12, x29
-    LUI x1, 1048560
-    XORI x22, x24, 58
-    ORI x2, x1, 140
-    XORI x26, x17, 159
-    SRLI x25, x4, 29
-    XOR x11, x25, x18
-    AND x10, x17, x25
-    ORI x20, x25, 118
-    AND x26, x17, x24
-    ADD x24, x26, x13
-    OR x8, x12, x8
-    XOR x5, x31, x2
-    SLT x23, x9, x29
-    BLT x31, x14, 24
-    SRAI x28, x1, 13
-    AND x21, x21, x10
-    SLTI x31, x13, 181
-    XORI x14, x30, 178
-    XORI x14, x8, -134
-    SLTIU x1, x21, -2
-    SLTU x5, x13, x13
-    SRA x26, x13, x24
-    ADD x5, x4, x2
-    AND x27, x27, x7
-    SLT x23, x17, x22
-    ANDI x17, x25, -65
-    ORI x24, x15, 135
-    SLTU x6, x6, x20
-    ORI x11, x12, 88
-    SRLI x24, x2, 6
-    SLTIU x29, x28, -34
-    LUI x26, 1048562
-    XOR x18, x28, x15
-    SLL x15, x11, x13
-    LBU x17, 38(x29)
-    ADD x17, x15, x23
-    ADDI x20, x7, -151
-    ADDI x22, x28, 132
-    ORI x6, x26, 153
-    SRA x30, x19, x11
-    SRLI x18, x29, 25
-    SLL x5, x25, x24
-    ADDI x22, x30, 189
-    SLL x11, x9, x10
-    OR x4, x31, x9
-    SLTIU x15, x12, -135
-    SUB x14, x16, x26
-    LUI x18, 0
-    XOR x3, x25, x7
-    XOR x6, x26, x9
-    SLTIU x9, x23, -97
-    SLTU x5, x10, x5
-    SLTU x19, x26, x10
-    BLTU x15, x27, 20
-    SLL x31, x4, x19
-    AND x3, x31, x10
-    SRA x30, x11, x6
-    SRL x13, x24, x0
-    ORI x4, x16, 120
-    ANDI x13, x3, -96
-    XOR x25, x26, x18
-    AUIPC x21, 1048553
-    OR x0, x9, x23
-    ORI x2, x9, -12
-    AND x16, x1, x27
-    LBU x9, 143(x29)
-    SRLI x6, x14, 15
-    LUI x25, 1048575
-    ORI x8, x28, -197
-    SLL x25, x17, x26
-    ADDI x17, x1, 188
-    SLLI x3, x23, 17
-    ORI x23, x18, 153
-    SRA x11, x30, x6
-    SLTIU x20, x22, 139
-    ORI x20, x29, 127
-    ORI x10, x9, 158
-    AUIPC x2, 1048565
-    ORI x14, x28, 21
-    ANDI x12, x26, -196
-    SRA x17, x18, x12
-    ADD x13, x26, x10
-    SRAI x10, x13, 28
-    OR x31, x6, x4
-    SLL x29, x6, x1
-    XORI x23, x8, -135
-    XORI x31, x27, -9
-    XORI x30, x3, -188
-    SRAI x1, x19, 31
-    SUB x3, x9, x25
-    SLLI x14, x2, 5
-    SUB x11, x0, x31
-    SLT x23, x2, x20
-    SUB x28, x4, x14
-    SRAI x9, x23, 18
-    SLTI x15, x0, 56
-    BGE x27, x4, 28
-    SUB x3, x16, x5
-    SLTI x12, x30, -78
-    XORI x1, x14, -31
-    LUI x19, 5
-    SLT x31, x15, x9
-    SLTI x26, x8, 131
-    ORI x9, x18, -185
-    XORI x17, x30, 82
-    SLLI x15, x25, 20
-    ANDI x5, x26, -89
-    AND x7, x19, x29
-    ADD x18, x7, x2
-    SB x5, 149(x29)
-    SLL x31, x25, x20
-    OR x10, x13, x23
-    SRAI x8, x27, 25
-    ADD x4, x14, x23
-    ADD x5, x29, x18
-    AUIPC x8, 1048563
-    SLTI x24, x1, -37
-    SLTU x28, x25, x16
-    SLTIU x22, x25, 119
-    SRAI x13, x18, 31
-    SLL x3, x25, x27
-    SRLI x3, x8, 20
-    SLLI x24, x1, 5
-    ADD x13, x7, x13
-    SLTI x18, x9, -157
-    ADD x12, x24, x1
-    SLTU x23, x6, x12
-    SLL x27, x23, x27
-    SLL x28, x16, x14
-    BLT x26, x9, 40
-    SRAI x10, x13, 1
-    SLTIU x29, x22, -36
-    SLTU x22, x0, x2
-    SUB x0, x27, x27
-    LUI x9, 1048560
-    SLLI x8, x12, 23
-    SRAI x12, x11, 23
-    SLTI x4, x22, 46
-    SLTU x17, x16, x0
-    XORI x1, x27, 24
-    SLTI x12, x25, -106
-    AUIPC x27, 1048572
-    SH x10, 1942(x29)
-    XORI x22, x13, 107
-    SUB x7, x12, x20
-    SLTI x22, x7, 120
-    SLL x17, x11, x3
-    ORI x31, x13, -56
-    ANDI x14, x13, 35
-    SRLI x1, x29, 0
+    JALR x29, 40(x13)
+    AUIPC x7, 1048571
+    ADDI x15, x21, 160
+    ORI x11, x10, -75
+    OR x20, x20, x20
+    AUIPC x24, 1048572
+    SLT x19, x0, x6
+    AUIPC x8, 18
+    SRLI x6, x22, 6
+    SLL x6, x10, x18
+    SLTU x23, x19, x19
+    OR x22, x25, x5
+    SRA x1, x2, x15
+    AND x16, x30, x1
+    SRLI x7, x17, 23
+    SRL x22, x18, x3
+    SLTIU x13, x5, -180
+    SRL x25, x1, x10
+    XORI x19, x16, -169
+    SLLI x17, x28, 21
+    ORI x30, x12, 47
+    SLTU x31, x3, x4
+    ADD x6, x16, x1
+    LUI x25, 7
+    SLLI x25, x21, 12
+    LH x10, 228(x26)
+    XORI x26, x16, 186
+    OR x30, x18, x25
+    SRL x12, x20, x27
+    ADD x22, x22, x31
+    ADDI x31, x27, 3
+    ADD x2, x23, x10
+    AND x19, x27, x16
+    AUIPC x29, 1048563
+    SLTU x22, x22, x28
+    SRL x3, x22, x7
+    SLTIU x22, x25, 22
+    ANDI x21, x27, -86
+    ANDI x8, x25, -182
+    ORI x28, x5, -150
+    XORI x17, x5, -47
+    SLTIU x20, x31, 161
+    SRLI x27, x1, 7
+    SLTIU x15, x14, -180
+    BNE x24, x25, 40
+    XORI x2, x0, 55
+    SLL x16, x24, x8
+    SRLI x30, x12, 27
+    SLTIU x18, x25, -38
+    SLT x29, x8, x31
+    SRLI x6, x6, 10
+    SLTIU x5, x30, 47
+    LUI x15, 3
+    SUB x10, x23, x27
+    SRLI x17, x22, 29
+    SUB x19, x24, x5
+    OR x28, x1, x13
+    XOR x16, x2, x7
+    ORI x7, x24, 11
+    SLL x8, x30, x10
+    SLTU x14, x28, x20
+    SRL x29, x21, x3
+    ADDI x9, x20, -92
+    SRA x15, x13, x5
+    SLT x9, x21, x3
+    SRL x28, x11, x18
+    OR x25, x17, x16
+    SLL x25, x22, x12
+    ADDI x2, x16, 171
+    SLLI x22, x30, 21
+    SRL x17, x0, x26
+    LUI x3, 1048559
+    AND x8, x12, x27
+    SH x28, 2026(x26)
+    SLTIU x4, x2, 7
+    AND x26, x10, x5
+    SLTIU x14, x28, -23
+    ANDI x23, x1, 198
+    SLT x8, x15, x10
+    ANDI x26, x10, 117
+    XOR x1, x24, x23
+    XORI x18, x4, 132
+    SLTU x10, x14, x6
+    ADD x25, x11, x13
+    ADD x13, x25, x20
+    SRL x18, x7, x8
+    SLL x29, x29, x1
+    SLLI x19, x15, 26
+    SRA x8, x20, x25
+    SLT x0, x16, x16
+    AUIPC x30, 1048561
+    SRAI x8, x13, 7
+    SLTU x20, x18, x26
+    ADDI x5, x23, 39
+    XORI x21, x19, 188
+    ORI x2, x19, -4
+    SRLI x7, x24, 10
+    SLL x20, x12, x19
+    OR x1, x16, x29
+    AUIPC x30, 0
+    ADDI x30, x30, 8
+    JALR x2, 8(x30)
+    XORI x2, x13, 2
+    SLTI x27, x7, -19
+    AUIPC x16, 14
+    OR x18, x5, x5
+    LUI x3, 1048559
+    LUI x9, 1048573
+    SB x6, 354(x26)
+    ADD x22, x24, x18
+    ADDI x1, x20, 23
+    ADD x6, x27, x6
+    SRA x29, x23, x13
+    SRA x29, x25, x31
+    ANDI x11, x13, -128
+    ADD x2, x6, x6
+    SLTIU x31, x1, 37
+    SLT x22, x4, x11
+    ADD x31, x12, x1
+    SLTU x19, x12, x11
+    LUI x26, 1048570
+    XORI x13, x0, 35
+    SRL x22, x16, x16
+    SLL x0, x17, x29
+    XOR x6, x25, x6
+    ORI x29, x17, 103
+    SLT x31, x16, x25
+    SRA x14, x16, x25
+    ORI x24, x16, 170
+    BGEU x19, x26, 40
+    XORI x7, x21, -74
+    XOR x17, x30, x2
+    SLT x21, x6, x26
+    ANDI x25, x14, 95
+    SLTIU x6, x4, 21
+    OR x10, x7, x0
+    SLTI x3, x2, -41
+    SRA x31, x1, x19
+    SRAI x24, x20, 31
+    SLTU x1, x18, x0
+    OR x6, x10, x0
+    SLT x4, x10, x16
+    SLL x16, x10, x29
+    SRA x1, x1, x24
+    AUIPC x10, 12
+    XORI x19, x12, -103
+    SRL x5, x12, x25
+    SLTIU x15, x19, -68
+    SRAI x31, x29, 30
+    SW x16, 400(x26)
+    SLTIU x27, x9, 174
+    SLL x23, x16, x3
+    ADDI x16, x12, -51
+    ANDI x8, x17, 189
+    SLTIU x6, x20, 89
+    AUIPC x18, 1048559
+    SLTU x0, x21, x11
+    SRL x22, x18, x14
+    ADDI x25, x5, 56
+    ORI x22, x24, 56
+    XORI x22, x9, -139
+    OR x25, x5, x16
+    SUB x7, x14, x6
+    SLTI x8, x14, -15
+    AND x30, x5, x10
+    SLTIU x8, x8, 79
+    XORI x10, x13, -109
+    LUI x8, 1048557
+    SLT x1, x31, x20
+    SLLI x21, x12, 5
+    SLLI x0, x18, 4
+    AUIPC x23, 3
+    SRLI x25, x23, 3
+    ADDI x22, x29, -79
+    XOR x2, x25, x25
+    ADDI x14, x16, 134
+    ADD x2, x12, x15
+    ADD x16, x9, x28
+    SRLI x25, x11, 15
+    SRL x19, x18, x31
+    ORI x24, x19, -110
+    SRAI x5, x14, 20
+    SLTU x28, x24, x21
+    XOR x30, x15, x5
+    SLTIU x25, x16, 63
+    AUIPC x5, 0
+    ADDI x5, x5, 8
+    JALR x23, 16(x5)
+    SLT x10, x15, x0
+    XORI x0, x10, 171
+    SLT x21, x26, x0
+    ADD x30, x29, x30
+    SLL x22, x16, x5
+    SLTIU x25, x20, 164
+    SB x16, 1243(x26)
+    XORI x18, x18, -11
+    AUIPC x22, 1048556
+    SRL x23, x19, x21
+    XORI x18, x16, -86
+    ANDI x27, x23, 181
+    SLTU x27, x20, x27
+    LUI x14, 1048562
+    AUIPC x25, 15
+    SRLI x31, x10, 11
+    SRAI x5, x12, 16
+    SRAI x14, x5, 12
+    OR x28, x30, x3
+    SLL x21, x30, x8
+    JAL x13, 28
+    SRLI x7, x23, 9
+    XORI x26, x28, -182
+    SRA x24, x8, x28
+    ANDI x8, x3, -112
+    SLL x23, x9, x1
+    SLL x7, x26, x13
+    ORI x6, x5, -27
+    SLL x19, x18, x26
+    ORI x4, x25, -124
+    XORI x13, x6, -10
+    SUB x14, x27, x0
+    SLTU x31, x0, x29
+    SRL x30, x24, x1
+    SRL x29, x17, x23
+    SRAI x7, x30, 22
+    ADDI x30, x14, -43
+    SUB x8, x5, x20
+    SRAI x28, x20, 27
+    AUIPC x7, 1
+    OR x0, x26, x16
     AUIPC x16, 1048575
-    SRA x7, x19, x2
-    SLL x20, x24, x7
-    LUI x17, 2
-    SLTI x0, x31, 66
-    AND x14, x13, x7
-    SLTU x10, x26, x31
-    SUB x15, x22, x18
-    SLTIU x6, x13, -184
-    SLTU x4, x26, x27
-    XORI x3, x25, -185
-    XOR x2, x27, x6
-    AUIPC x6, 0
-    ADDI x6, x6, 8
-    JALR x9, 12(x6)
-    ADDI x18, x30, 21
-    SRL x28, x30, x24
-    AUIPC x9, 1048563
-    XOR x25, x0, x8
-    ADD x30, x12, x19
-    ORI x14, x27, -150
-    OR x22, x26, x20
-    SLTU x12, x15, x25
-    SRAI x13, x6, 26
-    SW x3, 468(x29)
-    OR x21, x11, x1
-    AUIPC x14, 1048574
-    SUB x30, x27, x13
-    ANDI x0, x31, -167
-    SRLI x9, x31, 14
-    XORI x2, x29, 158
-    SLLI x8, x21, 14
-    SLL x2, x7, x0
-    AUIPC x22, 18
-    OR x5, x1, x15
-    SRAI x15, x6, 1
-    SLLI x20, x6, 30
-    AND x12, x29, x16
-    SRLI x24, x0, 24
-    LUI x24, 1048570
-    JAL x0, 36
-    XOR x22, x1, x23
-    SLTI x3, x20, 31
-    XORI x31, x31, -111
-    AND x24, x10, x29
-    SRAI x29, x16, 29
-    ANDI x22, x3, -101
-    SLTU x24, x4, x11
-    SRL x6, x7, x24
-    LUI x17, 13
-    ORI x13, x19, 119
-    OR x24, x27, x17
-    SLTI x8, x7, -16
-    AND x10, x5, x17
-    SRAI x15, x23, 25
-    SRL x1, x6, x26
-    AND x10, x24, x2
-    SUB x22, x7, x11
-    LUI x6, 14
-    LHU x9, 22(x29)
-    AND x11, x3, x0
-    SLTIU x22, x15, 146
-    SRAI x25, x26, 9
-    SLTI x27, x5, 182
-    SLTIU x31, x30, -41
-    SRAI x26, x23, 28
-    XOR x9, x6, x10
-    ADD x29, x9, x22
-    SUB x18, x29, x26
-    ORI x22, x31, -37
-    ORI x0, x22, -137
-    OR x3, x23, x19
-    AND x10, x22, x10
-    SLTI x28, x7, -94
-    XOR x21, x14, x14
-    SRAI x0, x14, 21
-    SLLI x15, x14, 13
-    SRLI x16, x27, 16
-    XOR x5, x24, x2
-    ADD x23, x21, x14
-    ORI x17, x10, -73
-    SRLI x6, x19, 2
-    ADD x15, x19, x0
-    SLL x19, x3, x24
-    SLL x15, x23, x19
-    SLT x24, x10, x18
-    SLT x8, x0, x7
-    ORI x30, x8, 65
-    SLL x0, x31, x5
-    JAL x16, 36
-    XOR x5, x17, x13
-    ADD x15, x20, x24
-    SRAI x19, x24, 19
-    SRLI x9, x24, 9
-    SRLI x30, x1, 15
-    ADDI x14, x0, 60
-    LUI x19, 20
-    ORI x3, x5, 169
-    ADDI x13, x14, 51
-    ADD x10, x1, x26
-    ORI x22, x4, -70
-    XORI x8, x14, -187
-    SRAI x1, x7, 19
-    SLTIU x30, x24, 189
-    ADD x12, x3, x1
-    LUI x7, 1048557
-    SLL x14, x11, x2
-    AUIPC x10, 10
-    ADDI x9, x13, 30
-    ANDI x29, x9, 178
-    ORI x25, x22, -182
-    LUI x11, 31
-    OR x4, x14, x31
-    SLLI x15, x22, 21
-    SLTU x30, x9, x11
-    SRLI x23, x17, 11
-    AUIPC x13, 18
-    XORI x16, x10, -71
-    LBU x5, 32(x29)
-    SLLI x21, x12, 24
-    AUIPC x25, 4
-    SRL x4, x16, x7
-    SLL x16, x20, x14
-    LUI x8, 19
-    SLTU x21, x27, x29
-    SLTIU x17, x8, -143
-    ORI x6, x15, 163
-    SLTIU x22, x28, -62
-    SRA x23, x25, x11
-    SRAI x3, x21, 25
-    ORI x8, x0, 108
-    SLLI x23, x1, 21
-    LUI x5, 8
-    ANDI x16, x6, 161
-    SLTI x9, x3, 34
-    ORI x24, x6, -183
-    SUB x12, x6, x13
-    SLTIU x21, x11, -161
-    OR x15, x5, x11
-    SLTI x12, x17, -182
-    ORI x5, x24, 140
-    AND x8, x3, x29
-    AUIPC x17, 0
-    ADDI x17, x17, 8
-    JALR x14, 12(x17)
-    SLTU x23, x27, x24
-    SLTIU x12, x31, 105
-    SRLI x10, x1, 4
-    SRLI x8, x12, 30
-    SLLI x12, x15, 1
-    SLTI x29, x14, 157
-    ORI x28, x8, -151
-    ANDI x12, x18, -91
-    ORI x12, x22, 89
-    SLL x8, x9, x17
-    SRAI x19, x14, 16
-    SLTI x3, x10, -84
-    LH x23, 40(x29)
-    SRL x29, x22, x6
-    OR x31, x24, x2
-    AUIPC x4, 27
-    ADDI x11, x20, -77
-    ADD x16, x13, x30
-    LUI x19, 7
-    OR x0, x4, x16
-    SLT x29, x31, x5
-    SRLI x9, x17, 31
-    ADD x11, x12, x24
-    SRAI x8, x6, 27
-    AND x14, x21, x26
-    SRA x9, x8, x8
-    AUIPC x26, 21
-    SLT x19, x28, x16
-    SRLI x15, x16, 17
-    XORI x27, x1, -62
-    SLL x5, x7, x16
-    XOR x14, x9, x17
-    SRAI x7, x30, 15
-    ORI x21, x3, 2
-    SLLI x2, x19, 12
-    OR x21, x1, x26
-    SLT x23, x7, x4
-    SLLI x20, x30, 19
-    SRAI x9, x27, 5
-    AUIPC x22, 1048571
-    AUIPC x0, 1048565
-    XORI x19, x13, -110
-    SLTI x24, x25, -180
-    SLTU x27, x24, x9
-    AUIPC x23, 1048555
-    SRL x2, x27, x8
-    ORI x7, x28, -22
-    XORI x0, x17, -138
-    AND x12, x15, x29
-    ADD x6, x9, x3
-    ANDI x2, x0, -155
-    BEQ x0, x3, 32
-    SLTI x9, x0, -63
-    ADDI x24, x4, -152
-    SH x28, 1254(x29)
-    XORI x11, x13, -183
-    SUB x6, x11, x20
-    ADDI x14, x23, 79
-    SLT x2, x7, x11
-    AUIPC x8, 11
-    SLLI x28, x19, 15
-    SLTIU x23, x2, -21
-    OR x28, x10, x6
-    XORI x14, x11, 153
-    SLL x9, x20, x1
-    SLTIU x24, x24, -52
-    SRL x18, x26, x9
-    AUIPC x1, 1048575
-    SLTIU x2, x17, 175
-    SRA x14, x30, x10
-    SRA x3, x12, x12
-    OR x10, x2, x17
-    SLTIU x9, x11, 114
-    ADDI x5, x22, -43
-    XORI x9, x21, -151
-    SRA x9, x28, x15
-    AUIPC x15, 1
-    ADDI x27, x18, -187
-    SLT x26, x23, x23
-    ADD x13, x0, x24
-    BEQ x3, x2, 4
-    SLT x14, x25, x21
-    AUIPC x28, 0
-    ANDI x26, x5, -56
-    ADDI x23, x14, -51
-    ORI x15, x12, -168
-    SLLI x11, x11, 31
-    LUI x8, 7
-    SLLI x29, x1, 2
-    SUB x12, x4, x31
-    XORI x18, x31, 135
-    SRLI x29, x2, 16
-    ANDI x20, x4, 36
-    SW x13, 1860(x29)
-    SLTIU x3, x9, -162
-    AUIPC x31, 1048572
-    SRLI x30, x14, 4
-    LUI x1, 8
-    SLTU x11, x29, x6
-    SRLI x28, x6, 27
-    AND x1, x27, x6
-    XOR x28, x27, x24
-    LUI x16, 5
-    SRLI x7, x22, 9
-    OR x24, x30, x18
-    SRLI x26, x13, 19
-    SLTIU x28, x13, 120
-    SRAI x30, x24, 30
-    SLLI x11, x9, 14
-    SLLI x22, x3, 7
-    XOR x13, x9, x3
-    SLTI x17, x7, 74
-    SRLI x0, x5, 30
-    ORI x20, x12, 191
-    SLTIU x29, x13, 60
-    XORI x15, x22, 80
-    SLL x0, x25, x17
-    SRA x31, x14, x2
-    BLT x17, x21, 24
-    XORI x3, x31, -55
-    ADD x12, x17, x22
-    SLL x24, x15, x21
-    ORI x5, x5, 80
-    SLLI x16, x21, 30
-    SLTIU x12, x16, 119
-    SLTI x27, x20, 93
-    SLLI x22, x18, 24
-    LUI x31, 1
-    SRL x19, x14, x5
-    ORI x8, x22, -97
-    XORI x18, x10, -109
-    SLT x23, x2, x7
-    SLTIU x8, x31, 172
-    SLT x26, x26, x23
-    SLTIU x28, x1, -186
-    SLL x16, x0, x7
-    LB x13, 140(x29)
-    SLTIU x10, x21, -110
-    ANDI x2, x15, 55
-    ADDI x12, x23, -98
-    SRAI x19, x3, 29
-    SLTIU x22, x13, -90
-    SRAI x6, x14, 4
-    SLT x25, x27, x31
-    SUB x28, x25, x2
-    SLT x7, x13, x18
-    ADDI x29, x0, -192
-    XORI x6, x0, -157
-    SLTI x4, x17, -171
-    SLTIU x22, x3, 156
+    LBU x4, 106(x26)
+    SLT x3, x26, x15
+    ANDI x6, x1, 192
+    SRA x6, x11, x25
+    SLTI x24, x22, 126
+    XOR x18, x6, x5
+    SLTI x8, x28, 87
+    SRAI x3, x2, 20
+    SLL x1, x25, x12
+    AUIPC x29, 8
+    OR x28, x30, x21
+    SRL x19, x5, x3
+    SRLI x2, x21, 31
+    SLTIU x8, x16, 139
+    SLTIU x15, x27, 1
+    SLLI x13, x23, 8
+    SRLI x27, x20, 22
+    XOR x28, x16, x11
+    ANDI x8, x19, -35
+    SUB x15, x23, x13
+    SLTU x26, x6, x7
+    SLTIU x20, x19, 123
+    ADDI x31, x24, -132
+    SLLI x26, x3, 0
+    ADD x15, x2, x19
+    SLTI x23, x12, -43
+    SLTU x31, x13, x11
+    BGE x25, x14, 20
+    ORI x9, x28, 65
+    AND x19, x7, x0
+    ANDI x5, x10, -36
+    SLT x16, x16, x8
+    SUB x18, x14, x12
+    ADDI x2, x30, 131
+    SRL x7, x8, x8
+    SRL x23, x8, x8
+    SW x8, 616(x26)
+    SLT x27, x19, x22
+    ORI x19, x22, 77
+    SLTU x20, x15, x25
+    SRLI x2, x6, 19
+    SLT x4, x28, x23
+    ORI x3, x2, 86
+    SLTIU x23, x27, -125
+    SLTU x6, x12, x26
+    AND x18, x2, x26
+    SLTU x23, x18, x10
+    SRAI x18, x22, 28
+    SLTU x8, x9, x0
+    XORI x7, x29, -101
+    AUIPC x14, 2
+    SLTI x19, x5, -28
+    ADD x26, x12, x10
+    SRA x27, x23, x22
+    XORI x8, x13, -148
+    SLTIU x16, x1, 197
+    SLTI x3, x25, 35
+    SRA x14, x2, x25
+    ORI x13, x12, -89
+    SRLI x17, x21, 25
+    SLTI x31, x11, 54
+    SLTI x28, x11, 6
+    SLTU x12, x17, x18
+    JAL x0, 24
+    SLTI x29, x31, 121
+    XORI x12, x9, -68
+    AND x3, x9, x17
+    AUIPC x26, 1048566
+    ANDI x15, x3, 175
+    SRA x14, x25, x30
+    ADDI x24, x25, -103
+    SRA x1, x3, x28
+    ADD x12, x26, x23
+    SLTU x16, x30, x27
+    SUB x8, x5, x31
+    AND x15, x5, x8
+    SLTI x17, x31, -17
+    SLTI x20, x3, -88
+    LUI x14, 10
+    SLTI x15, x11, 139
+    SRAI x28, x13, 5
+    AND x7, x6, x25
+    XORI x7, x9, -52
+    SLLI x25, x31, 31
+    LBU x17, 85(x26)
+    SLT x24, x3, x25
+    SLTU x13, x25, x26
+    AUIPC x22, 14
+    XORI x18, x22, -99
+    SLTI x3, x26, -142
+    SRAI x29, x5, 24
+    SLLI x28, x24, 7
+    ADD x0, x12, x1
+    SLL x24, x19, x24
+    ADD x28, x20, x14
+    ADD x2, x14, x4
+    ADDI x16, x17, 188
+    AUIPC x13, 1048569
+    SLLI x10, x4, 16
+    SLLI x22, x27, 31
+    SLT x18, x7, x4
+    SLL x26, x10, x1
+    SRLI x30, x16, 22
+    OR x13, x16, x4
+    SLL x29, x11, x5
+    OR x24, x31, x24
+    LUI x30, 1048566
+    AUIPC x5, 0
+    ADDI x5, x5, 8
+    JALR x23, 40(x5)
+    SLTIU x11, x29, -171
+    ORI x21, x1, 81
+    SLTI x13, x22, 84
+    SRA x2, x11, x25
+    AUIPC x16, 0
+    SRLI x25, x30, 20
+    SRA x18, x31, x7
+    SLTU x16, x30, x11
+    SRLI x28, x7, 22
+    ADDI x3, x22, 89
+    AUIPC x4, 1048573
+    SRAI x7, x31, 27
+    SRL x7, x17, x4
+    AUIPC x28, 18
+    SRAI x4, x14, 9
+    XORI x6, x24, 22
+    XOR x4, x16, x5
+    XORI x13, x1, 79
+    ORI x7, x19, 169
+    SRAI x24, x7, 7
+    ADD x19, x1, x1
+    ORI x19, x29, -95
+    XORI x30, x13, -86
+    SLTI x10, x31, -73
+    SLL x10, x5, x27
+    AND x16, x28, x19
+    SH x19, 1658(x26)
+    ADD x31, x24, x15
+    SRA x8, x26, x12
+    LUI x20, 25
+    SLTI x21, x10, -172
+    ADD x29, x12, x31
+    SRAI x13, x10, 0
+    AUIPC x10, 1048565
+    LUI x2, 7
+    ANDI x14, x8, -125
+    AUIPC x28, 1
+    SUB x15, x20, x13
+    AUIPC x9, 1048572
+    SLTI x6, x11, -155
+    SLT x8, x7, x15
+    SLTI x24, x25, 155
+    SLTIU x21, x6, -39
+    ANDI x17, x8, 86
+    SRAI x12, x1, 17
+    JAL x21, 40
+    XORI x28, x2, -50
+    SLTIU x5, x9, 163
+    LUI x1, 1048575
+    SLTI x25, x2, -188
+    SRL x18, x10, x26
+    SLTIU x4, x23, -147
+    AUIPC x27, 15
+    ADDI x10, x10, -129
+    XOR x26, x23, x11
+    ADD x1, x0, x19
+    SRLI x2, x23, 15
+    AUIPC x10, 2
+    SLTU x20, x29, x27
+    SRA x20, x3, x18
+    AUIPC x8, 12
+    LUI x17, 0
+    ADDI x26, x26, 65
+    ORI x29, x22, 193
+    AND x6, x31, x19
+    XORI x20, x2, -134
+    OR x14, x5, x28
+    SLTIU x4, x2, 110
+    SH x8, 1912(x26)
+    XORI x9, x24, 84
+    ANDI x17, x20, -42
+    SRAI x4, x13, 25
+    XOR x16, x27, x25
+    ANDI x0, x10, -132
+    SRLI x0, x14, 9
+    SLT x8, x9, x12
+    AND x10, x28, x7
+    ADDI x0, x25, 57
+    AUIPC x4, 16
+    SRLI x31, x20, 29
+    ANDI x3, x17, -13
+    SLTIU x23, x27, -58
+    SRA x2, x14, x5
+    SLTI x19, x18, -29
+    OR x22, x10, x2
+    XORI x29, x21, 67
+    XORI x26, x31, -128
+    XORI x6, x24, -93
+    SLTIU x8, x11, 173
+    OR x5, x15, x21
+    ANDI x13, x7, -171
+    SRLI x3, x29, 22
+    SLLI x31, x0, 29
+    SLLI x19, x4, 14
+    SRA x26, x26, x9
+    BLTU x3, x30, 8
+    SLL x11, x14, x29
+    ORI x29, x21, -7
+    XORI x25, x1, -152
+    SLTU x4, x4, x16
+    XOR x3, x13, x12
+    AUIPC x1, 1048572
+    SLTI x21, x18, -183
+    SRL x14, x17, x26
+    SLLI x22, x30, 15
+    XOR x13, x12, x14
+    SRLI x27, x31, 7
+    SLL x9, x20, x26
+    SB x15, 1510(x26)
+    LUI x29, 13
+    SLLI x0, x19, 12
+    SLT x0, x2, x25
+    SRL x24, x26, x19
+    SRLI x30, x14, 31
+    XORI x24, x19, 28
+    AUIPC x20, 1048575
+    ADDI x18, x23, 64
+    AUIPC x11, 5
+    ADD x9, x1, x7
+    AUIPC x2, 1048572
+    SUB x23, x30, x0
+    XORI x2, x4, -178
+    ADD x1, x2, x31
+    SRAI x17, x28, 4
+    ORI x14, x3, -91
+    SRLI x17, x13, 21
+    SRA x18, x29, x3
+    LUI x30, 1048568
+    SLTU x11, x21, x3
+    SLT x15, x14, x6
+    ADDI x6, x24, 120
+    SLTI x18, x18, -113
+    XORI x13, x23, 132
+    SLTIU x10, x23, 17
+    LUI x16, 1048575
+    ANDI x14, x2, -199
+    AND x27, x13, x1
+    ANDI x30, x1, 47
+    SLT x13, x29, x27
+    JAL x2, 36
+    SLTIU x19, x8, -118
+    LUI x4, 20
+    SUB x18, x28, x21
+    AND x11, x21, x2
+    ADD x18, x31, x4
+    SRAI x5, x8, 12
+    SLTIU x0, x1, -5
+    AND x19, x11, x4
+    SLTU x1, x6, x10
+    SLLI x15, x1, 8
+    AND x16, x26, x28
+    SRAI x13, x26, 2
+    SLTIU x15, x13, 118
+    SLTIU x12, x28, -133
+    SRL x17, x4, x29
+    SLT x12, x9, x8
+    SLT x7, x13, x14
+    ORI x24, x11, -188
+    SRA x30, x20, x1
+    AUIPC x6, 1048574
+    SRLI x7, x0, 17
+    ANDI x0, x13, -140
+    SLT x7, x0, x10
+    SLL x30, x20, x24
+    OR x10, x2, x16
+    SLT x14, x19, x13
+    SB x27, 1588(x26)
+    ADDI x13, x26, -174
+    SLTIU x22, x29, -51
+    SLLI x7, x30, 18
+    SRA x13, x11, x7
+    SRAI x24, x1, 12
+    SUB x24, x28, x25
+    SLTU x4, x14, x8
+    SRLI x14, x29, 0
+    BNE x27, x13, 16
+    XOR x16, x27, x24
+    SLTIU x9, x0, 66
+    SLTU x3, x24, x1
+    LUI x11, 22
+    LUI x20, 9
+    LHU x28, 58(x26)
+    SUB x27, x13, x15
+    SLL x30, x10, x24
+    ANDI x7, x22, -45
+    SLLI x11, x20, 9
+    ADD x30, x16, x13
+    SLL x23, x24, x9
+    SRA x26, x14, x17
+    SRL x19, x15, x19
+    SUB x6, x11, x29
+    XORI x1, x26, -65
+    ORI x13, x29, 112
+    SLL x16, x5, x4
+    SLTIU x8, x31, -93
+    XOR x26, x1, x23
+    SLTI x9, x0, 164
+    SLTIU x15, x7, 13
+    SLT x20, x2, x10
+    XORI x6, x13, -101
+    SRL x11, x6, x5
+    ADDI x9, x21, 59
+    ANDI x31, x10, -84
+    LUI x6, 1048574
+    SLTU x22, x28, x30
+    AND x1, x7, x6
+    AND x27, x2, x30
+    SUB x5, x19, x5
+    ADD x19, x4, x9
+    ANDI x7, x31, 174
+    OR x16, x9, x2
+    ANDI x0, x0, 40
+    SLT x27, x0, x8
+    AUIPC x23, 0
+    ADDI x23, x23, 8
+    JALR x21, 4(x23)
+    SLT x29, x25, x11
+    SLT x8, x7, x15
+    SLT x7, x0, x23
+    SLTU x1, x17, x13
+    SLLI x7, x8, 28
+    SRAI x18, x9, 12
+    ANDI x12, x1, 39
+    ADD x26, x24, x25
+    SLTU x25, x18, x24
+    ADD x15, x28, x20
+    AUIPC x7, 1048572
+    SRL x21, x9, x9
+    SRAI x18, x0, 20
+    SRAI x11, x4, 22
+    SLTI x17, x31, -92
+    SH x1, 1946(x26)
+    SLL x8, x25, x3
+    SLL x0, x13, x1
+    ADDI x22, x0, 123
+    XORI x13, x25, 48
+    XOR x22, x9, x28
+    XORI x6, x29, -120
+    JAL x29, 40
+    SRA x20, x4, x7
+    SLT x10, x22, x31
+    SLT x6, x8, x12
+    ORI x9, x9, -194
+    OR x11, x1, x18
+    SRA x13, x10, x15
+    LUI x1, 1048566
+    AUIPC x21, 1048568
+    XORI x28, x27, -46
+    LUI x29, 4
+    AND x10, x10, x10
+    ANDI x24, x12, 49
+    SB x5, 618(x26)
+    XORI x6, x4, 142
+    SRA x13, x13, x13
+    SLT x3, x23, x27
+    SLTI x19, x24, -27
+    AND x17, x30, x18
+    ADDI x7, x28, -92
+    SRAI x28, x29, 10
+    SRAI x1, x16, 30
+    SLTU x2, x26, x22
+    AND x29, x11, x24
+    SLTIU x9, x26, 52
+    SLTIU x1, x10, -15
+    SLTIU x3, x21, 150
+    SLTU x0, x7, x27
+    SLL x16, x16, x2
+    SLTI x3, x11, -13
+    ADD x9, x6, x22
+    AND x2, x28, x23
+    AUIPC x10, 0
+    ADDI x10, x10, 8
+    JALR x14, 40(x10)
+    SLTIU x8, x21, -77
+    SLTU x29, x22, x8
+    SLL x28, x15, x21
+    SLL x17, x7, x28
+    OR x27, x3, x6
+    SLLI x10, x27, 10
+    SRA x21, x0, x12
+    XORI x31, x7, -188
+    SLLI x26, x8, 2
+    SRLI x31, x20, 6
+    SLLI x25, x12, 16
+    SRAI x28, x21, 23
+    OR x6, x2, x16
+    OR x11, x7, x5
+    SLTIU x21, x17, -109
+    ADDI x9, x28, -98
+    ANDI x30, x27, -159
+    AUIPC x5, 5
+    XOR x10, x13, x16
+    OR x20, x26, x20
+    SRL x2, x0, x28
+    SLLI x13, x4, 7
+    SRLI x5, x18, 5
+    ADDI x7, x14, -77
+    SH x9, 1096(x26)
+    ANDI x2, x2, 25
+    SRAI x26, x9, 21
+    XOR x15, x17, x19
+    SLL x19, x21, x24
+    SLL x27, x23, x7
+    ANDI x24, x1, -75
     AUIPC x26, 17
-    LUI x22, 1048559
-    ADD x27, x15, x20
-    SLLI x16, x31, 0
-    XORI x9, x17, 61
-    AND x21, x13, x5
-    XORI x17, x20, 16
-    ADDI x18, x4, -84
-    XORI x31, x31, 99
-    AUIPC x5, 1048575
-    JAL x18, 24
-    SRL x0, x23, x14
-    ANDI x28, x23, 158
-    SRAI x26, x11, 7
-    ORI x15, x5, 74
-    XOR x2, x2, x6
-    SLT x14, x25, x25
-    XORI x19, x25, 29
-    OR x8, x11, x14
-    ANDI x20, x13, -192
-    SRLI x28, x17, 9
-    ADD x1, x8, x12
-    SLTIU x31, x11, 169
-    ORI x30, x28, -145
-    SRL x15, x7, x8
-    XOR x16, x31, x2
-    SLLI x20, x11, 7
-    ADDI x19, x4, 172
-    ADD x18, x4, x10
-    SRL x7, x12, x21
-    SUB x15, x12, x18
-    SUB x2, x11, x15
-    SLL x16, x6, x24
-    SLT x29, x12, x19
-    SRL x3, x26, x18
-    LB x29, 1828(x29)
-    SLLI x20, x2, 5
-    SLLI x13, x12, 24
-    LUI x20, 1048571
-    ORI x19, x20, 186
-    SUB x19, x16, x20
-    SLT x9, x18, x4
-    ANDI x8, x1, 70
-    SLTU x23, x28, x30
-    SLTU x17, x14, x3
-    ADDI x4, x11, 183
-    ADDI x29, x28, 191
-    SRA x16, x23, x24
-    ADD x28, x31, x3
-    OR x23, x14, x11
-    ADD x18, x22, x11
-    ANDI x14, x17, 55
-    AUIPC x11, 0
-    ADDI x11, x11, 8
-    JALR x28, 24(x11)
-    SLLI x26, x8, 17
-    SRAI x7, x8, 26
-    SLTU x27, x30, x16
-    SRAI x1, x20, 10
-    SRLI x6, x5, 7
-    SLTIU x12, x1, 158
-    ORI x31, x6, 187
-    SRLI x1, x23, 8
-    SLTI x3, x20, 178
-    SLTIU x25, x27, -163
-    SLLI x26, x31, 24
-    ADD x11, x3, x26
-    OR x11, x18, x11
-    LUI x6, 524304
-    ADDI x6, x6, 256
-    SH x17, 892(x6)
-    OR x22, x9, x16
-    AUIPC x29, 2
-    AND x27, x15, x9
-    XOR x4, x14, x30
-    XORI x16, x20, 86
-    SRA x31, x18, x15
-    ADDI x14, x8, 141
-    SLTIU x7, x4, -24
-    SLTI x22, x19, -198
-    ADD x11, x21, x30
-    AND x26, x14, x23
-    ANDI x9, x9, -66
-    OR x27, x8, x28
-    SLTI x16, x22, 123
-    ORI x28, x31, 83
-    XOR x14, x17, x28
-    ORI x0, x29, 122
-    SLLI x13, x2, 31
-    LUI x21, 1048562
-    ORI x26, x1, 85
-    ANDI x20, x17, 127
-    SLTI x18, x25, 18
-    SRA x17, x28, x0
-    LUI x0, 1048564
-    SLTIU x18, x1, 118
-    ADDI x11, x27, 194
-    XOR x13, x28, x16
-    OR x26, x25, x12
-    XORI x30, x29, 2
-    XORI x13, x5, 100
-    SRLI x8, x13, 28
-    BGE x12, x14, 32
-    SLT x27, x1, x6
-    XOR x24, x10, x15
-    ADD x24, x12, x23
-    SLL x15, x23, x3
-    ORI x3, x29, 19
-    SRLI x18, x31, 1
-    ADD x9, x13, x12
-    ADD x9, x23, x14
-    SW x27, 1104(x6)
-    SLTU x7, x5, x23
-    ANDI x21, x10, -80
-    OR x12, x0, x29
-    SRLI x28, x31, 13
-    SRA x29, x5, x6
-    SRA x23, x14, x29
-    XOR x31, x21, x9
-    SLTIU x1, x10, 92
-    SLT x30, x16, x12
-    SRL x24, x20, x3
-    LUI x31, 1048571
-    ORI x2, x31, 49
-    ANDI x22, x12, 6
-    AUIPC x16, 1048574
-    ADD x0, x29, x25
-    ADDI x7, x18, 104
-    XORI x0, x0, -28
-    XORI x0, x30, -124
+    ANDI x28, x26, 117
+    SLTIU x5, x18, 82
+    AUIPC x20, 1048563
+    SLTI x22, x28, 144
+    SRAI x29, x16, 3
+    SUB x30, x14, x15
+    ADD x29, x10, x9
+    ADD x28, x18, x28
+    BEQ x2, x8, 16
+    ANDI x21, x22, 106
+    ORI x4, x6, 84
+    SRLI x30, x9, 20
+    ANDI x0, x13, -66
+    SUB x12, x11, x23
+    ADDI x13, x9, -61
+    AND x31, x9, x9
+    ADD x12, x4, x5
+    SRA x19, x11, x8
+    SRAI x23, x0, 10
+    XOR x30, x5, x24
+    SUB x25, x12, x13
+    XORI x14, x13, 194
+    SLTI x19, x21, 179
+    AND x22, x30, x23
+    AUIPC x6, 1048565
+    SB x17, 1110(x26)
+    SLLI x31, x23, 26
+    SUB x1, x24, x29
+    OR x21, x25, x27
+    SRL x20, x14, x15
+    SLT x0, x13, x19
+    ORI x29, x24, -21
+    ANDI x13, x4, 28
+    AND x25, x17, x7
+    AUIPC x9, 0
+    ADDI x9, x9, 8
+    JALR x6, 20(x9)
+    XORI x17, x30, -161
+    ADDI x28, x7, -140
+    SLT x30, x8, x11
+    SRA x27, x20, x0
+    SLT x29, x26, x30
+    SLT x13, x26, x5
+    SRL x30, x25, x12
+    ADDI x23, x22, 98
+    ADDI x28, x13, 108
+    XOR x11, x20, x1
+    SLLI x25, x6, 26
+    ORI x24, x2, -163
+    SUB x7, x21, x7
+    ADD x9, x13, x27
+    ADDI x6, x26, -156
+    SRL x16, x3, x13
+    ADD x8, x22, x5
+    SLL x28, x9, x13
+    SLTIU x19, x24, 33
+    SUB x21, x27, x14
+    SRAI x30, x10, 5
+    SB x12, 989(x26)
+    LUI x27, 1048563
+    SLTU x26, x13, x30
+    XOR x30, x29, x1
+    ORI x28, x2, 135
+    XOR x3, x31, x16
+    XOR x22, x14, x8
+    XOR x23, x1, x1
+    ADDI x5, x29, -164
+    SRA x31, x6, x11
+    SLL x13, x25, x13
+    XORI x20, x15, 113
+    ADD x13, x22, x20
+    AND x31, x2, x9
+    OR x20, x6, x1
+    SLLI x30, x2, 30
+    SLTI x30, x9, 150
+    AUIPC x23, 5
+    ANDI x5, x5, -164
+    ORI x29, x16, 126
+    LUI x5, 10
+    SRA x29, x21, x2
+    SRAI x23, x28, 30
+    ORI x13, x17, -179
+    SRL x7, x30, x30
+    XORI x23, x8, -113
+    SRA x22, x23, x22
+    JAL x28, 4
+    SLTU x31, x22, x15
+    AUIPC x4, 1048568
+    SLTU x12, x9, x12
+    ANDI x0, x8, 154
+    LUI x6, 3
+    ADDI x19, x6, -6
+    AND x0, x18, x30
+    SLT x15, x28, x22
+    XOR x9, x27, x4
+    AUIPC x20, 1048575
+    SUB x20, x29, x12
+    SLT x11, x15, x19
+    LUI x14, 1048559
+    ADDI x15, x26, -7
+    AUIPC x23, 8
+    SRLI x2, x1, 5
+    ADDI x11, x12, -153
+    SLL x1, x18, x24
+    SRLI x31, x8, 31
+    LH x9, 114(x26)
+    XOR x8, x3, x27
+    SRL x17, x23, x15
+    SRAI x2, x22, 23
+    OR x13, x4, x1
+    SLTIU x24, x23, -82
+    JAL x9, 4
+    SLTU x2, x9, x12
+    ADD x18, x15, x26
+    LB x6, 7(x26)
+    ORI x28, x11, 173
+    AUIPC x5, 1048561
+    SRA x0, x10, x23
+    SRLI x8, x21, 26
+    ADD x18, x30, x31
+    ANDI x6, x31, -90
+    SLT x11, x16, x27
+    SRLI x0, x26, 28
+    XORI x2, x30, -44
+    XOR x8, x9, x23
+    ADD x3, x8, x21
+    SLT x30, x20, x7
+    OR x13, x10, x28
+    SLTU x11, x12, x1
+    AUIPC x27, 1
+    LUI x4, 8
+    JAL x0, 28
+    SRAI x27, x30, 16
+    ADDI x24, x29, -32
+    SLLI x28, x11, 3
+    AUIPC x15, 3
+    SRLI x7, x21, 2
+    SRAI x8, x16, 16
+    SB x9, 1926(x26)
+    XOR x3, x27, x0
+    SLTU x15, x4, x13
+    XORI x25, x24, -40
+    XORI x4, x11, -148
+    SLT x20, x14, x16
+    SUB x24, x26, x31
+    XORI x19, x31, -93
+    LUI x17, 1048574
+    SLL x7, x16, x16
+    SRAI x1, x11, 18
+    AUIPC x18, 1048575
+    SUB x18, x8, x24
+    SRL x11, x6, x9
+    LUI x7, 3
+    SRAI x21, x5, 10
+    SRAI x30, x15, 31
+    SLLI x4, x4, 8
+    AUIPC x10, 1048575
+    LUI x20, 5
+    XORI x2, x31, 74
+    SLL x29, x6, x4
+    ORI x27, x30, 193
+    SLTIU x12, x13, -99
+    AUIPC x23, 1048559
+    ORI x20, x29, -194
+    SRA x26, x27, x1
+    SLTIU x13, x18, 99
+    SRLI x25, x9, 19
+    SLTIU x31, x19, -185
+    SLL x31, x17, x25
+    SUB x19, x14, x10
+    XORI x3, x14, -72
+    SLTU x3, x17, x9
+    SUB x29, x29, x14
+    SLLI x10, x27, 27
+    JAL x12, 4
+    SLT x23, x9, x24
+    ADD x2, x6, x18
+    SUB x19, x26, x30
+    SLTI x8, x2, -198
+    SLTIU x4, x30, 6
+    LUI x0, 2
+    SLTI x25, x20, -51
+    SLT x31, x28, x25
+    LUI x21, 13
+    XOR x10, x10, x10
+    SLTI x6, x27, -48
+    SB x31, 1771(x26)
+    SLL x26, x7, x30
+    SLT x11, x29, x11
+    ADD x10, x15, x24
+    SUB x3, x4, x29
+    ADDI x7, x11, 17
+    SLT x18, x30, x11
+    OR x9, x25, x5
+    SUB x20, x26, x21
+    SLTI x3, x25, -162
+    SLTI x9, x8, 139
+    SLTI x0, x30, -174
+    OR x11, x13, x21
+    SRA x23, x3, x28
+    LUI x2, 2
+    XORI x29, x19, -18
+    SLTU x20, x14, x21
+    LUI x6, 1
+    SLTIU x21, x11, -26
+    SLTIU x22, x13, 197
+    SLT x9, x31, x14
+    ANDI x24, x30, 67
+    SLTIU x6, x16, 164
+    SRAI x8, x10, 31
+    SLLI x10, x26, 18
+    OR x25, x29, x8
+    SLTIU x23, x6, 21
+    LUI x18, 1048554
+    ADDI x1, x24, 174
+    AND x5, x27, x27
+    SUB x12, x1, x14
+    SLLI x0, x18, 5
+    SLTIU x22, x4, 18
+    SRLI x19, x10, 22
+    BNE x29, x0, 16
+    SLT x6, x29, x21
+    AUIPC x29, 1
+    SUB x31, x9, x1
+    SLLI x19, x22, 26
+    SLTIU x18, x15, 113
+    OR x28, x22, x16
+    SLTIU x1, x6, 173
+    SLTIU x5, x21, 187
+    OR x1, x14, x1
+    SRA x0, x6, x16
+    ADDI x26, x17, -85
+    SRLI x26, x15, 30
+    ADD x30, x6, x2
+    SLL x25, x17, x6
+    SLT x28, x31, x23
+    OR x29, x24, x15
+    SRL x9, x3, x14
+    SLTI x4, x17, -39
+    SLT x0, x6, x26
+    ADD x28, x4, x31
+    SB x19, 943(x26)
+    SLL x24, x0, x11
+    AND x26, x25, x5
+    SLT x21, x8, x0
+    ORI x6, x27, -63
+    SLTI x13, x6, -82
+    AUIPC x27, 11
+    ADDI x9, x26, -112
+    SRAI x4, x25, 25
+    XOR x15, x10, x20
+    SRL x23, x31, x0
+    ANDI x25, x30, -159
+    XOR x26, x16, x6
+    SRAI x11, x16, 16
+    SLLI x7, x16, 25
+    SRLI x12, x23, 31
+    AUIPC x2, 1048573
+    SRAI x24, x5, 24
+    XORI x26, x20, -143
+    JAL x2, 16
+    ORI x31, x20, -28
+    SRAI x14, x23, 8
+    LUI x7, 18
+    OR x8, x15, x26
+    SRLI x16, x30, 8
+    SRLI x5, x21, 7
+    XORI x20, x11, -69
+    SUB x29, x15, x11
+    LH x9, 124(x26)
+    OR x19, x2, x19
+    ADDI x9, x15, -179
+    ADD x29, x16, x6
+    SLTIU x21, x3, 42
+    LUI x11, 2
+    ADD x8, x5, x8
+    OR x15, x1, x28
+    SRAI x1, x22, 15
+    SRL x0, x10, x13
+    SLT x3, x12, x14
+    SLTU x20, x22, x5
+    SLT x16, x25, x14
+    SLLI x14, x30, 5
+    SLLI x22, x4, 10
+    BGE x4, x13, 36
+    AND x16, x16, x15
+    SLTIU x30, x8, 109
+    ADD x6, x10, x24
+    ADDI x24, x13, 93
+    ORI x9, x12, -95
+    LUI x12, 1048568
+    ORI x10, x14, -117
+    ORI x0, x13, 18
+    SRL x30, x16, x8
+    XORI x11, x26, -162
+    SUB x4, x29, x0
+    SUB x17, x22, x28
+    ANDI x31, x3, 61
+    SRA x15, x19, x4
+    ORI x18, x19, 39
+    ADD x15, x24, x5
+    ADD x22, x27, x11
+    LHU x13, 64(x26)
+    OR x7, x18, x24
+    SLTI x10, x31, -9
+    SLTU x15, x25, x4
+    AUIPC x5, 0
+    ADDI x5, x5, 8
+    JALR x22, 28(x5)
+    SLLI x20, x22, 31
+    LUI x28, 10
+    ORI x6, x28, -135
+    SRAI x15, x27, 27
+    SLLI x24, x31, 24
+    SLTI x30, x17, -185
+    LUI x28, 1048567
+    SLTIU x13, x24, -28
+    AND x11, x5, x18
+    XORI x26, x9, 196
+    OR x31, x17, x9
+    SLTIU x19, x10, 52
+    SRA x24, x17, x20
+    ANDI x30, x2, -41
+    SRA x26, x20, x16
+    SRA x8, x26, x27
+    SRAI x18, x17, 7
+    SLL x4, x8, x2
+    SLTI x1, x5, 75
+    ADD x2, x3, x15
+    SLTU x0, x12, x26
+    LHU x9, 230(x26)
+    SUB x19, x10, x11
+    LUI x18, 1048554
+    SUB x18, x11, x0
+    SRL x28, x14, x29
+    SRLI x5, x19, 4
+    SRL x6, x29, x5
+    LUI x14, 2
+    SLLI x25, x0, 28
+    ORI x19, x25, -58
+    SUB x29, x13, x26
+    ANDI x16, x27, -130
+    SLL x10, x15, x3
+    AUIPC x26, 1048563
+    ANDI x3, x22, 181
+    SLTIU x30, x25, -143
+    BLT x28, x22, 12
+    SRA x22, x0, x11
+    ADDI x17, x29, -140
+    LUI x8, 1048575
+    SLTI x30, x24, 17
+    SLT x12, x29, x21
+    XOR x8, x5, x31
+    SRLI x10, x21, 9
+    SRAI x17, x17, 19
+    SUB x25, x25, x19
+    OR x14, x7, x3
+    XOR x9, x8, x28
+    SRA x28, x14, x18
+    XORI x22, x16, -163
+    SW x11, 968(x26)
+    SLL x19, x1, x15
+    XOR x10, x15, x13
+    ANDI x14, x4, 104
+    SRAI x2, x29, 20
+    SRAI x2, x14, 25
+    XORI x22, x27, 29
+    SRA x18, x5, x27
+    ORI x17, x30, 44
+    ANDI x12, x14, 114
+    SLTIU x9, x28, 18
+    SRA x13, x27, x4
+    BLTU x22, x7, 32
+    XORI x9, x10, -20
+    XORI x19, x31, 51
+    LUI x6, 23
+    AND x29, x8, x27
+    AND x20, x22, x12
+    XORI x5, x15, 198
+    SLTIU x11, x13, -93
+    SLTIU x18, x15, -150
+    SW x17, 1460(x26)
+    SLT x5, x9, x31
+    XOR x30, x22, x4
+    LUI x10, 1048571
+    SLLI x28, x19, 27
+    SRLI x5, x7, 4
+    AUIPC x10, 10
+    SRL x20, x14, x10
+    ANDI x26, x14, 79
+    OR x10, x1, x1
+    ORI x26, x9, -61
+    SLTIU x6, x25, 133
+    OR x9, x8, x25
+    SUB x1, x2, x3
+    SRAI x17, x26, 30
+    AUIPC x31, 2
+    SRLI x5, x2, 4
+    XOR x23, x16, x23
+    ADD x27, x21, x23
+    SLTI x16, x21, -180
+    LUI x5, 1048570
+    AUIPC x3, 0
+    ADDI x3, x3, 8
+    JALR x2, 24(x3)
+    ADDI x17, x27, 168
+    ADD x10, x21, x19
+    SRLI x15, x11, 27
+    ORI x25, x21, 45
+    SLTIU x15, x17, 55
+    SLL x20, x10, x20
+    ORI x14, x11, 109
+    SLLI x8, x11, 6
+    SRA x31, x24, x7
+    SRL x11, x7, x0
+    SLL x12, x13, x3
+    SLTIU x22, x14, -176
+    ANDI x7, x12, -61
+    SRLI x22, x0, 26
+    SLTIU x13, x12, 112
+    XORI x10, x20, 169
+    SLL x16, x30, x15
+    SLL x4, x18, x3
+    SRL x24, x15, x20
+    OR x24, x9, x0
+    SLTU x16, x6, x11
+    SLT x27, x17, x11
+    SLTIU x2, x16, 50
+    SLLI x11, x22, 27
+    AUIPC x14, 1048555
+    LBU x3, 211(x26)
+    AUIPC x31, 10
+    SLTU x19, x27, x14
+    ORI x24, x28, 0
+    AND x15, x17, x19
+    SRAI x4, x23, 9
+    SLLI x30, x9, 31
+    ANDI x5, x13, -115
+    SLTIU x3, x9, -198
+    XOR x9, x17, x4
+    XORI x2, x8, 93
+    ADD x9, x23, x21
+    SRAI x27, x9, 19
+    SLL x30, x21, x24
+    SRL x15, x30, x6
+    SLL x27, x28, x18
+    XOR x29, x11, x2
+    SLTI x15, x31, -72
+    ANDI x3, x29, -7
+    XORI x16, x1, -173
+    AND x20, x17, x30
+    SRLI x19, x15, 14
+    ADDI x20, x21, -133
+    SRAI x29, x20, 14
+    SLT x0, x9, x18
+    AUIPC x5, 0
+    ADDI x5, x5, 8
+    JALR x24, 28(x5)
+    AUIPC x2, 1048547
+    AUIPC x15, 1048569
+    XOR x4, x12, x18
+    ADDI x3, x1, 165
+    SRA x0, x3, x26
+    SLL x29, x9, x11
+    AND x7, x4, x9
+    AUIPC x10, 1048566
+    XORI x24, x17, -157
+    ADDI x1, x0, -130
+    SLLI x24, x11, 8
+    SRLI x14, x3, 22
+    SLLI x18, x8, 21
+    SRL x2, x30, x9
+    SLL x14, x31, x5
+    ADDI x10, x16, 102
+    LUI x18, 4
+    XOR x20, x22, x13
+    AND x4, x28, x17
+    LUI x26, 1048551
+    ANDI x28, x2, 87
+    ADDI x13, x9, 133
+    ANDI x15, x23, 18
+    SLL x11, x6, x11
+    SLT x1, x10, x10
+    OR x22, x3, x8
+    SW x2, 1296(x26)
+    SLTU x14, x29, x26
+    ADDI x9, x27, 107
+    OR x0, x3, x1
+    OR x3, x25, x27
+    ADDI x26, x4, -59
+    SRAI x10, x18, 21
+    SLL x11, x19, x10
+    AUIPC x11, 1048574
+    SRA x13, x0, x2
+    SRAI x3, x31, 16
+    AND x22, x11, x28
+    SLTIU x20, x12, 59
+    XOR x31, x22, x5
+    SLLI x11, x5, 14
+    ADD x27, x6, x13
+    SRA x7, x23, x11
+    ADDI x29, x5, -68
+    XORI x16, x28, -40
+    OR x5, x30, x2
+    ADDI x25, x30, 154
+    SRA x15, x30, x0
+    ADDI x26, x29, 157
+    LUI x13, 1
+    JAL x29, 36
+    SLT x6, x23, x8
+    LUI x0, 1048557
+    OR x22, x14, x29
+    SLTIU x7, x3, 96
+    XORI x16, x20, 124
+    ANDI x24, x17, -55
+    LUI x24, 3
+    SRL x15, x5, x6
+    SRLI x6, x21, 13
+    SLL x21, x6, x14
+    SLTI x30, x11, -52
+    ADD x0, x19, x10
+    SRA x1, x11, x24
+    SRA x25, x1, x4
+    ADDI x25, x17, 79
+    XOR x31, x28, x29
+    XORI x26, x21, -71
+    ADD x10, x25, x16
+    SRLI x0, x25, 3
+    SUB x13, x26, x10
+    SUB x30, x10, x9
+    OR x0, x30, x0
+    ADDI x20, x28, 13
+    XORI x0, x26, 85
+    ADDI x12, x6, 62
+    SH x31, 1056(x26)
+    SLTU x28, x10, x15
+    LUI x31, 23
+    AND x2, x4, x31
+    SLTI x21, x8, -19
+    ORI x23, x28, 29
+    SUB x18, x9, x29
+    LUI x10, 16
+    SRAI x23, x19, 16
+    SRAI x10, x0, 31
+    ADDI x7, x8, -1
+    SLT x19, x4, x26
+    XOR x0, x11, x21
+    SLLI x27, x8, 22
+    ADD x25, x2, x31
+    SLTI x3, x27, -28
+    LUI x26, 6
+    SLTI x1, x12, 35
+    SLTU x19, x31, x18
+    SRL x5, x22, x25
+    AUIPC x29, 25
+    ADD x29, x17, x19
+    AUIPC x18, 1048575
+    SLT x6, x9, x3
+    SLL x27, x18, x16
+    LUI x26, 1048574
+    SLLI x13, x11, 23
+    SLLI x13, x21, 15
+    JAL x10, 20
+    SRLI x15, x5, 23
+    SRA x4, x30, x2
+    SLL x22, x10, x15
+    AND x30, x31, x4
+    ANDI x30, x29, -86
+    SLL x18, x1, x4
+    SLTU x8, x29, x20
+    SLTI x26, x31, -75
+    SLTI x6, x5, -36
+    SUB x28, x22, x15
+    ADDI x3, x19, 141
+    SLT x21, x13, x29
+    SRL x1, x1, x22
+    OR x26, x19, x12
+    XOR x19, x15, x29
+    SLLI x4, x30, 11
+    OR x22, x10, x26
+    SLTIU x1, x0, 96
+    ANDI x19, x9, -168
+    LUI x24, 1048574
+    SLTU x24, x2, x18
+    SLTU x20, x19, x27
+    SRLI x28, x16, 6
+    LW x1, 140(x26)
+    SLTIU x7, x8, 90
+    AND x6, x1, x6
+    SRLI x8, x23, 14
+    SUB x10, x27, x29
+    XORI x17, x25, 60
+    SLTI x24, x24, 108
+    SRAI x12, x19, 9
+    XOR x9, x8, x4
+    SLTU x17, x13, x21
+    BGE x16, x16, 24
+    SLT x11, x19, x12
+    XORI x18, x28, 57
+    ORI x14, x1, 167
+    SLTIU x13, x22, -15
+    AUIPC x6, 2
+    AND x13, x24, x24
+    XORI x18, x17, -57
+    LUI x11, 11
+    LUI x8, 5
+    OR x16, x15, x2
+    AUIPC x28, 17
+    XORI x20, x31, -130
+    SRA x17, x14, x26
+    AND x17, x27, x24
+    ORI x26, x20, 141
+    AUIPC x1, 1048557
+    AUIPC x22, 23
+    SLT x20, x22, x13
+    SLL x17, x9, x25
+    AUIPC x25, 0
+    ADDI x17, x28, -74
+    ANDI x27, x18, -163
+    SLL x31, x11, x15
+    SH x1, 182(x26)
+    OR x21, x29, x11
+    XORI x19, x16, 27
+    SLTIU x13, x9, -2
+    SRLI x5, x15, 28
+    AUIPC x26, 1048569
+    ADDI x16, x11, -20
+    LUI x12, 1048569
+    AND x8, x25, x5
+    XORI x25, x8, 122
+    SLLI x11, x26, 14
+    SLL x31, x21, x21
+    SLTIU x26, x30, -27
+    SRLI x8, x0, 2
+    SLTU x10, x7, x23
+    SUB x12, x2, x15
+    SUB x3, x1, x22
+    ORI x10, x16, -30
+    ORI x8, x6, 121
+    AUIPC x31, 0
+    ADDI x31, x31, 8
+    JALR x0, 32(x31)
+    SLL x21, x19, x30
+    ANDI x10, x17, -185
+    OR x30, x23, x0
+    XORI x9, x20, 166
+    SLLI x1, x9, 27
+    SRL x1, x12, x8
+    ADDI x7, x20, -66
+    SLT x19, x6, x1
+    SLL x8, x15, x21
+    SLTI x26, x24, 22
+    ADDI x26, x21, -15
+    ORI x12, x14, 95
+    ADDI x7, x15, 114
+    AUIPC x2, 1048574
+    SRA x18, x5, x26
+    SRAI x29, x13, 4
+    SLTI x13, x8, -47
+    LUI x9, 1048564
+    LUI x26, 10
+    LB x10, 104(x26)
+    SLL x6, x12, x19
+    ADD x10, x15, x23
+    SRA x17, x29, x18
+    LUI x28, 1
+    ORI x21, x28, -71
+    ORI x26, x27, 169
+    SRA x0, x5, x3
+    SRL x5, x17, x13
+    SLTIU x3, x21, 37
+    AND x5, x17, x18
+    SRL x12, x9, x2
+    SRLI x15, x21, 10
+    SUB x21, x14, x5
+    ANDI x14, x1, 125
+    SLTI x5, x20, 24
+    SRAI x16, x16, 9
+    SLTI x7, x6, 6
+    AUIPC x12, 0
+    ADDI x12, x12, 8
+    JALR x3, 4(x12)
+    SLLI x7, x1, 31
+    SLLI x27, x24, 30
+    SLL x9, x19, x4
+    SLLI x18, x22, 11
+    XORI x30, x23, 24
+    SRA x14, x2, x13
+    AND x16, x9, x5
+    SRL x7, x10, x0
+    LW x12, 184(x26)
+    AND x20, x21, x4
+    OR x12, x9, x28
+    SRLI x7, x19, 6
+    SLT x14, x13, x0
+    SRL x1, x20, x7
+    SRLI x31, x26, 27
+    SLL x31, x25, x17
+    SRAI x17, x3, 9
+    SLLI x31, x18, 24
+    ADDI x25, x10, -63
+    SLLI x13, x19, 25
+    SLTI x21, x12, -29
+    SLL x9, x9, x29
+    SLT x24, x18, x0
+    SRA x12, x0, x15
+    SLTI x27, x31, -102
+    ADDI x24, x26, -192
+    SRL x6, x23, x3
+    ORI x17, x0, -175
+    SLLI x2, x5, 15
+    SLLI x25, x12, 31
+    AUIPC x27, 0
+    ADDI x27, x27, 8
+    JALR x27, 12(x27)
+    SRL x16, x15, x25
+    SRA x25, x9, x12
+    SLTU x17, x9, x9
+    SLTIU x30, x8, 63
+    LUI x18, 1048569
+    OR x25, x24, x21
+    SRA x30, x28, x23
+    SLTIU x6, x15, -194
+    SUB x1, x15, x0
+    SLLI x7, x17, 12
+    SUB x19, x13, x18
+    AUIPC x12, 1048564
+    ADD x6, x2, x26
+    LB x3, 2037(x26)
+    SRAI x14, x30, 10
+    SLLI x29, x20, 6
+    SLTIU x19, x23, 140
+    ADDI x27, x15, -160
+    ADD x13, x9, x0
+    ADD x9, x0, x6
+    AUIPC x21, 33
+    SUB x5, x8, x25
+    SLT x24, x0, x14
+    ADDI x8, x4, 34
+    SLL x19, x4, x2
+    SLTI x28, x11, 175
+    AUIPC x16, 1
+    ORI x22, x12, 82
+    SRLI x28, x13, 6
     AUIPC x2, 0
     ADDI x2, x2, 8
-    JALR x24, 20(x2)
-    SLTIU x18, x5, -142
-    ADDI x7, x26, -164
-    SRAI x7, x31, 25
-    ANDI x10, x18, 35
-    XOR x16, x17, x14
-    SLTU x8, x24, x1
-    SRAI x25, x17, 0
-    SLL x18, x30, x5
-    SLL x26, x8, x4
-    ORI x0, x12, -111
-    SRLI x8, x24, 5
-    SRA x12, x10, x4
-    SUB x19, x26, x12
-    XOR x23, x7, x18
-    SLLI x24, x14, 21
-    AND x22, x8, x21
-    XORI x0, x23, 8
-    SLLI x7, x10, 4
-    LUI x7, 1048557
-    ADDI x0, x1, -144
-    SB x16, 1983(x6)
-    AUIPC x18, 1048553
-    AND x25, x7, x17
-    LUI x18, 1048571
-    JAL x4, 36
-    SUB x21, x10, x28
-    ANDI x18, x2, -130
-    SLTI x9, x14, 16
-    SRAI x16, x26, 29
-    SLL x22, x11, x25
-    SUB x19, x12, x25
-    AUIPC x11, 29
-    AUIPC x16, 27
-    OR x7, x2, x3
-    LUI x11, 1048555
-    SLL x20, x12, x1
-    LBU x15, 972(x6)
-    SRLI x24, x12, 21
-    OR x3, x19, x2
-    SRA x30, x0, x7
-    SLT x15, x3, x28
-    ADDI x16, x20, -164
-    SLTIU x28, x22, -8
-    SLTU x15, x9, x6
-    LUI x31, 4
-    SLL x4, x12, x18
-    SRA x24, x4, x17
-    SLLI x16, x30, 27
-    ANDI x20, x20, 37
-    AND x21, x1, x8
-    SLTU x25, x6, x0
-    OR x28, x12, x26
-    XORI x22, x19, -99
-    BGEU x9, x11, 40
-    SRLI x2, x25, 15
-    SLTI x7, x20, 153
-    SRL x28, x19, x4
-    OR x30, x6, x3
-    SLT x31, x25, x3
-    SRLI x30, x31, 2
-    LUI x10, 1048568
-    SUB x21, x17, x1
-    SRA x31, x7, x20
-    ANDI x5, x13, -128
-    SLL x4, x5, x11
-    SLTIU x2, x22, 190
-    ADD x26, x9, x25
-    LUI x26, 2
-    SRAI x15, x4, 28
-    AND x6, x28, x31
-    SLTI x17, x15, -54
-    SLTU x19, x12, x0
-    AUIPC x29, 1048558
-    SRA x2, x21, x21
-    LH x30, 34(x6)
-    AUIPC x20, 9
-    XORI x28, x2, -125
-    AND x7, x24, x17
-    XOR x11, x11, x26
-    LUI x30, 1048572
-    AUIPC x26, 11
-    OR x21, x15, x15
-    AND x29, x1, x27
-    SRA x8, x13, x2
-    ADD x24, x4, x9
-    BLTU x19, x9, 16
-    SLL x13, x20, x29
-    SRL x9, x31, x24
-    OR x15, x27, x16
-    SRL x31, x2, x6
-    SLTU x16, x7, x10
-    LBU x24, 192(x6)
-    ORI x30, x22, 58
-    LUI x13, 1048572
-    SLT x13, x26, x14
-    ANDI x0, x2, -17
-    LUI x19, 1048575
-    OR x21, x25, x13
-    ADD x1, x8, x12
-    SLLI x18, x22, 17
-    XORI x15, x20, 72
-    SLTU x10, x21, x27
-    BLT x22, x15, 4
-    ANDI x10, x17, -40
-    SRA x8, x7, x7
-    SRL x25, x31, x13
-    SRAI x17, x11, 24
-    SLTI x19, x5, -76
-    OR x25, x3, x19
-    SRA x25, x2, x9
-    ADD x11, x15, x20
-    SRLI x23, x13, 17
-    SLT x16, x3, x8
-    SRL x17, x29, x28
-    SRLI x8, x30, 18
-    AND x6, x3, x11
-    SLTI x1, x30, -66
-    AUIPC x5, 10
-    ADDI x2, x8, -147
-    LUI x2, 1048560
-    ADDI x29, x8, -163
-    AUIPC x12, 1048571
-    SH x25, 1440(x6)
-    SRAI x10, x13, 0
-    SLT x13, x7, x2
-    SLTU x4, x9, x7
-    SRA x15, x11, x8
-    LUI x11, 1048569
-    XORI x16, x15, 7
-    SLTU x26, x3, x1
-    ADD x22, x26, x30
-    SRAI x22, x13, 2
-    SLTIU x28, x14, -88
-    ADD x26, x8, x4
-    SLT x12, x8, x20
-    XORI x24, x5, 160
+    JALR x25, 12(x2)
+    SRAI x30, x7, 11
+    ANDI x6, x22, 186
+    SRL x29, x19, x20
+    SLTU x26, x20, x4
+    OR x10, x21, x18
+    SRL x16, x26, x6
+    ADD x31, x5, x28
+    LUI x29, 4
+    LUI x22, 1048565
+    SRL x12, x3, x2
+    SUB x23, x17, x3
+    SH x27, 792(x26)
+    AND x29, x14, x6
+    SUB x2, x24, x19
+    SLT x14, x1, x21
+    SLLI x29, x12, 12
+    ANDI x30, x13, 64
+    SRA x26, x10, x25
+    SLTI x27, x22, 193
+    AUIPC x16, 7
+    SRAI x10, x5, 22
+    OR x30, x6, x5
+    SUB x27, x22, x22
+    OR x0, x23, x15
+    LUI x20, 4
+    BGE x1, x25, 20
+    LUI x12, 1048571
+    SUB x23, x12, x27
+    SLTI x14, x6, 29
+    LUI x9, 1048574
+    SLTI x16, x21, -161
+    SLTU x8, x5, x7
+    SLTI x9, x30, 146
+    XOR x23, x31, x19
+    SLTI x29, x25, -66
+    SUB x19, x19, x14
+    ADDI x5, x9, 157
+    SW x15, 1136(x26)
+    SUB x15, x28, x6
+    SRA x11, x15, x9
+    OR x2, x7, x3
+    SLTIU x19, x31, 66
+    ADD x24, x6, x23
+    XORI x2, x16, -82
+    LUI x10, 13
+    ADD x30, x20, x21
+    SRLI x18, x30, 15
+    SLL x29, x5, x2
+    AUIPC x20, 1048544
+    ADDI x20, x20, -141
+    SRAI x16, x12, 28
+    XORI x10, x15, 85
+    XOR x10, x29, x20
+    SRL x28, x8, x14
+    AND x28, x21, x9
+    SLL x31, x3, x18
+    BLTU x15, x20, 8
+    XORI x25, x0, -140
+    SRLI x6, x13, 0
+    SRAI x20, x1, 5
+    SRAI x22, x13, 28
+    LUI x26, 1048561
+    LB x13, 254(x26)
+    SRA x10, x10, x0
+    AUIPC x2, 3
+    SLT x2, x5, x28
+    ADDI x23, x13, -189
+    SRAI x11, x7, 8
+    LUI x15, 1048570
+    ADD x16, x12, x1
+    SLLI x1, x8, 7
+    ANDI x16, x17, 56
+    ANDI x24, x11, -166
+    OR x3, x23, x17
+    LUI x24, 16
+    ADD x24, x9, x18
+    SRLI x14, x13, 16
+    ORI x18, x4, 11
+    ADDI x23, x20, 134
+    SRAI x11, x3, 20
+    AUIPC x10, 1048574
+    LUI x31, 14
+    SRA x20, x13, x3
+    XORI x23, x14, -60
+    ORI x9, x5, -68
+    ADDI x4, x30, 39
+    SLTU x13, x31, x16
+    XORI x0, x14, 83
+    XOR x16, x6, x10
+    SLTI x31, x16, 128
+    SUB x22, x23, x30
+    SLTIU x11, x29, -5
+    SRA x5, x21, x1
+    SLL x19, x21, x21
+    SRLI x19, x29, 29
+    XORI x24, x7, 107
+    AUIPC x3, 0
+    ADDI x3, x3, 8
+    JALR x17, 24(x3)
+    SLTU x31, x7, x11
+    SLTI x22, x10, -89
+    ADDI x6, x19, 135
+    AUIPC x23, 1048575
+    SRAI x23, x27, 26
+    ORI x4, x9, 16
+    ADDI x6, x25, 122
+    SRAI x4, x22, 18
+    SRA x13, x0, x25
+    SUB x14, x24, x12
+    LUI x11, 1048550
+    SRLI x20, x27, 17
+    SLTU x10, x29, x5
+    SH x20, 342(x26)
+    SRL x12, x12, x11
+    XOR x12, x28, x19
+    AND x13, x5, x19
+    ADD x22, x16, x27
+    SUB x22, x14, x12
+    AND x1, x28, x2
+    SLLI x25, x12, 1
+    AUIPC x24, 1048571
+    AUIPC x29, 0
+    ADDI x29, x29, 8
+    JALR x18, 32(x29)
+    XOR x24, x27, x22
+    SLTI x9, x1, -170
+    SRLI x20, x16, 29
+    ADDI x20, x17, 24
+    SUB x29, x26, x20
+    SRA x19, x0, x31
+    SUB x4, x9, x29
+    SLLI x16, x10, 6
+    SLTIU x5, x7, 105
+    AND x4, x13, x18
+    SRL x18, x28, x17
+    SRLI x29, x29, 13
+    ANDI x29, x0, 150
+    SLLI x30, x20, 12
+    SRL x6, x8, x10
+    SLTI x2, x11, -30
+    ORI x26, x10, 195
+    ADD x10, x10, x3
+    SLL x6, x7, x22
+    SLLI x6, x30, 13
+    LW x6, 108(x26)
+    SRAI x19, x13, 23
+    SRLI x13, x19, 20
+    SLLI x13, x14, 26
+    XORI x13, x13, 139
+    XORI x11, x26, 117
+    SRLI x29, x7, 17
+    SLTI x3, x19, -46
+    ADD x24, x4, x21
+    ORI x0, x17, -64
+    XOR x30, x15, x30
+    SLTIU x12, x9, -16
+    SLTU x25, x3, x14
+    AND x1, x11, x19
+    SLTU x25, x8, x0
+    SLTU x13, x21, x22
+    AND x23, x14, x1
+    SLT x17, x14, x10
+    JAL x22, 20
+    SRAI x15, x7, 28
+    OR x28, x1, x12
+    SLT x16, x29, x22
+    OR x29, x7, x3
+    LH x20, 78(x26)
+    AND x26, x13, x11
+    SLT x21, x18, x19
+    XORI x24, x2, 107
+    ORI x12, x11, -71
+    SLT x29, x22, x16
+    SRL x3, x23, x5
+    ADD x0, x24, x30
+    ANDI x30, x16, -37
+    SLT x28, x8, x30
+    AUIPC x5, 1048568
+    ANDI x29, x1, -118
+    SRAI x1, x15, 9
+    SLTIU x31, x3, 12
+    SLTI x0, x15, -149
+    ADDI x18, x11, 85
+    OR x24, x12, x19
+    AUIPC x15, 0
+    ADDI x15, x15, 8
+    JALR x26, 28(x15)
+    SLL x5, x8, x11
+    ADD x19, x28, x15
+    LUI x19, 2
+    LUI x0, 10
+    SRLI x17, x1, 25
+    SRLI x14, x8, 2
+    SLL x17, x18, x5
+    SLLI x16, x1, 10
+    SUB x30, x1, x30
+    XORI x0, x30, 42
+    XOR x5, x24, x27
+    AUIPC x8, 3
+    LUI x11, 524304
+    ADDI x11, x11, 256
+    LW x12, 64(x11)
+    SLT x1, x10, x20
+    SRLI x10, x15, 19
+    SLTU x14, x23, x21
+    AND x7, x10, x1
+    SLTU x14, x13, x21
+    SRA x17, x30, x20
+    ANDI x2, x29, 139
+    ADDI x21, x9, 11
+    SRLI x26, x6, 12
+    SLL x12, x15, x9
+    SLTU x9, x2, x24
+    AUIPC x11, 0
+    ADDI x11, x11, 8
+    JALR x30, 4(x11)
+    OR x31, x10, x25
+    XORI x9, x6, 177
+    SRA x30, x9, x16
+    SLLI x29, x7, 18
+    LUI x17, 524304
+    ADDI x17, x17, 256
+    LB x24, 238(x17)
+    AUIPC x16, 5
+    SRAI x12, x24, 25
+    ORI x7, x8, 70
+    ADDI x11, x2, 125
+    XORI x3, x29, 45
+    XOR x3, x4, x19
+    SLT x31, x18, x9
+    SLL x6, x0, x10
+    ANDI x19, x6, -178
+    ADD x29, x28, x18
+    SRLI x29, x5, 20
+    SLTIU x14, x13, 134
+    SLTI x19, x23, 31
+    SRA x11, x28, x23
+    ORI x16, x7, 131
+    JAL x10, 28
+    SRA x12, x28, x21
+    XORI x7, x9, -126
+    SLTIU x13, x2, 163
+    XORI x0, x2, -158
+    AND x16, x16, x13
+    SLTI x18, x15, -38
+    SLL x22, x19, x30
+    LW x19, 32(x17)
+    SUB x4, x18, x0
+    ORI x19, x19, 185
+    SRL x15, x26, x26
+    SLTIU x11, x2, -109
+    SLLI x19, x3, 4
+    OR x21, x31, x31
+    ORI x6, x7, 184
+    XOR x2, x20, x16
+    SLLI x0, x30, 3
+    AUIPC x15, 1048571
+    SLLI x0, x1, 17
+    SRLI x29, x19, 23
+    ADD x26, x10, x7
+    SLLI x16, x9, 2
+    BGEU x12, x23, 28
+    ADDI x27, x30, -89
+    SUB x4, x0, x4
+    LUI x0, 1048568
+    SRA x26, x29, x18
+    SLTI x26, x31, -104
+    SRLI x30, x3, 5
+    ORI x24, x22, -49
+    SRA x30, x28, x19
+    SRLI x0, x29, 11
+    SLLI x25, x25, 9
+    SLTI x24, x18, -97
+    AND x8, x20, x3
+    SLTIU x27, x21, 45
+    SRL x25, x26, x29
+    SRAI x15, x22, 30
+    ANDI x12, x13, 102
+    XOR x2, x15, x18
+    SLLI x16, x21, 29
+    LUI x2, 1
+    SH x12, 1738(x17)
+    AUIPC x29, 1048573
+    OR x9, x15, x28
+    SRA x29, x5, x10
+    SLL x26, x24, x24
+    ADDI x27, x24, 73
+    SLTU x17, x21, x15
+    XORI x26, x30, 27
+    OR x16, x27, x4
+    XOR x20, x19, x11
+    SLLI x13, x20, 7
+    OR x6, x29, x28
+    SRAI x3, x11, 20
+    ORI x2, x16, 128
+    SRA x17, x9, x8
+    SLL x5, x21, x7
+    XORI x7, x26, 14
+    SLTIU x11, x6, 46
+    ANDI x11, x26, 158
+    SRAI x1, x17, 9
+    SLTU x5, x25, x11
+    OR x25, x9, x22
+    XORI x28, x5, -141
+    SLTIU x12, x17, 175
+    LUI x11, 1048567
+    SRLI x20, x9, 11
+    LUI x31, 7
+    AND x1, x16, x1
+    SUB x1, x13, x12
+    ADDI x2, x5, 147
+    SRLI x15, x13, 0
+    AND x0, x22, x2
+    SLLI x6, x22, 26
+    SUB x22, x15, x13
+    ADD x13, x4, x11
+    SLT x7, x2, x10
+    BGEU x14, x17, 16
+    ANDI x23, x22, 92
+    LUI x12, 24
+    SLL x16, x31, x6
+    SB x25, 119(x17)
+    SLLI x0, x4, 20
+    SRA x5, x25, x18
+    SLT x20, x6, x7
+    ADD x5, x31, x22
+    SRLI x7, x6, 10
+    ADD x31, x27, x29
+    AUIPC x14, 15
+    SRLI x3, x25, 20
+    SLTU x9, x20, x22
+    AND x22, x30, x22
+    SUB x1, x25, x24
+    ORI x25, x11, 176
+    SUB x9, x20, x25
+    AUIPC x12, 0
+    ADDI x12, x12, 8
+    JALR x11, 16(x12)
+    SLLI x4, x20, 0
+    ORI x13, x25, 70
+    SLTI x5, x20, -151
+    SLTIU x28, x28, -80
+    SLTU x0, x10, x15
+    SUB x11, x1, x5
+    ANDI x26, x31, 67
+    LUI x15, 12
+    SLTI x4, x29, 187
+    SRLI x9, x15, 14
+    ORI x27, x24, -145
+    SRL x20, x29, x21
+    SRA x2, x8, x12
+    ORI x13, x31, -89
+    SB x7, 1487(x17)
+    SRAI x14, x26, 12
+    XORI x1, x7, 68
+    SRL x25, x25, x7
+    ANDI x13, x23, 189
+    SLTI x11, x1, -106
+    SRLI x30, x20, 15
+    AND x23, x13, x0
+    OR x18, x29, x13
+    OR x9, x18, x13
+    SLTIU x15, x20, -62
+    ORI x25, x19, 172
+    SLTI x6, x5, 60
+    LUI x27, 12
+    ADDI x23, x17, 15
+    ORI x3, x2, 89
+    SRLI x23, x26, 6
+    SRL x12, x5, x24
+    XORI x12, x13, -51
+    JAL x14, 24
+    XOR x8, x20, x31
+    SLT x21, x17, x4
+    SUB x29, x31, x27
+    SUB x18, x10, x2
+    ADD x27, x27, x25
+    SB x9, 384(x17)
     
     jal x22,  exiting_step
     li x23, 0xFFFF      # Should skip

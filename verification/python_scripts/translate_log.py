@@ -12,6 +12,7 @@ def read_trace_log_line(line: str):
     core   0: 3 0x0000100c (0x0182a283) x5  0x80000000 mem 0x00001018 (load)
     core   0: 3 0x80000010 (0x00538023) mem 0x80010100 0x00 (store)
     core   0: 3 0x8000001c (0xfe62eae3) (branches, jal/jalr to x0, noops)
+    core   0: 3 0x80000338 (0x07051003) mem 0x80010170 (load-noop)
     """
     str_arry = line.split()
     pc = int(str_arry[3], 16)
@@ -23,11 +24,18 @@ def read_trace_log_line(line: str):
         assert len(str_arry) == 5, f"Unexpected format for branch or noop instruction: {line}"
         return {"pc": pc, "instr": instr}
     elif instr.type3 == "LOAD":
-        assert len(str_arry) == 9, f"Unexpected format for load instruction: {line}"
-        dest_reg = int(str_arry[5][1:], 10)
-        data = int(str_arry[6], 16)
-        addr = int(str_arry[8], 16)
-        return {"pc": pc, "instr": instr, "dest_reg": dest_reg, "data": data, "addr": addr}
+        if instr.rd == 0:
+            assert len(str_arry) == 7, f"Unexpected format for load-noop instruction: {line}"
+            dest_reg = 0
+            data = 0
+            addr = int(str_arry[6], 16)
+            return {"pc": pc, "instr": instr, "dest_reg": dest_reg, "data": data, "addr": addr}
+        else:
+            assert len(str_arry) == 9, f"Unexpected format for load instruction: {line}"
+            dest_reg = int(str_arry[5][1:], 10)
+            data = int(str_arry[6], 16)
+            addr = int(str_arry[8], 16)
+            return {"pc": pc, "instr": instr, "dest_reg": dest_reg, "data": data, "addr": addr}
     elif instr.type3 == "STORE":
         assert len(str_arry) == 8, f"Unexpected format for store instruction: {line}"
         addr = int(str_arry[6], 16)

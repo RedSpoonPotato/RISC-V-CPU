@@ -1,6 +1,7 @@
 from utils import *
 import random as rand
 
+# adjust these values as needed
 data_base_addr = 0x80010100
 end_addr = 0x80012100
 program = Program(
@@ -14,6 +15,7 @@ program = Program(
     # data_mem_base_addr=0x80010100
     data_mem_base_addr=data_base_addr
 )
+rand_sub_seq_num = 100
 
 # load initial instructions and execute them
 init_instr_str_seq = grab_instrs_from_bin("bins/init_py.bin", 100)
@@ -57,7 +59,7 @@ safe_instr_args = {
     "u_imm_bounds": (-1e10, 1e10)
 }
 
-for _ in range(100):
+for _ in range(rand_sub_seq_num):
     # generage safe instructions
     print("\nGenerating and running safe instructions...\n")
     program.gen_rand_program_seq_and_add(
@@ -92,6 +94,7 @@ for _ in range(100):
         type3 = rand.choice(list(mem_set)),
         max_attempts = 100,
         imm_bounds=(-2048, 2047),
+        # imm_bounds=(0, 2047),
         debug = 2,
         data_addr_range=(data_base_addr, data_base_addr + 2047)
     )
@@ -104,5 +107,5 @@ for _ in range(100):
     )
     program.exec(max_cycles=2000, debug=1)
 
-print("\n Program memory states:")
+print("\nProgram memory states:")
 program.memory.print_valid_address_ranges()
