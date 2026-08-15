@@ -19,8 +19,8 @@ cat init_p1.s \
 cd ../..
 clang --target=riscv32 -march=rv32i -mabi=ilp32 -nostdlib -Wl,-T,link.ld -o elfs/rand_sim_spike.elf asms/rand_sim_spike.s
 echo "--launching spike--"
-# spike --isa=rv32i -m0x80000000:0x10000,0x80010000:0x10000 --log-commits elfs/rand_sim_spike.elf 2> trace.log
-spike --isa=rv32i -m0x80000000:0x10000,0x80010000:0x10000 -l elfs/rand_sim_spike.elf 2> trace.log
+spike --isa=rv32i -m0x80000000:0x10000,0x80010000:0x10000 --log-commits elfs/rand_sim_spike.elf 2> trace.log # for running
+# spike --isa=rv32i -m0x80000000:0x10000,0x80010000:0x10000 -l elfs/rand_sim_spike.elf 2> trace.log # for debugging
 echo "--spike finished--"
 
 # translating trace.log to readable format for UVM testbench

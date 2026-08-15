@@ -6,7 +6,8 @@ data_base_addr = 0x80010100
 end_addr = 0x80012100
 program = Program(
     # instr_mem_space_byte_size=0x10000,
-    instr_mem_space_byte_size=0x1000,
+    # instr_mem_space_byte_size=0x1000, old
+    instr_mem_space_byte_size=0xB000,
     instr_mem_base_addr=0x80000000,
     # data_mem_size=0x10000,
     data_mem_size=(end_addr - data_base_addr + 4),
@@ -15,10 +16,13 @@ program = Program(
     # data_mem_base_addr=0x80010100
     data_mem_base_addr=data_base_addr
 )
-rand_sub_seq_num = 100
+rand_sub_seq_num = 50
+
+with open(py_trace_pth, "w") as f:
+    f.write("\n")
 
 # load initial instructions and execute them
-init_instr_str_seq = grab_instrs_from_bin("bins/init_py.bin", 100)
+init_instr_str_seq = grab_instrs_from_bin("bins/init_main_py.bin", 100)
 init_instr_seq = [create_instr_from_bin(instr_str) for instr_str in init_instr_str_seq]
 program.instructions.extend(init_instr_seq)
 print(f"Program instruction length: {len(program.instructions)}\n")

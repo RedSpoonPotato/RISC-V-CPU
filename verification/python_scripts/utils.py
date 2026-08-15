@@ -3,6 +3,9 @@ from enum import Enum, auto
 import sys
 from typing import Tuple
 
+# paths
+py_trace_pth = "py_trace.log"
+
 def print_to_file(filename, content, append=False):
     mode = "a" if append else "w"
     with open(filename, mode, encoding="utf-8") as f:
@@ -1511,6 +1514,14 @@ class Program:
         if debug >= 3:
             print(f"Memory state before execution: {self.memory.print_memory_state()}")
 
+        global py_trace_pth
+        with open(py_trace_pth, "a") as f:
+            f.write(f"0x{self.pc:08X}: {instr.gen_assembly_str()}\n")
+            # f.write(f"Register file before execution: {self.register_file.print_register_state()}\n")
+            # f.write("Memory valid ranges before execution:\n")
+            # self.memory.print_valid_address_ranges(file=f)
+            # f.write(f"Memory state before execution: {self.memory.print_memory_state()}\n")
+
         if instr.type2 == "ALU" and instr.type == "R-TYPE":   self.register_r_op(instr)
         elif instr.type2 == "ALU" and instr.type == "I-TYPE": self.register_i_op(instr)
         elif instr.type2 == "LOAD":     self.register_load_instr(instr)
@@ -1525,12 +1536,13 @@ class Program:
     
     def grab_next_instr_index(self) -> int:
         if self.pc < self.instr_addr_range[0] or self.pc > self.instr_addr_range[1]:
-            print(f"PC 0x{self.pc:08X} out of instruction memory range {self.instr_addr_range}, halting execution")
-            return -1
-        # if self.pc + 4 > self.instr_addr_range[1]:
+            # print(f"PC 0x{self.pc:08X} out of instruction memory range {self.instr_addr_range}, halting execution")
+            raise ValueError(f"PC 0x{self.pc:08X} out of instruction memory range {self.instr_addr_range}, halting execution")
+            # return -1
         if self.pc + 3 > self.instr_addr_range[1]:
-            print(f"PC 0x{self.pc:08X} points to instruction that would go out of instruction memory range {self.instr_addr_range}, halting execution")
-            return -1
+            # print(f"PC 0x{self.pc:08X} points to instruction that would go out of instruction memory range {self.instr_addr_range}, halting execution")
+            raise ValueError(f"PC 0x{self.pc:08X} points to instruction that would go out of instruction memory range {self.instr_addr_range}, halting execution")
+            # return -1
         instr_index = (self.pc - self.instr_addr_range[0]) // 4
         if instr_index >= len(self.instructions):
             print(f"PC 0x{self.pc:08X} points to instruction index {instr_index} which is out of range of loaded instructions, halting execution")
@@ -1644,7 +1656,8 @@ class Program:
             cycle += 1
 
         if cycle >= max_cycles:
-            print(f"Reached maximum cycle count of {max_cycles}, halting execution")
+            # print(f"Reached maximum cycle count of {max_cycles}, halting execution")
+            raise ValueError(f"Reached maximum cycle count of {max_cycles}, halting execution")
         
         if debug >= 0:
             print("----------------------------------------")
@@ -1710,7 +1723,7 @@ class Program:
         self.add_instr_seq([instr])
         new_pc = self.pc
         new_instr_index = (new_pc - self.instr_addr_range[0]) // 4
-        assert new_pc > old_pc, "New PC is less or equal than old PC after executing forward control instruction"
+        assert new_instr_index > old_instr_index, "New PC is less or equal than old PC after executing forward control instruction"
         if debug >= 1:
             print(f"Old PC: 0x{old_pc:08X}, Old Instr Index: {old_instr_index}")
             print(f"New PC: 0x{new_pc:08X}, New Instr Index: {new_instr_index}")
