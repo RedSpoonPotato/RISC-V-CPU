@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-# Note: launch with "source sim.sh"
-
 if [ -n "${start_ran}" ]; then
     echo "already ran start.sh..."
 else

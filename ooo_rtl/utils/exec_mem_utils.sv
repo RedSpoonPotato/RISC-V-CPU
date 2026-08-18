@@ -8,7 +8,8 @@ package exec_mem_pkg;
     import issue_pkg::*;
     import instr_fetch_pkg::*;
 
-    localparam MEM_ENTRY_NUM = 1024;
+    // localparam MEM_ENTRY_NUM = 1024;
+    localparam MEM_ENTRY_NUM = 65536; // matches spike sim data mem space
     localparam MEM_INDEX_WIDTH = $clog2(MEM_ENTRY_NUM);
 
 
@@ -113,10 +114,100 @@ package exec_mem_pkg;
     );
         case (funct3)
             3'b000: return (4'b0001) << lower_addr_bits;
-            3'b001: return (4'b0011) << lower_addr_bits[1];
+            // 3'b001: return (4'b0011) << lower_addr_bits[1];
+            3'b001: return (4'b0011) << (lower_addr_bits[1] * 2); // shift by 2 bits for halfword
             3'b010: return 4'b1111;
             default:
                 return 4'b0000;
+        endcase
+    endfunction
+
+    function automatic logic [DATA_WIDTH-1:0] shift_store_data (
+        input logic [2:0] funct3,
+        input logic [1:0] lower_addr_bits,
+        input logic [DATA_WIDTH-1:0] store_data
+    );
+        case (funct3)
+            3'b000: return store_data << (lower_addr_bits * 8);
+            3'b001: return store_data << (lower_addr_bits[1] * 16);
+            3'b010: return store_data;
+            default:
+                return DATA_WIDTH'(0);
+        endcase
+    endfunction
+
+    function automatic logic [DATA_WIDTH-1:0] reverse_shift_store_data (
+        // input logic [2:0] funct3,
+        // input logic [1:0] lower_addr_bits,
+        input logic [3:0] store_en_vector,
+        input logic [DATA_WIDTH-1:0] store_data
+    );
+        int length = 0;
+        int most_sig_one = -1;
+        for (int i = 0; i < 4; i++) begin
+            if (store_en_vector[i]) begin
+                length = length + 1;
+                most_sig_one = i;
+            end
+        end
+
+        if (most_sig_one == -1) begin
+            return DATA_WIDTH'(0);
+        end
+
+        case (length)
+            1: return store_data >> (most_sig_one * 8);
+            2: begin 
+                if (most_sig_one == 1) begin
+                    return store_data;
+                end else if (most_sig_one == 3) begin
+                    return store_data >> 16;
+                end else begin
+                    return DATA_WIDTH'(0); // Invalid case, should not happen
+                end
+            end
+            4: return store_data;
+            default:
+                return DATA_WIDTH'(0);
+        endcase
+    endfunction
+
+    function automatic logic reverse_shift_store_data_comparison (
+        // input logic [2:0] funct3,
+        // input logic [1:0] lower_addr_bits,
+        input logic [3:0] store_en_vector,
+        input logic [DATA_WIDTH-1:0] store_data,
+        input logic [DATA_WIDTH-1:0] expected_data
+    );
+        int length = 0;
+        int most_sig_one = -1;
+        for (int i = 0; i < 4; i++) begin
+            if (store_en_vector[i]) begin
+                length = length + 1;
+                most_sig_one = i;
+            end
+        end
+
+        if (most_sig_one == -1) begin
+            return 1'b0;
+        end
+
+        case (length)
+            1: begin 
+                return store_data[8*most_sig_one +: 8] == expected_data[7:0];
+            end
+            2: begin 
+                if (most_sig_one == 1) begin
+                    return store_data[15:0] == expected_data[15:0];
+                end else if (most_sig_one == 3) begin
+                    return store_data[31:16] == expected_data[15:0];
+                end else begin
+                    return 1'b0; // Invalid case, should not happen
+                end
+            end
+            4: return store_data == expected_data;
+            default:
+                return 1'b0;
         endcase
     endfunction
 

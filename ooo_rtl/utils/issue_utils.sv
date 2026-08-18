@@ -155,8 +155,18 @@ function automatic logic [FUNCT_COMB_WIDTH-1:0] get_funct_comb(
     end else begin: Other
         logic [2:0] funct3 = op[9:7];
         logic [6:0] funct7 = op[16:10];
-        if (opcode == 7'b0010011 && funct3 == 3'b000) begin: Addi
-            return {1'b0, funct3}; // ADDI
+        // if (opcode == 7'b0010011 && funct3 == 3'b000) begin: Addi
+        //     return {1'b0, funct3}; // ADDI
+        // end else if (opcode == 7'b0010011 && funct3 == 3'b101) begin: Sri
+        //     return {funct7[5], funct3};
+        // end else if (opcode == 7'b0010011) begin: AluI
+        //     return {1'b0, funct3};
+        // end else begin: Default
+        //     return {funct7[5], funct3};
+        // end
+
+        if (opcode == 7'b0010011 && funct3 != 3'b101) begin: AluInotSri
+            return {1'b0, funct3};
         end else begin: Default
             return {funct7[5], funct3};
         end

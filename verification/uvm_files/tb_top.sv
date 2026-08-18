@@ -117,6 +117,7 @@ class cpu_commit_agent extends uvm_agent;
     endfunction
 endclass
 
+import exec_mem_pkg::*;
 class cpu_scoreboard extends uvm_scoreboard;
     `uvm_component_utils(cpu_scoreboard)
     uvm_analysis_imp #(cpu_commit_pkt, cpu_scoreboard) commit_pkt_export;
@@ -140,37 +141,38 @@ class cpu_scoreboard extends uvm_scoreboard;
     endfunction
 
     function bit conditional_compare(cpu_commit_pkt exp, cpu_commit_pkt act);
-        bit match = 1;
-
+        // bit match = 1;
+        
         if (exp.wr_en !== act.wr_en) begin
-            match = 0;
+            // match = 0;
+            return 1'b0;
         end
         if (exp.dest_valid !== act.dest_valid) begin
-            match = 0;
+            return 1'b0;
         end
         if (exp.dest_valid) begin
             if (exp.arch_reg_addr !== act.arch_reg_addr) begin
-                match = 0;
+                return 1'b0;
             end
             if (exp.reg_data !== act.reg_data) begin
-                match = 0;
+                return 1'b0;
             end
         end
         if (exp.store_en !== act.store_en) begin
-            match = 0;
+            return 1'b0;
         end
         if (exp.store_en) begin
             if (exp.store_addr !== act.store_addr) begin
-                match = 0;
+                return 1'b0;
             end
-            if (exp.store_data !== act.store_data) begin
-                match = 0;
+            if (!exec_mem_pkg::reverse_shift_store_data_comparison(act.store_en, act.store_data, exp.store_data)) begin
+                return 1'b0;
             end
         end
         if (exp.pc !== act.pc) begin
-            match = 0;
+            return 1'b0;
         end
-        return match;
+        return 1'b1;
     endfunction
 
     // Called when Input Monitor sees an instruction entering the pipeline

@@ -18,17 +18,18 @@ package instr_fetch_pkg;
     localparam MAX_AUIPC_INSTRS = 4;
     localparam MAX_PC_INSTRS = MAX_SPEC_EXEC_INSTRS + MAX_AUIPC_INSTRS; // max number of instrs that can be waiting on a pc calculation (branches, jumps, auipc)
 
-    localparam INSTR_MEM_ENTRY_NUM = 1024;
+    // localparam INSTR_MEM_ENTRY_NUM = 1024;
+    localparam INSTR_MEM_ENTRY_NUM = 2048 * 4;
     localparam INSTR_MEM_INDEX_WIDTH = $clog2(INSTR_MEM_ENTRY_NUM);
 
     // may have to change back for synth
     // localparam INSTR_MEM_FILE = "memory/instr_mem_simple.mem";
-    localparam INSTR_MEM_FILE = "../verification/python_scripts/rtl_hexs/init_spike.hex";
+    // localparam INSTR_MEM_FILE = "../verification/python_scripts/rtl_hexs/init_spike.hex";
+    localparam INSTR_MEM_FILE = "../verification/python_scripts/rtl_hexs/rand_sim_spike.hex";
 
     `ifdef DEBUG
         localparam INSTR_ADDR_OFFSET = 32'h80000000;
     `endif
-
 
     typedef struct packed {
         logic wr_en;

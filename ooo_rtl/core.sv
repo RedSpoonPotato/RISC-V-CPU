@@ -25,7 +25,11 @@ import core_pkg::*;
     logic issue_stall;
     logic wb_stall;
     logic stall;
-    assign stall = decode_stall && issue_stall && wb_stall;
+    logic non_decode_stall;
+    // assign stall = decode_stall && issue_stall && wb_stall;
+    assign stall = decode_stall || issue_stall || wb_stall;
+    assign non_decode_stall = issue_stall || wb_stall;
+
     
     logic decode_is_spec_instr;
     if_output_pkt_t instr_fetch_output_pkt;
@@ -64,7 +68,8 @@ import core_pkg::*;
         .pc_buff_inst_o(decode_pc_buff_inst),
         .mem_buff_wr_en_o(decode_mem_buff_wr_en),
         .exception_i(instr_fetch_exception),
-        .stall_o(decode_stall)
+        .stall_o(decode_stall),
+        .stall_i(non_decode_stall)
     );
 
     fetch_packet_t issue_fetch_pkt;

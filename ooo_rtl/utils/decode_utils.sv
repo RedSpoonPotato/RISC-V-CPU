@@ -66,7 +66,7 @@ package decode_pkg;
     typedef struct packed {
         logic valid;
         logic [INSTR_COMPRESS_WIDTH-1:0] op;
-        logic [$clog2(MAX_EXEC_CYCLE)-1:0] exec_dur;
+        logic [$clog2(MAX_EXEC_CYCLE+1)-1:0] exec_dur;
         logic imm_valid;
         logic [IMM_COMPRESS-1:0] imm_compr;
         logic speculative;
@@ -109,22 +109,26 @@ package decode_pkg;
 
     // SUBJECT TO CHANGE
     // adds + 2 to normal delay, see mini_scoreboard for details
-    function automatic logic [$clog2(MAX_EXEC_CYCLE)-1:0] get_exec_stage_delays_sb (
+    function automatic logic [$clog2(MAX_EXEC_CYCLE+1)-1:0] get_exec_stage_delays_sb (
         input [INSTR_COMPRESS_WIDTH-1:0] op
     );
         // if (op[6:0] == 7'b0000011 || op[6:0] == 7'b010001) begin
         if (op[6:0] == 7'b0000011) begin // load
-            return 4;
-        end else begin
             return 3;
+        end else begin
+            return 2;
         end
     endfunction
 
     // SUBJECT TO CHANGE
-    function automatic logic [$clog2(MAX_EXEC_CYCLE)-1:0] get_exec_stage_delays_from_instr (
+    function automatic logic [$clog2(MAX_EXEC_CYCLE+1)-1:0] get_exec_stage_delays_from_instr (
         input [31:0] instr
     );
-        return 3;
+        if (instr[6:0] == 7'b0000011) begin
+            return 3;
+        end else begin
+            return 2;
+        end
     endfunction
 
     // sets some entries to be 0, will be overwritten later
@@ -226,6 +230,7 @@ package decode_pkg;
         7'b011_0111, 7'b001_0111:
         begin
             extract_20b_imm = instr[31:12];
+            // extract_20b_imm = instr[19:0];
         end
 
         // ----------------------------------------------------------------

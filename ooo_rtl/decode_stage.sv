@@ -71,7 +71,9 @@ module decode_stage
     output logic mem_buff_wr_en_o,
 
     input logic exception_i, // not sure if we need to flipflop this
-    output logic stall_o
+    output logic stall_o,
+
+    input logic stall_i
 );
 
     /* input flip flops */
@@ -84,7 +86,9 @@ module decode_stage
     // logic exception_ff;
 
     always_ff @(posedge clk) begin
-        if_input_ff <= if_input_i;
+        if (!stall_i && !stall_o) begin
+            if_input_ff <= if_input_i;
+        end
         // free_list_update_pkt_ff <= free_list_update_pkt_i;
         // rename_table_update_pkt_ff <= rename_table_update_pkt_i;
         // issue_queue_update_pkt_ff <= issue_queue_update_pkt_i;
@@ -167,7 +171,7 @@ module decode_stage
     logic issue_queue_empty;
     logic issue_queue_full;
     logic issue_queue_all_stalled;
-    logic [MAX_EXEC_CYCLE:0] issue_queue_future_exec_stage_slots;
+    logic [MAX_EXEC_CYCLE+1:0] issue_queue_future_exec_stage_slots;
 
     issue_queue issue_queue_inst (
         .clk(clk),
@@ -230,7 +234,14 @@ module decode_stage
     logic mem_instr;
 
     logic master_instr_valid; // NEED TO SET, should depend alos upon exception
-    assign master_instr_valid = if_input_ff.instr_valid && !exception_i;
+    // assign master_instr_valid = if_input_ff.instr_valid && !exception_i;
+    assign master_instr_valid = 
+        if_input_ff.instr_valid && 
+        !exception_i && 
+        // !(free_list_empty && has_dest(instr_ff[6:0])) &&
+        // !issue_queue_all_stalled && 
+        !stall_o &&
+        !stall_i;
 
     // setting cntrl instructions
     always_comb begin
@@ -266,9 +277,11 @@ module decode_stage
         //     master_instr_valid;
 
         new_instr_ready = 
-            !((has_dest(instr_ff[6:0]) && free_list_empty) ||
+            !(
+                // (has_dest(instr_ff[6:0]) && free_list_empty) ||
             (has_src0(instr_ff[6:0]) && rename_table_src0_pending) ||
-            (has_src1(instr_ff[6:0]) && rename_table_src1_pending)) &&
+            (has_src1(instr_ff[6:0]) && rename_table_src1_pending) ||
+            issue_queue_future_exec_stage_slots[get_exec_stage_delays_from_instr(instr_ff)] == 1'b1) &&
             master_instr_valid;
         
         iq_instr_ready = !issue_queue_empty && !issue_queue_all_stalled && !exception_i;
@@ -610,7 +623,7 @@ module issue_queue
     input logic prf_wr_en_i,
     // for checking for structural hazards
     // 1 extra: 1 for reg fetch stage
-    input logic [MAX_EXEC_CYCLE:0] future_exec_stage_slots_i,
+    input logic [MAX_EXEC_CYCLE+1:0] future_exec_stage_slots_i,
     // output logic [INSTR_COMPRESS_WIDTH-1:0] compr_instr_o;
     output iq_output_t instr_o,
     // also other output information 
@@ -721,7 +734,7 @@ import general_pkg::*;
     input [INSTR_COMPRESS_WIDTH-1:0] op_i,
     // outputting to iq
     // 1 extra: 1 for reg fetch stage
-    output logic [MAX_EXEC_CYCLE:0] future_exec_stage_slots_o,
+    output logic [MAX_EXEC_CYCLE+1:0] future_exec_stage_slots_o,
     // stalling or clearing
     input exception_i
 );
@@ -746,7 +759,7 @@ import general_pkg::*;
         end
     end
 
-    assign future_exec_stage_slots_o = exec_stage_slots_int[MAX_EXEC_CYCLE+1:1];
+    assign future_exec_stage_slots_o = {1'b0, exec_stage_slots_int[MAX_EXEC_CYCLE+1:1]};
 
 endmodule
 

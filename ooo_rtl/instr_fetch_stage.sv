@@ -163,13 +163,14 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
     always_comb begin
         branch_mispredict = 0;
         trgt_mispredict = 0;
-        if (spec_exec_answr_pkt_i.branch_en) begin: Jump
+        if (spec_exec_answr_pkt_i.branch_en) begin: Branch
             branch_mispredict = shift_reg_pkt_2.branch_pred != spec_exec_answr_pkt_i.branch_pred;
         end
-        if (spec_exec_answr_pkt_i.trgt_en) begin: Branch
+        if (spec_exec_answr_pkt_i.trgt_en) begin: Target
             trgt_mispredict = shift_reg_pkt_2.trgt != spec_exec_answr_pkt_i.trgt;
         end
-        jump_mispredict = trgt_mispredict && ~branch_mispredict;
+        // jump_mispredict = trgt_mispredict && ~branch_mispredict;
+        jump_mispredict = trgt_mispredict && !spec_exec_answr_pkt_i.branch_en;
     end
 
     assign exception_internal = jump_mispredict || branch_mispredict || mem_addr_conflict_pkt_i.en;
@@ -217,6 +218,7 @@ import writeback_pkg::mem_addr_conflict_pkt_t;
             end else begin: NoSpec
                 pc <= pc + 4; // assuming 4 byte instructions, will need to change for compressed instrs
             end
+
         end
     end
 

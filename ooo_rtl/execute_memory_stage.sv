@@ -474,7 +474,8 @@ import writeback_pkg::*;
             mem_addr_pkt_o.is_store = store_i;
             mem_addr_pkt_o.addr = addr;
             mem_addr_pkt_o.pc = pc;
-            mem_addr_pkt_o.store_data = store_data;
+            // mem_addr_pkt_o.store_data = store_data;
+            mem_addr_pkt_o.store_data = shift_store_data(funct_code_i[2:0], addr[1:0], store_data);
             mem_addr_pkt_o.store_width_type = funct_code_i[1:0];
         end
     end    
@@ -566,7 +567,8 @@ import general_pkg::*;
             LUI:  result_o = b_i;
 
             // will add rest of rv32m instructions later
-            default:  result_o = 3'b010;
+            // default:  result_o = 3'b010;
+            default: result_o = 'x;
         endcase
     end
     // The Zero flag is asserted if the result_o is all zeros.

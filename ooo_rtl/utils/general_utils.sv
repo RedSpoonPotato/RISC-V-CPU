@@ -13,7 +13,8 @@ package general_pkg;
     localparam DATA_WIDTH = 32;
     localparam IQ_SIZE = 16;
     localparam ROB_COUNT = 32;
-    localparam PRF_COUNT = 32;
+    // localparam PRF_COUNT = 32;
+    localparam PRF_COUNT = 33;
     localparam INSTR_COMPRESS_WIDTH = 17;
     localparam MAX_EXEC_CYCLE = 2;
     localparam IMM_COMPRESS = 20;
@@ -54,7 +55,7 @@ package general_pkg;
     );
         instruction_t instr;
         instr = classify_instr(opcode);
-        return instr == B_TYPE || instr == J_TYPE;
+        return instr == B_TYPE || instr == J_TYPE || opcode == 7'b1100111; // JALR is an I-type, but is also speculative
     endfunction
 
     function automatic logic is_store (
