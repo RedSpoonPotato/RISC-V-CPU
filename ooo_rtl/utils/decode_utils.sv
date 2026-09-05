@@ -83,7 +83,7 @@ package decode_pkg;
         logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] spec_exec_ptr;
         logic pc_instr;
         logic [$clog2(MAX_PC_INSTRS)-1:0] pc_buff_ptr;
-        logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_ptr;
+        logic [$clog2(MAX_MEM_INSTRS):0] lsq_ptr;
     } iq_entry_t;
     
     typedef struct packed {
@@ -104,7 +104,7 @@ package decode_pkg;
         logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] spec_exec_ptr;
         logic pc_instr;
         logic [$clog2(MAX_PC_INSTRS)-1:0] pc_buff_ptr;
-        logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_ptr;
+        logic [$clog2(MAX_MEM_INSTRS):0] lsq_ptr;
     } iq_output_t;
 
     // SUBJECT TO CHANGE
@@ -112,23 +112,24 @@ package decode_pkg;
     function automatic logic [$clog2(MAX_EXEC_CYCLE+1)-1:0] get_exec_stage_delays_sb (
         input [INSTR_COMPRESS_WIDTH-1:0] op
     );
-        // if (op[6:0] == 7'b0000011 || op[6:0] == 7'b010001) begin
-        if (op[6:0] == 7'b0000011) begin // load
-            return 3;
-        end else begin
-            return 2;
-        end
+        // if (op[6:0] == LOAD_OP) begin
+        //     return 3;
+        // end else begin
+        //     return 2;
+        // end
+        return 2;
     endfunction
 
     // SUBJECT TO CHANGE
     function automatic logic [$clog2(MAX_EXEC_CYCLE+1)-1:0] get_exec_stage_delays_from_instr (
         input [31:0] instr
     );
-        if (instr[6:0] == 7'b0000011) begin
-            return 3;
-        end else begin
-            return 2;
-        end
+        // if (instr[6:0] == LOAD_OP) begin
+        //     return 3;
+        // end else begin
+        //     return 2;
+        // end
+        return 2;
     endfunction
 
     // sets some entries to be 0, will be overwritten later
@@ -179,7 +180,7 @@ package decode_pkg;
         out.spec_exec_ptr = in.spec_exec_ptr;
         out.pc_instr    = in.pc_instr;
         out.pc_buff_ptr = in.pc_buff_ptr;
-        out.mem_buff_ptr = in.mem_buff_ptr;
+        out.lsq_ptr = in.lsq_ptr;
         return out;
     endfunction
 
@@ -202,7 +203,7 @@ package decode_pkg;
         // ----------------------------------------------------------------
         // I-Type: 12 bits (sign-extended to 20)
         // ----------------------------------------------------------------
-        7'b000_0011, 7'b110_0111, 7'b001_0011:
+        LOAD_OP, JALR_OP, ALU_IMM_OP:
         begin
             extract_20b_imm = {{8{instr[31]}}, instr[31:20]};
         end
@@ -210,7 +211,7 @@ package decode_pkg;
         // ----------------------------------------------------------------
         // S-Type: 12 bits (sign-extended to 20)
         // ----------------------------------------------------------------
-        7'b010_0011:
+        STORE_OP:
         begin
             extract_20b_imm = {{8{instr[31]}}, instr[31:25], instr[11:7]};
         end
@@ -218,7 +219,7 @@ package decode_pkg;
         // ----------------------------------------------------------------
         // B-Type: 13-bit value (12 encoded + 1 implicit 0, sign-extended to 20)
         // ----------------------------------------------------------------
-        7'b110_0011:
+        BRANCH_OP:
         begin
             // extract_20b_imm = {{7{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
             extract_20b_imm = {{8{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
@@ -227,7 +228,7 @@ package decode_pkg;
         // ----------------------------------------------------------------
         // U-Type: 20 bits (Exact fit)
         // ----------------------------------------------------------------
-        7'b011_0111, 7'b001_0111:
+        LUI_OP, AUIPC_OP:
         begin
             extract_20b_imm = instr[31:12];
             // extract_20b_imm = instr[19:0];
@@ -236,7 +237,7 @@ package decode_pkg;
         // ----------------------------------------------------------------
         // J-Type: 20 raw encoded bits (Excludes the implicit 0)
         // ----------------------------------------------------------------
-        7'b110_1111:
+        JAL_OP:
         begin
             // A JAL immediate is technically a 21-bit offset. To fit it into 
             // a 20-bit signal without losing the sign bit, we omit the implicit LSB 0.

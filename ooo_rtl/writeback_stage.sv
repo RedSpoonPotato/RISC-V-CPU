@@ -402,10 +402,12 @@ import issue_pkg::*;
             wb_phys_reg_pkt_o.wr_en = ex_mem_stage_pkt_i.dest_valid;
             wb_phys_reg_pkt_o.dest_ptr = reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].phys_reg_addr;
             wb_phys_reg_pkt_o.dest_data = ex_mem_stage_pkt_i.dest_data;
+            wb_phys_reg_pkt_o.rob_ptr = ex_mem_stage_pkt_i.rob_ptr;
         end else begin
             wb_phys_reg_pkt_o.wr_en = 0;
             wb_phys_reg_pkt_o.dest_ptr = '{default:'0};
             wb_phys_reg_pkt_o.dest_data = '{default:'0};
+            wb_phys_reg_pkt_o.rob_ptr = '{default:'0};
         end
     end
 

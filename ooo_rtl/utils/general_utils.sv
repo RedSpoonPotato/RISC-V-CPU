@@ -20,8 +20,21 @@ package general_pkg;
     localparam IMM_COMPRESS = 20;
     localparam FUNCT_COMB_WIDTH = 4; // representing funct3 + funct7
     localparam OUTCOME_DELAY = 3; // # of cycles until the "brnch_taken_i" result comes in  
-    localparam MAX_MEM_INSTRS = 32;
+    // localparam MAX_MEM_INSTRS = 32;
+    localparam MAX_LOAD_INSTRS  = 16;
+    localparam MAX_STORE_INSTRS = 16;
 
+    typedef enum logic [6:0] {
+        7'b0110011 = ALU_OP, // R-type
+        7'b0010011 = ALU_IMM_OP, // I-type
+        7'b0000011 = LOAD_OP, // I-type
+        7'b0100011 = STORE_OP, // S-type
+        7'b1100011 = BRANCH_OP, // B-type
+        7'b1101111 = JAL_OP, // J-type
+        7'b1100111 = JALR_OP, // I-type
+        7'b0110111 = LUI_OP, // U-type
+        7'b0010111 = AUIPC_OP, // U-type
+    } opcode_t;
 
     typedef enum logic [$clog2(6)-1:0] {R_TYPE, I_TYPE, S_TYPE, B_TYPE, U_TYPE, J_TYPE} instruction_t;
 

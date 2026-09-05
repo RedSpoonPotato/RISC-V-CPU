@@ -44,7 +44,10 @@ import issue_pkg::*;
 
     // input logic mem_buff_wr_en_i,
     output mem_addr_pkt_t mem_addr_pkt_o,
-    input store_buffer_commit_pkt_t store_buffer_commit_pkt_i
+    input store_buffer_commit_pkt_t store_buffer_commit_pkt_i,
+
+    // not sure if should be Flipfloped
+    input lsq_instantiation_pkt_t lsq_instant_pkt_i,
 );
 
     fetch_packet_t fetch_pkt_ff;
@@ -90,6 +93,7 @@ import issue_pkg::*;
     );
     
     // mem path (atleast 2 cycles: add, then memory access)
+            
     // logic [DATA_WIDTH-1:0] mem_load_data;
     mem_stage mem_stage_inst (
         .clk(clk),
@@ -97,7 +101,7 @@ import issue_pkg::*;
         .en_i(fetch_pkt_ff.funct_unit_one_hot[MEM]),
         .store_i(fetch_pkt_ff.store),
         .pc_i(fetch_pkt_ff.pc),
-        .mem_buff_ptr_i(fetch_pkt_ff.mem_buff_ptr),
+        .lsq_ptr_i(fetch_pkt_ff.lsq_ptr),
         .funct_code_i(fetch_pkt_ff.funct_code),
         .base_addr_i(fetch_pkt_ff.src0_data),
         .offset_i(fetch_pkt_ff.mem_offset_or_brnch_imm), // for now, just using imm_compr as offset, will change later
@@ -105,7 +109,8 @@ import issue_pkg::*;
         .data_o(result_arry[1]), // will connect this to writeback stage later
         .mem_addr_pkt_o(mem_addr_pkt_o),
         .store_buffer_commit_pkt_i(store_buffer_commit_pkt_i),
-        .exception_i(exception_i)
+        .exception_i(exception_i),
+        .lsq_instant_pkt_i(lsq_instant_pkt_i)
     );
 
     // branch path (1 cycle for now): if(rs1 == rs2) PC += imm
@@ -417,6 +422,350 @@ import issue_pkg::*;
 
 endmodule
 
+// NOTE: MAKE SURE, load_width_i is set to 1,2,4 
+module store_buffer
+import writeback_pkg::*;
+import exec_mem_pkg::*;
+import instr_fetch_pkg::*;
+import general_pkg::*;
+(
+    input clk,
+    input rst,
+    // other
+    output logic                        full_o,
+    // committing
+    input logic                         store_commit_en_i,
+    input logic [DATA_WIDTH-1:0]        store_addr_i,
+    input logic [DATA_WIDTH-1:0]        store_data_i,
+    input logic [(DATA_WIDTH/8)-1:0]    store_byte_wr_en_i,
+    // checking store's for load operations in lsq
+    input logic [DATA_WIDTH-1:0]        load_addr_i,
+    input logic [1:0]                   load_width_i,
+    output logic [(DATA_WIDTH/8)-1:0]   load_byte_en_o,
+    output logic [DATA_WIDTH-1:0]       load_data_o,
+    // storing to cache
+    // ...
+);
+    store_buffer_entry_t store_buff [0:STORE_BUFF_SIZE-1];
+    logic [$clog2(STORE_BUFF_SIZE):0] head_ptr;
+    logic [$clog2(STORE_BUFF_SIZE):0] tail_ptr;
+    logic [$clog2(STORE_BUFF_SIZE)-1:0] head_ptr_lower;
+    logic [$clog2(STORE_BUFF_SIZE)-1:0] tail_ptr_lower;
+    assign head_ptr_lower = head_ptr[$clog2(STORE_BUFF_SIZE)-1:0];
+    assign tail_ptr_lower = tail_ptr[$clog2(STORE_BUFF_SIZE)-1:0];
+
+    assign full_o = 
+        tail_ptr_lower == head_ptr_lower
+         && tail_ptr[$clog2(STORE_BUFF_SIZE)] != head_ptr[$clog2(STORE_BUFF_SIZE)];
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            store_buff <= '{default:'0};
+            head_ptr <= '{default:'0};
+            tail_ptr <= '{default:'0};
+        end else begin
+            if (store_commit_en_i) begin
+                store_buff.valid <= 1'b1;
+                store_buff.addr <= store_addr_i;
+                store_buff.data <= store_data_i;
+                store_buff.byte_wr_en <= store_byte_wr_en_i;
+            end
+        end
+    end
+
+    logic [DATA_WIDTH-1:0] pos_diff, neg_diff;
+    logic [1:0] pos_byte_offset, neg_byte_offset;
+    always_comb begin
+        load_byte_en_o = '0;
+        load_data_o = '0;
+        for (int i = STORE_BUFF_SIZE-1; i >= 0; i--) begin
+            pos_diff = load_addr_i - store_buff[i].addr;
+            neg_diff = store_buff[i].addr - load_addr_i;
+            pos_byte_offset = pos_diff[1:0];
+            neg_byte_offset = neg_diff[1:0];
+            if (store_buff[i].valid && (store_buff[i].addr >= load_addr_i
+                    ? neg_diff < load_width_i
+                    : pos_diff < load_width_i)) begin: WithinRange
+                if (load_addr_i <= store_buff[i].addr) begin
+                    load_byte_en_o = load_byte_en_o | (store_buff[i].byte_wr_en << neg_byte_offset);
+                    for (int j = 0; j < (DATA_WIDTH/8); j++) begin
+                        if ((store_buff[i].byte_wr_en << neg_byte_offset)[j]) begin
+                            load_data_o[8*j+:8] = (store_buff[i].data << (8*neg_byte_offset))[8*j+:8];
+                        end
+                    end
+                end else begin
+                    load_byte_en_o = load_byte_en_o | (store_buff[i].byte_wr_en >> pos_byte_offset);
+                    for (int j = 0; j < (DATA_WIDTH/8); j++) begin
+                        if ((store_buff[i].byte_wr_en >> pos_byte_offset)[j]) begin
+                            load_data_o[8*j+:8] = (store_buff[i].data >> (8*pos_byte_offset))[8*j+:8];
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+endmodule
+
+module load_queue
+import writeback_pkg::*;
+import exec_mem_pkg::*;
+import instr_fetch_pkg::*;
+import general_pkg::*;
+(
+    input clk,
+    input rst,
+    // updating state
+    // input ex_mem_stage_pkt_t ex_mem_stage_pkt_i,
+    // input spec_exec_answr_pkt_t spec_exec_answr_i,
+    // input mem_addr_pkt_t mem_addr_pkt_i,
+    input lq_pkt_t issue_pkt_i,
+    // state
+    output full_o,
+    // instantiation
+    // input spec_exec_buffer_instance_pkt_t spec_exec_buffer_instance_pkt_i,
+    // input logic mem_buff_instance_wr_en_i,
+    input lq_instantiation_pkt_t lq_instant_pkt_i,
+    // comitting
+    // input logic commit_en_i,
+    // input logic store_commit_en_i,
+    // input logic mem_commit_en_i,
+    input lq_commit_pkt_t lq_commit_pkt_i,
+    // output shift_reg_pkt_t spec_exec_answr_pkt_o,
+    // combinational output
+    // output logic load_addr_conflict_o,
+    // output logic [DATA_WIDTH-1:0] pc_o,
+
+    output lq_load_dispatch_pkt_t lq_load_dispatch_pkt_o,
+
+    output mem_addr_conflict_pkt_t mem_addr_conflict_pkt_o,
+    output store_buffer_commit_pkt_t store_buffer_commit_pkt_o,
+    input logic exception_i,
+
+    input wb_phys_reg_pkt_t wb_phys_reg_pkt_i,
+    input commit_stage_pkt_t commit_stage_pkt_i
+);
+
+    // mem_addr_entry_t lsq [0:MAX_MEM_INSTRS-1];
+    lq_entry_t lq [0:MAX_LOAD_INSTRS-1];
+    logic [$clog2(MAX_LOAD_INSTRS)-1:0] head_ptr;
+    logic [$clog2(MAX_LOAD_INSTRS)-1:0] tail_ptr;
+    logic [$clog2(MAX_LOAD_INSTRS)-1:0] next_head_ptr;
+    // logic [$clog2(MAX_LOAD_INSTRS)-1:0] head_ptr_lower;
+    // logic [$clog2(MAX_LOAD_INSTRS)-1:0] tail_ptr_lower;
+    // assign head_ptr_lower = head_ptr[$clog2(MAX_MEM_INSTRS)-1:0];
+    // assign tail_ptr_lower = tail_ptr[$clog2(MAX_MEM_INSTRS)-1:0];
+
+    // assign full_o = 
+    //     tail_ptr_lower == head_ptr_lower
+    //      && tail_ptr[$clog2(MAX_MEM_INSTRS)] != head_ptr[$clog2(MAX_MEM_INSTRS)];
+    assign full_o = lq[tail_ptr].state == INVALID;
+
+    // logic empty;
+    // assign empty = tail_ptr == head_ptr;
+
+    logic [MAX_LOAD_INSTRS-1:0] valid_arry, next_valid_arry, masked_valid_arry, mask_arry, ready_arry, masked_ready_arry;
+    logic [$clog2(MAX_LOAD_INSTRS)-1:0] select_ptr;
+
+    // common signals
+    always_comb begin
+        mask_arry = {MAX_LOAD_INSTRS{1'b1}} << head;
+        for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
+            valid_arry[i] = lq[i].state != INVALID;
+            ready_arry[i] = lq[i].state == LOAD_SAFE;
+        end
+        masked_ready_arry = mask_arry & ready_arry;
+    end
+
+    // issuing instruction after recieving data from cache
+    always_comb begin
+        if (!exception_i) begin // possibly add extra conditions here!
+            if (|masked_ready_arry) begin
+                for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
+                    if (masked_ready_arry[i]) begin
+                        lq_load_dispatch_pkt_o = set_lq_load_dispatch_pkt(lq[i], i);
+                    end
+                end
+            end else if (|ready_arry) begin
+                for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
+                    if (ready_arry[i]) begin
+                        lq_load_dispatch_pkt_o = set_lq_load_dispatch_pkt(lq[i], i);
+                    end
+                end
+            end
+        end else begin
+            lq_load_dispatch_pkt_o = '{default:'0};
+        end
+    end
+
+    // determine next head_ptr 
+    always_comb begin
+        // determine next valid state of array
+        next_valid_arry = valid_arry;
+        if (lq_commit_pkt_i.en) begin
+            next_valid_arry[lq_commit_pkt_i.ptr] = 1'b0; // Entry is leaving
+        end
+        if (lq_instant_pkt_i.wr_en && !full_o) begin
+            next_valid_arry[tail_ptr] = 1'b1;      // Entry is arriving
+        end
+        // compute next head position
+        masked_valid_arry = mask_arry & next_valid_arry;
+        next_head_ptr = head_ptr;
+        if (|masked_valid_arry) begin
+            for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
+                if (masked_valid_arry[i]) begin
+                    next_head_ptr = i;
+                end
+            end
+        end else if (|next_valid_arry) begin
+            for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
+                if (next_valid_arry[i]) begin
+                    next_head_ptr = i;
+                end
+            end
+        end
+    end
+
+    // buffer management
+    always_ff @(posedge clk) begin
+        if (rst || exception_i || mem_addr_conflict_pkt_o.en) begin
+            lq <= '{state: INVALID, default:'0};
+            head_ptr <= '{default:'0};
+            tail_ptr <= '{default:'0};
+        end else begin
+            // instantiation
+            if (lq_instant_pkt_i.wr_en && !full_o) begin
+                // lq[head_ptr_lower].valid = 1'b1;
+                lq[tail_ptr].state <= LOAD_PENDING;
+                lq[tail_ptr].dest_ptr <= lq_instant_pkt_i.dest_ptr;
+                // head_ptr <= head_ptr + 1;
+                // head_ptr <= next_head_ptr;
+                tail_ptr <= tail_ptr + 1;
+            end
+            head_ptr <= next_head_ptr;
+            // issued
+            if (issue_pkt_i.wr_en) begin
+                // if (issue_pkt_i.is_store) begin
+                //     lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].byte_wr_en <= issue_pkt_i.byte_wr_en;
+                //     lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].addr       <= issue_pkt_i.addr;
+                //     lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].pc         <= issue_pkt_i.pc;
+                //     if (issue_pkt_i.store_data_in) begin
+                //         lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].state  <= STORE_DATA_IN;
+                //         lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].data   <= issue_pkt_i.data;
+                //     end else begin
+                //         lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].state  <= STORE_ADDR_IN;
+                //     end
+                // end else begin
+                lq[issue_pkt_i.lq_ptr].state      <= LOAD_ADDR_IN;
+                lq[issue_pkt_i.lq_ptr].rob_ptr    <= issue_pkt_i.rob_ptr;
+                lq[issue_pkt_i.lq_ptr].byte_wr_en <= issue_pkt_i.byte_wr_en;
+                lq[issue_pkt_i.lq_ptr].funct_code <= issue_pkt_i.funct_code;
+                lq[issue_pkt_i.lq_ptr].addr       <= issue_pkt_i.addr;
+                lq[issue_pkt_i.lq_ptr].pc         <= issue_pkt_i.pc;
+                // end
+            end
+            // data in
+            // if (wb_phys_reg_pkt_i.wr_en) begin
+            //     for (int i = 0; i < MAX_MEM_INSTRS; i++) begin
+            //         if (lsq[i].state == STORE_ADDR_IN && lsq[i].src_ptr == wb_phys_reg_pkt_i.dest_ptr) begin
+            //             lsq[i].state <= STORE_DATA_IN;
+            //             lsq[i].data  <= wb_phys_reg_pkt_i.data;
+            //         end
+            //     end
+            // end
+
+            // store committed
+            // if (commit_stage_pkt_i.wr_en && commit_stage_pkt_i.store) begin /// use later
+            if (lq_commit_pkt_i.en) begin
+
+                // if (lsq[i].state == STORE_DATA_IN && lsq[i].src_ptr == commit_stage_pkt_i.phys_reg_addr) begin
+                // lsq[commit_stage_pkt_i.lsq_counter]; // work off this
+                    // COME BACK TO THIS
+                    // DISPATCH THE STORE TO THE STORE BUFFER, where it will then go to cache
+                    // ALSO RESET state of entry to be INVALID
+                // end
+                lsq[lq_commit_pkt_i.lq_ptr].state <= INVALID;
+                // lsq[]
+            end
+            
+
+            // // updating state
+            // if (mem_addr_pkt_i.wr_en) begin
+            //     lsq[mem_addr_pkt_i.buff_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].valid <= 1'b1;
+            //     lsq[mem_addr_pkt_i.buff_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].byte_wr_en <= mem_addr_pkt_i.vec_wr_en;
+            //     lsq[mem_addr_pkt_i.buff_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].is_store <= mem_addr_pkt_i.is_store;
+            //     lsq[mem_addr_pkt_i.buff_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].addr <= mem_addr_pkt_i.addr;
+            //     lsq[mem_addr_pkt_i.buff_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].pc <= mem_addr_pkt_i.pc;
+            //     lsq[mem_addr_pkt_i.buff_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].store_data <= mem_addr_pkt_i.store_data;
+            // end
+            // // committing
+            // if (commit_en_i && mem_commit_en_i) begin
+            //     lsq[tail_ptr_lower].valid <= 1'b0;
+            //     tail_ptr <= tail_ptr + 1;
+            // end
+
+        end
+    end
+
+    assert property (
+        @(posedge clk) disable iff (rst || exception_i)
+        (!(issue_pkt_i.wr_en && issue_pkt_i.is_store) || lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].state == STORE_PENDING)
+    );
+
+    assert property (
+        @(posedge clk) disable iff (rst || exception_i)
+        (!(issue_pkt_i.wr_en && !issue_pkt_i.is_store) || lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].state == LOAD_PENDING)
+    );
+
+    assert property (
+        @(posedge clk) disable iff (rst || exception_i)
+        (!(commit_stage_pkt_i.wr_en && commit_stage_pkt_i.store) || lsq[commit_stage_pkt_i.lsq_counter].state == STORE_DATA_IN)
+    );
+
+
+
+    // determining memory conflict
+    logic [MAX_MEM_INSTRS-1:0] cnflct_arry;
+    logic frwd_cnflct;
+    always_comb begin
+        cnflct_arry = '0;
+        frwd_cnflct = '0;
+        if (commit_en_i && !exception_i && store_commit_en_i) begin
+            for (int i = 0; i < MAX_MEM_INSTRS; i++) begin
+                cnflct_arry[i] = lsq[i].valid &&
+                    i != tail_ptr_lower &&
+                    !lsq[i].is_store &&
+                    lsq[i].addr == lsq[tail_ptr_lower].addr;
+            end
+            frwd_cnflct = mem_addr_pkt_i.wr_en &&
+                // mem_addr_pkt_i.valid && 
+                !mem_addr_pkt_i.is_store &&
+                mem_addr_pkt_i.addr == lsq[tail_ptr_lower].addr &&
+                lsq[tail_ptr_lower].valid;
+
+            mem_addr_conflict_pkt_o.en = |cnflct_arry || frwd_cnflct;
+        end else begin
+            mem_addr_conflict_pkt_o.en = '0;
+        end
+        
+        mem_addr_conflict_pkt_o.pc = lsq[tail_ptr_lower].pc;
+    end
+
+    // setting store pkt when commiting
+    always_comb begin
+        if (commit_en_i && !exception_i && store_commit_en_i) begin
+            // store_buffer_commit_pkt_o.en = 1'b1;
+            store_buffer_commit_pkt_o.byte_wr_en = lsq[tail_ptr_lower].byte_wr_en;
+            store_buffer_commit_pkt_o.addr = lsq[tail_ptr_lower].addr;
+            store_buffer_commit_pkt_o.data = lsq[tail_ptr_lower].store_data;
+        end else begin
+            store_buffer_commit_pkt_o = '{default:'0};
+        end
+    end
+
+endmodule
+
+
 
 // for now doing a simple memory, 2 cycles
 module mem_stage 
@@ -431,7 +780,7 @@ import writeback_pkg::*;
     input logic en_i,
     input logic store_i,
     input logic [DATA_WIDTH-1:0] pc_i,
-    input logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_ptr_i,
+    input logic [$clog2(MAX_MEM_INSTRS):0] lsq_ptr_i,
     input logic [FUNCT_COMB_WIDTH-1:0] funct_code_i,
     input logic [DATA_WIDTH-1:0] base_addr_i,
     input logic [DATA_WIDTH-1:0] offset_i,
@@ -439,7 +788,8 @@ import writeback_pkg::*;
     output logic [DATA_WIDTH-1:0] data_o,
     output mem_addr_pkt_t mem_addr_pkt_o,
     input store_buffer_commit_pkt_t store_buffer_commit_pkt_i,
-    input logic exception_i
+    input logic exception_i,
+    input lsq_instantiation_pkt_t lsq_instant_pkt_i // SEND TO LSQ
 );
 
     logic [DATA_WIDTH-1:0] base_addr, offset, store_data, addr, pc, loaded_data;
@@ -469,13 +819,14 @@ import writeback_pkg::*;
             mem_addr_pkt_o = '{default:'0};
         end else begin
             mem_addr_pkt_o.wr_en = en_i;
-            mem_addr_pkt_o.vec_wr_en = store_funct3_to_en_vector(funct_code_i[2:0], addr[1:0]);
-            mem_addr_pkt_o.buff_ptr = mem_buff_ptr_i;
+            // mem_addr_pkt_o.vec_wr_en = store_funct3_to_en_vector(funct_code_i[2:0], addr[1:0]);
+            mem_addr_pkt_o.byte_wr_en = funct_code_i[1:0];
+            mem_addr_pkt_o.buff_ptr = lsq_ptr_i;
             mem_addr_pkt_o.is_store = store_i;
             mem_addr_pkt_o.addr = addr;
             mem_addr_pkt_o.pc = pc;
-            // mem_addr_pkt_o.store_data = store_data;
-            mem_addr_pkt_o.store_data = shift_store_data(funct_code_i[2:0], addr[1:0], store_data);
+            // mem_addr_pkt_o.store_data = shift_store_data(funct_code_i[2:0], addr[1:0], store_data);
+            mem_addr_pkt_o.store_data = store_data;
             mem_addr_pkt_o.store_width_type = funct_code_i[1:0];
         end
     end    

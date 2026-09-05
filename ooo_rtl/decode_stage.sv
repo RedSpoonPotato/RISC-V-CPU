@@ -68,7 +68,8 @@ module decode_stage
     // output logic pc_instr
     output pc_buff_instance_pkt_t pc_buff_inst_o,
 
-    output logic mem_buff_wr_en_o,
+    // output logic mem_buff_wr_en_o,
+    output lsq_instantiation_pkt_t lsq_instant_pkt_o,
 
     input logic exception_i, // not sure if we need to flipflop this
     output logic stall_o,
@@ -246,18 +247,18 @@ module decode_stage
     // setting cntrl instructions
     always_comb begin
 
-        cntrl_instr = (instr_ff[6:0] == 7'b1100011) || // Branch
-                      (instr_ff[6:0] == 7'b1101111) || // JAL
-                      (instr_ff[6:0] == 7'b1100111);   // JALR
+        cntrl_instr = (instr_ff[6:0] == BRANCH_OP) || // Branch
+                      (instr_ff[6:0] == JAL_OP) || // JAL
+                      (instr_ff[6:0] == JALR_OP);   // JALR
         
-        mem_instr = (instr_ff[6:0] == 7'b0000011) || (instr_ff[6:0] == 7'b0100011);
+        mem_instr = (instr_ff[6:0] == LOAD_OP) || (instr_ff[6:0] == STORE_OP);
 
         // pc_instr = (cntrl_instr || 
                     // instr_ff[6:0] == 7'b0010111); // AUIPC
 
         pc_instr = cntrl_instr || 
-            instr_ff[6:0] == 7'b0010111 || // AUIPC
-            instr_ff[6:0] == 7'b0100011; // Store
+            instr_ff[6:0] == AUIPC_OP || // AUIPC
+            instr_ff[6:0] == STORE_OP; // Store
         
         // free_list_rd_en = 1;
         // i think this is bad, this is really a stall condition
@@ -280,7 +281,7 @@ module decode_stage
             !(
                 // (has_dest(instr_ff[6:0]) && free_list_empty) ||
             (has_src0(instr_ff[6:0]) && rename_table_src0_pending) ||
-            (has_src1(instr_ff[6:0]) && rename_table_src1_pending) ||
+            (has_src1(instr_ff[6:0]) && !is_store(instr_ff[6:0]) && rename_table_src1_pending) ||
             issue_queue_future_exec_stage_slots[get_exec_stage_delays_from_instr(instr_ff)] == 1'b1) &&
             master_instr_valid;
         
@@ -295,14 +296,15 @@ module decode_stage
     logic [$clog2(ROB_COUNT):0] rob_head_counter;
     logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] spec_exec_counter;
     logic [$clog2(MAX_PC_INSTRS)-1:0] pc_instr_counter;
-    logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_counter;
+    // logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_counter;
+    logic [$clog2(MAX_MEM_INSTRS):0] lsq_counter;
     
     always_ff @(posedge clk) begin
         if (rst || exception_i) begin
             rob_head_counter <= '{default:'0};
             spec_exec_counter <= '{default:'0};
             pc_instr_counter <= '{default:'0};
-            mem_buff_counter <= '{default:'0};
+            lsq_counter <= '{default:'0};
         end else begin
             if (master_instr_valid) begin
                 rob_head_counter <= rob_head_counter + 1;
@@ -312,8 +314,10 @@ module decode_stage
                 if (pc_instr) begin
                     pc_instr_counter <= pc_instr_counter + 1;
                 end 
+
+                // NEED TO TAKE A LOOK AT THIS
                 if (mem_instr) begin
-                    mem_buff_counter <= mem_buff_counter + 1;
+                    lsq_counter <= lsq_counter + 1;
                 end
             end
         end
@@ -340,7 +344,7 @@ module decode_stage
             issue_queue_entry.spec_exec_ptr = cntrl_instr ? spec_exec_counter : '{default:'0};
             issue_queue_entry.pc_instr = pc_instr;
             issue_queue_entry.pc_buff_ptr = pc_instr ? pc_instr_counter : '{default:'0};
-            issue_queue_entry.mem_buff_ptr = mem_instr ? mem_buff_counter : '{default:'0};
+            issue_queue_entry.mem_buff_ptr = mem_instr ? lsq_counter : '{default:'0};
         end else begin
             issue_queue_entry = '{default: '0};
         end
@@ -375,6 +379,7 @@ module decode_stage
             rob_instance_pkt_o.phys_reg_addr = issue_queue_entry.dest_ptr;
             rob_instance_pkt_o.arch_reg_addr = instr_ff[11:7];
             rob_instance_pkt_o.prev_phys_reg_addr = rename_table_rob_dest_prf; /// what about J and U types
+            rob_instance_pkt_o.lsq_counter = lsq_counter;
             `ifdef DEBUG
             rob_instance_pkt_o.pc = if_input_ff.pc;
             `endif
@@ -387,14 +392,20 @@ module decode_stage
             // to if
             is_spec_instr_o = cntrl_instr;
             // to ex_mem
-            mem_buff_wr_en_o = mem_instr;
+            // mem_buff_wr_en_o = mem_instr;
+
+            lsq_instant_pkt_o.wr_en = mem_instr;
+            lsq_instant_pkt_o.store = decode_instr_o.store;
+            lsq_instant_pkt_o.src_ptr = decode_instr_o.src1_ptr;
+
         end else begin
             rob_instance_pkt_o = '{default:'0};
             // spec_exec_answer_buffer_pkt_o.wr_en = '0;
             spec_exec_buffer_instance_pkt_o.wr_en = '0;
             pc_buff_inst_o = '{default:'0};
             is_spec_instr_o = '0;
-            mem_buff_wr_en_o = '0;
+            // mem_buff_wr_en_o = '0;
+            lsq_instant_pkt_o = '{default:'0};
         end
     end
 
@@ -656,7 +667,7 @@ module issue_queue
         for (int i = 0; i < IQ_SIZE; i++) begin
             ready_array[i] = (
                 (!iq[i].src0_valid || !iq[i].src0_pending || ((iq[i].src0_ptr == prf_dst_i) && prf_wr_en_i)) &&
-                (!iq[i].src1_valid || !iq[i].src1_pending || ((iq[i].src1_ptr == prf_dst_i) && prf_wr_en_i)) &&
+                (!iq[i].src1_valid || !iq[i].src1_pending || ((iq[i].src1_ptr == prf_dst_i) && prf_wr_en_i) || iq[i].store) &&
                 (iq[i].valid) &&
                 (future_exec_stage_slots_i[iq[i].exec_dur] == 0)
             );

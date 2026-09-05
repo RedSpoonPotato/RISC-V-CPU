@@ -25,6 +25,7 @@ package writeback_pkg;
         logic [4:0] arch_reg_addr;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
         // logic [$clog2(ROB_COUNT)-1:0] rob_count;
+        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_counter;
 
         `ifdef DEBUG
         logic [DATA_WIDTH-1:0] pc;
@@ -53,6 +54,8 @@ package writeback_pkg;
         logic [4:0] arch_reg_addr;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
         // logic [$clog2(ROB_COUNT)-1:0] rob_count;
+        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_counter;
+
         `ifdef DEBUG
         logic [DATA_WIDTH-1:0] pc;
         `endif
@@ -74,11 +77,13 @@ package writeback_pkg;
         logic [$clog2(PRF_COUNT)-1:0] phys_reg_addr;
         logic [4:0] arch_reg_addr;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
+        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_counter;
 
         `ifdef DEBUG
         logic [DATA_WIDTH-1:0] pc;
         `endif
     } commit_stage_pkt_t;
+
 
     typedef struct packed {
         logic en;
@@ -103,6 +108,7 @@ package writeback_pkg;
         rob_entry.phys_reg_addr = rob_instance_pkt_i.phys_reg_addr;
         rob_entry.arch_reg_addr = rob_instance_pkt_i.arch_reg_addr;
         rob_entry.prev_phys_reg_addr = rob_instance_pkt_i.prev_phys_reg_addr;
+        rob_entry.lsq_counter = rob_instance_pkt_i.lsq_counter;
         `ifdef DEBUG
         rob_entry.pc = rob_instance_pkt_i.pc;
         `endif
@@ -121,6 +127,8 @@ package writeback_pkg;
         commit_pkt.phys_reg_addr = rob_entry_i.phys_reg_addr;
         commit_pkt.arch_reg_addr = rob_entry_i.arch_reg_addr;
         commit_pkt.prev_phys_reg_addr = rob_entry_i.prev_phys_reg_addr;
+        commit_pkt.lsq_counter = rob_entry_i.lsq_counter;
+
         `ifdef DEBUG
         commit_pkt.pc = rob_entry_i.pc;
         `endif

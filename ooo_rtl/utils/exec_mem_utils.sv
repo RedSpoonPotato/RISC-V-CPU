@@ -12,6 +12,8 @@ package exec_mem_pkg;
     localparam MEM_ENTRY_NUM = 65536; // matches spike sim data mem space
     localparam MEM_INDEX_WIDTH = $clog2(MEM_ENTRY_NUM);
 
+    localparam STORE_BUFF_SIZE = 10;
+
 
     //  COMEBACK AND DEFINE
     // function automatic logic [$clog2(MAX_EXEC_CYCLE_V2-1)-1:0] get_exec_stage_delays_v2 (
@@ -68,7 +70,9 @@ package exec_mem_pkg;
 
     typedef struct packed {
         logic wr_en;
-        logic [(DATA_WIDTH/4)-1:0] vec_wr_en;
+        // logic [(DATA_WIDTH/4)-1:0] vec_wr_en;
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+        logic [2:0] funct_code;
         logic [$clog2(MAX_MEM_INSTRS):0] buff_ptr;
         logic is_store;
         logic [DATA_WIDTH-1:0] addr;
@@ -78,16 +82,164 @@ package exec_mem_pkg;
         logic [1:0] store_width_type;
     } mem_addr_pkt_t;
 
-    // typedef struct packed 
-
     typedef struct packed {
         logic valid;
+        logic [DATA_WIDTH-1:0] addr;
+        logic [DATA_WIDTH-1:0] data;
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+    } store_buffer_entry_t;
+
+    typedef struct packed {
+        logic wr_en;
+        // logic [(DATA_WIDTH/4)-1:0] vec_wr_en;
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+        logic [2:0] funct_code;
+        // logic [$clog2(MAX_MEM_INSTRS):0] buff_ptr;
+        logic [$clog2(MAX_MEM_INSTRS):0] lsq_ptr;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         logic is_store;
-        logic [(DATA_WIDTH/4)-1:0] vec_wr_en;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] pc;
+        // can technically optimize away "store_data" by resuing data_o in mem stage
+        logic store_data_in;
         logic [DATA_WIDTH-1:0] store_data;
-    } mem_addr_entry_t;
+        logic [1:0] store_width_type;
+    } lsq_pkt_t;
+
+
+    typedef struct packed {
+        logic wr_en;
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+        logic [2:0] funct_code;
+        logic [$clog2(MAX_MEM_INSTRS)-1:0] lq_ptr;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [DATA_WIDTH-1:0] addr;
+        logic [DATA_WIDTH-1:0] pc;
+    } lq_pkt_t;
+
+    // might be c
+    typedef struct packed {
+        logic wr_en;
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+        logic [2:0] funct_code;
+        logic [$clog2(MAX_MEM_INSTRS):0] sq_ptr;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [DATA_WIDTH-1:0] addr;
+        logic [DATA_WIDTH-1:0] pc; // unsure if needed
+        // can technically optimize away "store_data" by resuing data_o in mem stage
+        logic store_data_in;
+        logic [DATA_WIDTH-1:0] store_data;
+        logic [1:0] store_width_type;
+    } sq_pkt_t;
+
+    typedef enum {
+        INVALID, 
+        STORE_PENDING, STORE_ADDR_IN, STORE_DATA_IN, 
+        STORE_COMMIT // probably dont need since once we commit, immediately send to store buffer
+    } sq_state_t;
+
+    typedef enum {
+        INVALID,
+        LOAD_PENDING, LOAD_ADDR_IN, LOAD_SAFE, LOAD_DISPATCHED, LOAD_RECIEVED, 
+        LOAD_ISSUED // still neede b/c for stores that are older than it, but lests
+    } lq_state_t;
+
+    
+    typedef struct packed {
+        // logic valid;
+        lsq_state_t state;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        // logic is_store;
+        // logic [(DATA_WIDTH/4)-1:0] vec_wr_en; // might only be used for debugging at this point
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+        logic [2:0] funct_code;
+        logic [DATA_WIDTH-1:0] addr;
+        logic [DATA_WIDTH-1:0] pc; // since we are currently not doing spec laods, dont really need anymore, but will keep just in case
+        // logic [DATA_WIDTH-1:0] store_data;
+        logic [$clog2(PRF_COUNT)-1:0] src_ptr;
+        logic [DATA_WIDTH-1:0] data;
+    // } mem_addr_entry_t;
+    } lsq_entry_t;
+
+
+    typedef struct packed {
+        // logic valid;
+        sq_state_t state;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+        logic [2:0] funct_code;
+        logic [DATA_WIDTH-1:0] addr;
+        logic [DATA_WIDTH-1:0] pc; // since we are currently not doing spec laods, dont really need anymore, but will keep just in case
+        logic [$clog2(PRF_COUNT)-1:0] src_ptr;
+        logic [DATA_WIDTH-1:0] data;
+    } sq_entry_t;
+
+    typedef struct packed {
+        lq_state_t state;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+        logic [2:0] funct_code;
+        logic [DATA_WIDTH-1:0] addr;
+        logic [DATA_WIDTH-1:0] pc; // since we are currently not doing spec laods, dont really need anymore, but will keep just in case
+        logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
+        logic [DATA_WIDTH-1:0] data;
+    } lq_entry_t;
+
+
+    typedef struct packed {
+        logic wr_en;
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+        logic [2:0] funct_code;
+        // logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr; // might not need as might need to store this in ROB
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [DATA_WIDTH-1:0] data;
+    } lq_load_dispatch_pkt_t;
+
+
+    // CHECK THIS CASE
+    function automatic logic [DATA_WIDTH-1:0] sign_extend_load_data (
+        input lq_pkt_t lq_entry_i
+    );
+        logic [DATA_WIDTH-1:0] load_data;
+        case (lq_entry_i.funct_code)
+            3'b000: load_data = {{(DATA_WIDTH-8){lq_entry_i.data[7]}}, lq_entry_i.data[7:0]};
+            3'b001: load_data = {{(DATA_WIDTH-16){lq_entry_i.data[15]}}, lq_entry_i.data[15:8]};
+            3'b010: load_data = lq_entry_i.data;
+            3'b100: load_data = {{(DATA_WIDTH-8){1'b0}}, lq_entry_i.data[7:0]};
+            3'b101: load_data = {{(DATA_WIDTH-16){1'b0}}, lq_entry_i.data[15:0]};
+            4'b0110: load_data = lq_entry_i.data;
+            default:
+                load_data = '0; // Default to zero for unsupported cases
+        endcase
+        return load_data;
+    endfunction
+
+    function automatic lq_load_dispatch_pkt_t set_lq_load_dispatch_pkt (
+        input lq_pkt_t lq_entry_i,
+        input logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_ptr_i
+    );
+        lq_load_dispatch_pkt_t lq_load_dispatch_pkt;
+        lq_load_dispatch_pkt.wr_en = 1'b1;
+        lq_load_dispatch_pkt.byte_wr_en = lq_entry_i.byte_wr_en;
+        lq_load_dispatch_pkt.funct_code = lq_entry_i.funct_code;
+        lq_load_dispatch_pkt.lq_ptr = lq_ptr_i;
+        lq_load_dispatch_pkt.rob_ptr = lq_entry_i.rob_ptr;
+        lq_load_dispatch_pkt.data = sign_extend_load_data(lq_entry_i);
+
+        return lq_load_dispatch_pkt;
+    endfunction
+ 
+
+    typedef struct packed {
+        logic wr_en;
+        logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
+    } lq_instantiation_pkt_t;
+
+    typedef struct packed {
+        logic en;
+        logic [$clog2(MAX_LOAD_INSTRS)-1:0] ptr;
+    } lq_commit_pkt_t;
+
 
     function automatic ex_mem_scoreboard_data_t set_ex_mem_scoreboard_data (
         input fetch_packet_t fetch_pkt_i
