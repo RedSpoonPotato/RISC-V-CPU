@@ -297,7 +297,8 @@ module decode_stage
     logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] spec_exec_counter;
     logic [$clog2(MAX_PC_INSTRS)-1:0] pc_instr_counter;
     // logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_counter;
-    logic [$clog2(MAX_MEM_INSTRS):0] lsq_counter;
+    // logic [$clog2(MAX_MEM_INSTRS):0] lsq_counter;
+    // need to instiatiate seperate load and store counterd. Mind the fect that store queue is not ciruclar, so +1
     
     always_ff @(posedge clk) begin
         if (rst || exception_i) begin

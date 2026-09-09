@@ -23,6 +23,7 @@ package general_pkg;
     // localparam MAX_MEM_INSTRS = 32;
     localparam MAX_LOAD_INSTRS  = 16;
     localparam MAX_STORE_INSTRS = 16;
+    localparam MAX_LSQ_INSTRS = MAX_LOAD_INSTRS + MAX_STORE_INSTRS;
 
     typedef enum logic [6:0] {
         7'b0110011 = ALU_OP, // R-type

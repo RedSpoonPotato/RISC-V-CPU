@@ -537,6 +537,8 @@ import general_pkg::*;
     // output logic [DATA_WIDTH-1:0] pc_o,
 
     output lq_load_dispatch_pkt_t lq_load_dispatch_pkt_o,
+    
+
 
     output mem_addr_conflict_pkt_t mem_addr_conflict_pkt_o,
     output store_buffer_commit_pkt_t store_buffer_commit_pkt_o,
@@ -637,7 +639,7 @@ import general_pkg::*;
             if (lq_instant_pkt_i.wr_en && !full_o) begin
                 // lq[head_ptr_lower].valid = 1'b1;
                 lq[tail_ptr].state <= LOAD_PENDING;
-                lq[tail_ptr].dest_ptr <= lq_instant_pkt_i.dest_ptr;
+                // lq[tail_ptr].dest_ptr <= lq_instant_pkt_i.dest_ptr;
                 // head_ptr <= head_ptr + 1;
                 // head_ptr <= next_head_ptr;
                 tail_ptr <= tail_ptr + 1;
@@ -662,6 +664,7 @@ import general_pkg::*;
                 lq[issue_pkt_i.lq_ptr].funct_code <= issue_pkt_i.funct_code;
                 lq[issue_pkt_i.lq_ptr].addr       <= issue_pkt_i.addr;
                 lq[issue_pkt_i.lq_ptr].pc         <= issue_pkt_i.pc;
+                lq[issue_pkt_i.lq_ptr].dest_ptr   <= issue_pkt_i.dest_ptr;
                 // end
             end
             // data in
@@ -760,6 +763,196 @@ import general_pkg::*;
             store_buffer_commit_pkt_o.data = lsq[tail_ptr_lower].store_data;
         end else begin
             store_buffer_commit_pkt_o = '{default:'0};
+        end
+    end
+
+endmodule
+
+// NEED TO have outside a lsq pointer and be able to check stores that come only BEORE a given load
+
+module store_queue
+import decode_pkg::*;
+import general_pkg::*;
+import issue_pkg::*;
+import exec_mem_pkg::*;
+import writeback_pkg::*;
+(
+    input clk,
+    input rst,
+    input exception_i,
+    // other
+    output logic full_o,
+    // checking store addresses for load operations in lq
+    input logic [DATA_WIDTH-1:0] load_addr_i,
+    input logic [1:0] load_width_i,
+    input logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr_i,
+    output logic [(DATA_WIDTH/8)-1:0] load_byte_en_o,
+    output logic [DATA_WIDTH-1:0] load_data_o,
+    // instantiation
+    input sq_instantiation_pkt_t sq_instant_pkt_i,
+    // address computation, and possibly store data
+    input sq_pkt_t sq_pkt_i,
+    // store data
+    input logic data_wr_en_i,
+    input logic [DATA_WIDTH-1:0] data_i,
+    input logic [$clog2(PRF_COUNT)-1:0] src_ptr_i,
+    // commiting
+    input sq_commit_pkt_t sq_commit_pkt_i,
+    // storing to cache
+    output sq_dispatch_pkt_t sq_dispatch_pkt_o
+);
+    sq_entry_t sq [0:MAX_STORE_INSTRS-1];
+    logic [$clog2(MAX_STORE_INSTRS):0] head_ptr, tail_ptr;
+    logic [$clog2(MAX_STORE_INSTRS)-1:0] head_ptr_lower, tail_ptr_lower;
+    assign head_ptr_lower = head_ptr[$clog2(MAX_STORE_INSTRS)-1:0];
+    assign tail_ptr_lower = tail_ptr[$clog2(MAX_STORE_INSTRS)-1:0];
+    
+    assign full_o = 
+        tail_ptr_lower == head_ptr_lower
+         && tail_ptr[$clog2(MAX_STORE_INSTRS)] != head_ptr[$clog2(MAX_STORE_INSTRS)];
+    
+    logic empty;
+    assign empty = head_ptr == tail_ptr;
+    
+    // reorder buffer management
+    always_ff @(posedge clk) begin
+        if (rst || exception_i) begin
+            // reorder_buffer <= '{default: rob_entry_t'('0)};
+            sq <= '{state: INVALID, default:'0};
+            head_ptr <= '{default:'0};
+            tail_ptr <= '{default:'0};
+        end else begin
+            // instantiation
+            if (sq_instant_pkt_i.en && !full_o) begin
+                sq[head_ptr_lower].state <= STORE_PENDING;
+                head_ptr <= head_ptr + 1;
+            end
+            // updating state
+            if (sq_pkt_i.wr_en) begin
+                sq[sq_pkt_i.sq_ptr] <= sq_set_entry_from_pkt(sq_pkt_i);
+            end
+            // data incoming
+            if (data_wr_en_i) begin
+                for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+                    if (sq[i].state == STORE_ADDR_IN && sq[i].src_ptr == src_ptr_i) begin
+                        sq[i].state <= STORE_DATA_IN;
+                        sq[i].store_data <= data_i;
+                    end
+                end
+            end
+        end 
+        // committing (UNSURE ABOUT TIMING OF THIS, when exception happens)
+        if (sq_commit_pkt_i.en) begin
+            sq[tail_ptr_lower].state <= STORE_COMMIT;
+        end
+        // sending to cache
+        if (sq[tail_ptr_lower].state == STORE_COMMIT) begin
+            sq[tail_ptr_lower].state <= INVALID;
+            tail_ptr <= tail_ptr + 1;
+        end
+    end
+
+    // might need to change this
+    always_comb begin
+        if (sq[tail_ptr_lower].state == STORE_COMMIT) begin
+            sq_dispatch_pkt_o = get_store_data_from_sq_entry(sq[tail_ptr_lower]);
+        end else begin
+            sq_dispatch_pkt_o = '{default:'0};
+        end
+    end
+
+    // WHAT ABOUT SITUATIONS WHERE STORE VLAUE IS NOT IN YET?
+
+    // NEED TO ACCOUNT FOR EMPTY, EXCEPTION, and also ADDR vs DATA cases
+
+    // checking store addresses for load operations in lq
+    logic tail_ptr_diff_sign;
+    logic [MAX_STORE_INSTRS-1:0] mask_arry, valid_arry, masked_valid_arry;
+    logic [MAX_STORE_INSTRS-1:0] overflow_mask_arry, overflow_valid_masked_arry;
+    logic overflow_condition;
+    // logic [$clog2]
+    logic [DATA_WIDTH-1:0] pos_diff, neg_diff;
+    logic [1:0] pos_byte_offset, neg_byte_offset;
+    // logic 
+    always_comb begin
+        tail_ptr_diff_sign = lsq_ptr_i > sq[tail_ptr_lower].lsq_ptr;
+        mask_arry = {MAX_STORE_INSTRS{1'b1}} << tail_ptr_lower;
+        overflow_mask_arry = {MAX_STORE_INSTRS{1'b1}} >> (MAX_STORE_INSTRS - head_ptr_lower);
+        for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+            valid_arry[i] = sq[i].state != INVALID && (tail_ptr_diff_sign == (lsq_ptr_i > sq[i].lsq_ptr));
+        end
+        masked_valid_arry = mask_arry & valid_arry;
+        overflow_valid_masked_arry = overflow_mask_arry & valid_arry;
+
+        overflow_condition = head_ptr_lower < tail_ptr_lower;
+        for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+            if (i >= tail_ptr_lower && sq[i].state != INVALID) begin
+                overflow_condition = overflow_condition && (lsq_ptr_i > sq[i].lsq_ptr);
+            end
+        end
+
+        if (|masked_valid_arry && !empty && !exception) begin
+            for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+                if (masked_valid_arry[i]) begin
+                    // check if load address is within range of store address and width
+                    pos_diff = load_addr_i - sq[i].addr;
+                    neg_diff = sq[i].addr - load_addr_i;
+                    pos_byte_offset = pos_diff[1:0];
+                    neg_byte_offset = neg_diff[1:0];
+                    if (sq[i].state == STORE_ADDR_IN && (sq[i].addr >= load_addr_i
+                            ? neg_diff < load_width_i
+                            : pos_diff < load_width_i)) begin: WithinRange
+                        if (load_addr_i <= sq[i].addr) begin
+                            load_byte_en_o = load_byte_en_o | (sq[i].byte_wr_en << neg_byte_offset);
+                            for (int j = 0; j < (DATA_WIDTH/8); j++) begin
+                                if ((sq[i].byte_wr_en << neg_byte_offset)[j]) begin
+                                    load_data_o[8*j+:8] = (sq[i].data << (8*neg_byte_offset))[8*j+:8];
+                                end
+                            end
+                        end else begin
+                            load_byte_en_o = load_byte_en_o | (sq[i].byte_wr_en >> pos_byte_offset);
+                            for (int j = 0; j < (DATA_WIDTH/8); j++) begin
+                                if ((sq[i].byte_wr_en >> pos_byte_offset)[j]) begin
+                                    load_data_o[8*j+:8] = (sq[i].data >> (8*pos_byte_offset))[8*j+:8];
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+            if (overflow_condition) begin
+                for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+                    if (overflow_valid_masked_arry[i]) begin
+                        // check if load address is within range of store address and width
+                        pos_diff = load_addr_i - sq[i].addr;
+                        neg_diff = sq[i].addr - load_addr_i;
+                        pos_byte_offset = pos_diff[1:0];
+                        neg_byte_offset = neg_diff[1:0];
+                        if (sq[i].state == STORE_ADDR_IN && (sq[i].addr >= load_addr_i
+                                ? neg_diff < load_width_i
+                                : pos_diff < load_width_i)) begin: WithinRangeOverflow
+                            if (load_addr_i <= sq[i].addr) begin
+                                load_byte_en_o = load_byte_en_o | (sq[i].byte_wr_en << neg_byte_offset);
+                                for (int j = 0; j < (DATA_WIDTH/8); j++) begin
+                                    if ((sq[i].byte_wr_en << neg_byte_offset)[j]) begin
+                                        load_data_o[8*j+:8] = (sq[i].data << (8*neg_byte_offset))[8*j+:8];
+                                    end
+                                end
+                            end else begin
+                                load_byte_en_o = load_byte_en_o | (sq[i].byte_wr_en >> pos_byte_offset);
+                                for (int j = 0; j < (DATA_WIDTH/8); j++) begin
+                                    if ((sq[i].byte_wr_en >> pos_byte_offset)[j]) begin
+                                        load_data_o[8*j+:8] = (sq[i].data >> (8*pos_byte_offset))[8*j+:8];
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end else begin
+            load_byte_en_o = '0;
+            load_data_o = '0;
         end
     end
 
