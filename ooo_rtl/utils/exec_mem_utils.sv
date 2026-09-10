@@ -133,13 +133,13 @@ package exec_mem_pkg;
         logic [DATA_WIDTH-1:0] store_data;
         logic [1:0] store_width_type; // do i need this?
 
-        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
+        // logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
     } sq_pkt_t;
 
     typedef enum {
         INVALID, 
         STORE_PENDING, STORE_ADDR_IN, STORE_DATA_IN, 
-        STORE_COMMIT // probably dont need since once we commit, immediately send to store buffer
+        STORE_COMMIT
     } sq_state_t;
 
     typedef enum {
@@ -175,7 +175,7 @@ package exec_mem_pkg;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] pc; // since we are currently not doing spec laods, dont really need anymore, but will keep just in case
         logic [$clog2(PRF_COUNT)-1:0] src_ptr;
-        logic data_in;
+        logic data_in; // dont really need
         logic [DATA_WIDTH-1:0] data;
         logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
     } sq_entry_t;
@@ -276,7 +276,7 @@ package exec_mem_pkg;
         // can technically optimize away "store_data" by resuing data_o in mem stage
         // sq_entry.store_data_in = sq_pkt_i.store_data_in;
         // sq_entry.store_data = sq_pkt_i.store_data;
-        sq_entry.lsq_ptr = sq_pkt_i.lsq_ptr;
+        // sq_entry.lsq_ptr = sq_pkt_i.lsq_ptr;
 
         return sq_entry;
     endfunction
@@ -287,6 +287,8 @@ package exec_mem_pkg;
         // logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
     } lq_instantiation_pkt_t;
 
+
+    CHECK THIS PTR
     typedef struct packed {
         logic en;
         logic [$clog2(MAX_LOAD_INSTRS)-1:0] ptr;
@@ -294,6 +296,7 @@ package exec_mem_pkg;
 
     typedef struct packed {
         logic en;
+        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
     } sq_instantiation_pkt_t;
 
 

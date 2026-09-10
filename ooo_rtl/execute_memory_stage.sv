@@ -770,6 +770,8 @@ endmodule
 
 // NEED TO have outside a lsq pointer and be able to check stores that come only BEORE a given load
 
+// NEED TO ENSURE LSQ POINTER IS LARGE, so that does it does not overflow
+
 module store_queue
 import decode_pkg::*;
 import general_pkg::*;
@@ -787,7 +789,9 @@ import writeback_pkg::*;
     input logic [1:0] load_width_i,
     input logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr_i,
     output logic [(DATA_WIDTH/8)-1:0] load_byte_en_o,
+    output logic [(DATA_WIDTH/8)-1:0] load_data_avail_o,
     output logic [DATA_WIDTH-1:0] load_data_o,
+    output logic load_safe_o,
     // instantiation
     input sq_instantiation_pkt_t sq_instant_pkt_i,
     // address computation, and possibly store data
@@ -825,6 +829,7 @@ import writeback_pkg::*;
             // instantiation
             if (sq_instant_pkt_i.en && !full_o) begin
                 sq[head_ptr_lower].state <= STORE_PENDING;
+                sq[head_ptr_lower].lsq_ptr <= sq_instant_pkt_i.lsq_ptr;
                 head_ptr <= head_ptr + 1;
             end
             // updating state
@@ -865,8 +870,13 @@ import writeback_pkg::*;
 
     // NEED TO ACCOUNT FOR EMPTY, EXCEPTION, and also ADDR vs DATA cases
 
+    // GO OVER ALL PROPER STATE TRANSSITIOSNS AND MAKE SURE YOU GOT THEM ALL
+
     // checking store addresses for load operations in lq
-    logic tail_ptr_diff_sign;
+    logic commit_tail_ptr_diff_sign;
+    logic [$clog2(MAX_STORE_INSTRS)-1:0] committed_ptr_tail;
+    logic contain_commits, commit_wrap_around;
+    logic [MAX_STORE_INSTRS-1:0] non_empty_arry, masked_non_empty_arry;
     logic [MAX_STORE_INSTRS-1:0] mask_arry, valid_arry, masked_valid_arry;
     logic [MAX_STORE_INSTRS-1:0] overflow_mask_arry, overflow_valid_masked_arry;
     logic overflow_condition;
@@ -875,23 +885,57 @@ import writeback_pkg::*;
     logic [1:0] pos_byte_offset, neg_byte_offset;
     // logic 
     always_comb begin
-        tail_ptr_diff_sign = lsq_ptr_i > sq[tail_ptr_lower].lsq_ptr;
+        // tail_ptr_diff_sign = lsq_ptr_i > sq[tail_ptr_lower].lsq_ptr; // wrong
+
+
         mask_arry = {MAX_STORE_INSTRS{1'b1}} << tail_ptr_lower;
+        for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+            non_empty_arry[i] = sq[i].state != INVALID;
+        end
+        masked_non_empty_arry = mask_arry & non_empty_arry;
+        contain_commits = 1'b0;
+        commit_wrap_around = 1'b0;
+        for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+            if (masked_non_empty_arry[i]) begin
+                if (contain_commits && sq[i].state != STORE_COMMIT) begin
+                    break;
+                end
+                if (sq[i].state == STORE_COMMIT) begin
+                    committed_ptr_tail = i;
+                    contain_commits = 1'b1;
+                end
+            end
+        end
+        if (contain_commits && committed_ptr_tail == MAX_STORE_INSTRS-1) begin // keep looking
+            commit_wrap_around = 1'b1;
+            for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+                if (non_empty_arry[i]) begin
+                    if (contain_commits && sq[i].state != STORE_COMMIT) begin
+                        break;
+                    end
+                    if (sq[i].state == STORE_COMMIT) begin
+                        committed_ptr_tail = i;
+                    end
+                end
+            end
+        end
+
+        tail_ptr_diff_sign = lsq_ptr_i > sq[committed_ptr_tail + 1].lsq_ptr;
+
         overflow_mask_arry = {MAX_STORE_INSTRS{1'b1}} >> (MAX_STORE_INSTRS - head_ptr_lower);
         for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
-            valid_arry[i] = sq[i].state != INVALID && (tail_ptr_diff_sign == (lsq_ptr_i > sq[i].lsq_ptr));
+            valid_arry[i] = sq[i].state != INVALID && (tail_ptr_diff_sign == (lsq_ptr_i > sq[i].lsq_ptr)) || (sq[i].state == STORE_COMMIT);
         end
         masked_valid_arry = mask_arry & valid_arry;
         overflow_valid_masked_arry = overflow_mask_arry & valid_arry;
 
-        overflow_condition = head_ptr_lower < tail_ptr_lower;
-        for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
-            if (i >= tail_ptr_lower && sq[i].state != INVALID) begin
-                overflow_condition = overflow_condition && (lsq_ptr_i > sq[i].lsq_ptr);
-            end
-        end
+        // overflow_condition = (head_ptr_lower < tail_ptr_lower) && valid_arry[MAX_STORE_INSTRS-1];
+        overflow_condition = valid_arry[MAX_STORE_INSTRS-1];
 
         if (|masked_valid_arry && !empty && !exception) begin
+            load_byte_en_o = '0;
+            load_data_o = '0;
+            load_data_avail_o = '0;
             for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
                 if (masked_valid_arry[i]) begin
                     // check if load address is within range of store address and width
@@ -904,6 +948,9 @@ import writeback_pkg::*;
                             : pos_diff < load_width_i)) begin: WithinRange
                         if (load_addr_i <= sq[i].addr) begin
                             load_byte_en_o = load_byte_en_o | (sq[i].byte_wr_en << neg_byte_offset);
+                            if (sq[i].state == STORE_DATA_IN) begin
+                                load_data_avail_o = load_data_avail_o | (sq[i].byte_wr_en << neg_byte_offset);
+                            end
                             for (int j = 0; j < (DATA_WIDTH/8); j++) begin
                                 if ((sq[i].byte_wr_en << neg_byte_offset)[j]) begin
                                     load_data_o[8*j+:8] = (sq[i].data << (8*neg_byte_offset))[8*j+:8];
@@ -911,6 +958,9 @@ import writeback_pkg::*;
                             end
                         end else begin
                             load_byte_en_o = load_byte_en_o | (sq[i].byte_wr_en >> pos_byte_offset);
+                            if (sq[i].state == STORE_DATA_IN) begin
+                                load_data_avail_o = load_data_avail_o | (sq[i].byte_wr_en >> pos_byte_offset);
+                            end
                             for (int j = 0; j < (DATA_WIDTH/8); j++) begin
                                 if ((sq[i].byte_wr_en >> pos_byte_offset)[j]) begin
                                     load_data_o[8*j+:8] = (sq[i].data >> (8*pos_byte_offset))[8*j+:8];
@@ -933,6 +983,9 @@ import writeback_pkg::*;
                                 : pos_diff < load_width_i)) begin: WithinRangeOverflow
                             if (load_addr_i <= sq[i].addr) begin
                                 load_byte_en_o = load_byte_en_o | (sq[i].byte_wr_en << neg_byte_offset);
+                                if (sq[i].state == STORE_DATA_IN) begin
+                                    load_data_avail_o = load_data_avail_o | (sq[i].byte_wr_en << neg_byte_offset);
+                                end
                                 for (int j = 0; j < (DATA_WIDTH/8); j++) begin
                                     if ((sq[i].byte_wr_en << neg_byte_offset)[j]) begin
                                         load_data_o[8*j+:8] = (sq[i].data << (8*neg_byte_offset))[8*j+:8];
@@ -940,6 +993,9 @@ import writeback_pkg::*;
                                 end
                             end else begin
                                 load_byte_en_o = load_byte_en_o | (sq[i].byte_wr_en >> pos_byte_offset);
+                                if (sq[i].state == STORE_DATA_IN) begin
+                                    load_data_avail_o = load_data_avail_o | (sq[i].byte_wr_en >> pos_byte_offset);
+                                end
                                 for (int j = 0; j < (DATA_WIDTH/8); j++) begin
                                     if ((sq[i].byte_wr_en >> pos_byte_offset)[j]) begin
                                         load_data_o[8*j+:8] = (sq[i].data >> (8*pos_byte_offset))[8*j+:8];
@@ -953,6 +1009,31 @@ import writeback_pkg::*;
         end else begin
             load_byte_en_o = '0;
             load_data_o = '0;
+            load_data_avail_o = '0;
+        end
+    end
+
+    always_comb begin
+        if (|masked_valid_arry && !empty && !exception_i) begin
+            load_safe_o = 1'b1;
+            for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+                if (masked_valid_arry[i]) begin
+                    if (sq[i].state == STORE_PENDING) begin
+                        load_safe_o = 1'b0;
+                    end
+                end
+            end
+            if (overflow_condition) begin
+                for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+                    if (overflow_valid_masked_arry[i]) begin
+                        if (sq[i].state == STORE_PENDING) begin
+                            load_safe_o = 1'b0;
+                        end
+                    end
+                end
+            end
+        end else begin
+            load_safe_o = 1'b0;
         end
     end
 
