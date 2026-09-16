@@ -116,6 +116,13 @@ package exec_mem_pkg;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] pc;
         logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
+        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
+        // signals coming from store_queue
+        logic [(DATA_WIDTH/8)-1:0] load_byte_en;
+        logic [(DATA_WIDTH/8)-1:0] load_data_avail;
+        logic [(DATA_WIDTH/8)-1:0] [$clog2(MAX_LSQ_INSTRS)-1:0] load_data_byte_lsq_arry,
+        logic [DATA_WIDTH-1:0] load_data;
+        logic load_safe;
     } lq_pkt_t;
 
     // might be c
@@ -144,7 +151,12 @@ package exec_mem_pkg;
 
     typedef enum {
         INVALID,
-        LOAD_PENDING, LOAD_ADDR_IN, LOAD_SAFE, LOAD_DISPATCHED, LOAD_RECIEVED, 
+        LOAD_PENDING, 
+        // LOAD_ADDR_IN, 
+        LOAD_UNSAFE,
+        LOAD_WAIT_ON_SNOOP,
+        LOAD_WAIT_ON_LSQ_ORDER,
+        LOAD_READY, LOAD_FORWARDED, LOAD_DISPATCHED, LOAD_RECIEVED, 
         LOAD_ISSUED // still neede b/c for stores that are older than it, but lests
     } lq_state_t;
 
@@ -189,6 +201,11 @@ package exec_mem_pkg;
         logic [DATA_WIDTH-1:0] pc; // since we are currently not doing spec laods, dont really need anymore, but will keep just in case
         logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
         logic [DATA_WIDTH-1:0] data;
+        logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr;
+        // added
+        logic [(DATA_WIDTH/8)-1:0] load_byte_en; // might not need this
+        logic [(DATA_WIDTH/8)-1:0] load_data_avail;
+        logic [(DATA_WIDTH/8)-1:0] [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_src_arry;
     } lq_entry_t;
 
 
@@ -205,6 +222,72 @@ package exec_mem_pkg;
         logic en;
         logic [$clog2(MAX_LOAD_INSTRS)-1:0] ptr;
     } sq_commit_pkt_t;
+
+    function automatic logic [DATA_WIDTH-1:0] funct_code_to_width (
+        input [2:0] funct_code
+    );
+        case (funct_code)
+            3'b000: funct_code_to_width = 1;
+            3'b001: funct_code_to_width = 1;
+            3'b010: funct_code_to_width = 4;
+            3'b100: funct_code_to_width = 1;
+            3'b101: funct_code_to_width = 2;
+            default: funct_code_to_width = 0;
+        endcase
+    endfunction
+
+    function automatic lq_entry_t lq_set_load_data (
+        input lq_entry_t lq_entry_i,
+        input lq_store_snoop_pkt_t snoop_pkt_i
+    );
+        lq_entry_t lq_entry_o;
+        lq_entry_o = lq_entry_i;
+        logic [DATA_WIDTH-1:0] pos_diff;
+        logic [DATA_WIDTH-1:0] neg_diff;
+        logic [DATA_WIDTH-1:0] load_width;
+        logic [1:0] pos_byte_offset;
+        logic [1:0] neg_byte_offset;
+        // align and set data
+        // check if load address is within range of store address and width
+        load_width = funct_code_to_width(lq_entry_i.funct_code);
+        pos_diff = lq_entry_i.addr - snoop_pkt_i.addr;
+        neg_diff = snoop_pkt_i.addr - lq_entry_i.addr;
+        pos_byte_offset = pos_diff[1:0];
+        neg_byte_offset = neg_diff[1:0];
+        if ((snoop_pkt_i.addr >= lq_entry_i.addr)
+                ? neg_diff < load_width
+                : pos_diff < load_width) begin
+            // if (snoop_pkt_i.addr <= lq_entry_i.addr) begin
+            if (lq_entry_i.addr <= snoop_pkt_i.addr) begin
+                // lq_entry_o.load_byte_en = lq_entry_o.load_byte_en | (lq_entry_i.byte_wr_en << neg_byte_offset);
+                // lq_entry_o.load_data_avail = lq_entry_o.load_data_avail | (lq_entry_i.byte_wr_en << neg_byte_offset);
+                for (int j = 0; j < (DATA_WIDTH/8); j++) begin
+                    if ((snoop_pkt_i.byte_wr_en << neg_byte_offset)[j] && lq_entry_i.byte_wr_en[j] && lq_entry_i.lsq_ptr > snoop_pkt_i.lsq_ptr
+                        && (lq_entry_i.lsq_src_arry[j] < snoop_pkt_i.lsq_ptr || lq_entry_i.load_data_avail[j] == 0)
+                    ) begin
+                        lq_entry_o.data[8*j+:8] = (snoop_pkt_i.data << (8*neg_byte_offset))[8*j+:8];
+                        lq_entry_o.load_byte_en[j] = 1'b1;
+                        lq_entry_o.load_data_avail[j] = 1'b1;
+                        lq_entry_o.lsq_src_arry[j] = lq_entry_i.lsq_ptr;
+                    end
+                end
+            end else begin
+                lq_entry_o.load_byte_en = lq_entry_o.load_byte_en | (snoop_pkt_i.byte_wr_en >> pos_byte_offset);
+                lq_entry_o.load_data_avail = lq_entry_o.load_data_avail | (snoop_pkt_i.byte_wr_en >> pos_byte_offset);
+                for (int j = 0; j < (DATA_WIDTH/8); j++) begin
+                    if ((snoop_pkt_i.byte_wr_en >> pos_byte_offset)[j] && lq_entry_i.byte_wr_en[j] && lq_entry_i.lsq_ptr > snoop_pkt_i.lsq_ptr
+                        && (lq_entry_i.lsq_src_arry[j] < snoop_pkt_i.lsq_ptr || lq_entry_i.load_data_avail[j] == 0)
+                    ) begin
+                        lq_entry_o.data[8*j+:8] = (snoop_pkt_i.data >> (8*pos_byte_offset))[8*j+:8];
+                        lq_entry_o.load_byte_en[j] = 1'b1;
+                        lq_entry_o.load_data_avail[j] = 1'b1;
+                        lq_entry_o.lsq_src_arry[j] = snoop_pkt_i.lsq_ptr;
+                    end
+                end
+            end
+        end
+        return lq_entry_o;
+    endfunction
 
     function automatic sq_dispatch_pkt_t get_store_data_from_sq_entry (
         input sq_entry_t sq_entry_i
@@ -227,6 +310,25 @@ package exec_mem_pkg;
         // logic 
     } sq_dispatch_pkt_t;
 
+    typedef struct packed {
+        logic en;
+        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
+    } sq_entry_addr_safety_notify_pkt_t;
+
+    typedef struct packed {
+        logic en;
+        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
+    } sq_entry_data_safety_notify_pkt_t;
+
+
+    typedef struct packed {
+        input logic en;
+        input logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
+        input logic [DATA_WIDTH-1:0] addr;
+        input logic [DATA_WIDTH-1:0] data;
+        input logic [DATA_WIDTH/8-1:0] byte_wr_en;
+        input logic store_data_in;
+    } lq_store_snoop_pkt_t;
 
     // CHECK THIS CASE
     function automatic logic [DATA_WIDTH-1:0] sign_extend_load_data (
