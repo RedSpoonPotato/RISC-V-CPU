@@ -515,11 +515,13 @@ import general_pkg::*;
 (
     input clk,
     input rst,
+    input logic exception_i,
     // updating state
     // input ex_mem_stage_pkt_t ex_mem_stage_pkt_i,
     // input spec_exec_answr_pkt_t spec_exec_answr_i,
     // input mem_addr_pkt_t mem_addr_pkt_i,
     input lq_pkt_t issue_pkt_i,
+    output logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr_incom_reply_o,
     // state
     output full_o,
     // instantiation
@@ -530,7 +532,9 @@ import general_pkg::*;
     // input logic commit_en_i,
     // input logic store_commit_en_i,
     // input logic mem_commit_en_i,
-    input lq_commit_pkt_t lq_commit_pkt_i,
+
+    // input lq_commit_pkt_t lq_commit_pkt_i, // dont actually think i need
+
     // output shift_reg_pkt_t spec_exec_answr_pkt_o,
     // combinational output
     // output logic load_addr_conflict_o,
@@ -538,17 +542,16 @@ import general_pkg::*;
 
     output lq_load_dispatch_pkt_t lq_load_dispatch_pkt_o,
 
+    output lq_load_issue_pkt_t lq_load_issue_pkt_o,
+
     // state updating args
-    input logic store_dispatch_en_i,
-    input logic [$clog2(MAX_MEM_INSTRS)-1:0] store_dispatch_lsq_ptr_i,
+    // input logic store_dispatch_en_i,
+    // input logic [$clog2(MAX_MEM_INSTRS)-1:0] store_dispatch_lsq_ptr_i,
 
     input lq_store_snoop_pkt_t lq_store_snoop_pkt_i,
 
     input sq_entry_addr_safety_notify_pkt_t addr_safety_i,
-    input sq_entry_data_safety_notify_pkt_t data_safety_i,
-    
-
-    input logic exception_i
+    input sq_entry_data_safety_notify_pkt_t data_safety_i
 );
 
     // mem_addr_entry_t lsq [0:MAX_MEM_INSTRS-1];
@@ -571,35 +574,63 @@ import general_pkg::*;
 
     logic [MAX_LOAD_INSTRS-1:0] valid_arry, next_valid_arry, masked_valid_arry, mask_arry, ready_arry, masked_ready_arry;
     logic [$clog2(MAX_LOAD_INSTRS)-1:0] select_ptr;
+    logic [MAX_LOAD_INSTRS-1:0] data_in_arry, masked_data_in_arry;
 
     // common signals
     always_comb begin
-        mask_arry = {MAX_LOAD_INSTRS{1'b1}} << head;
+        mask_arry = {MAX_LOAD_INSTRS{1'b1}} << head_ptr;
         for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
             valid_arry[i] = lq[i].state != INVALID;
             ready_arry[i] = lq[i].state == LOAD_READY;
+            data_in_arry[i] = lq[i].state == LOAD_RECEIVED || lq[i].state == LOAD_FORWARDED;
         end
         masked_ready_arry = mask_arry & ready_arry;
+        masked_data_in_arry = mask_arry & data_in_arry;
     end
 
-    // issuing instruction after recieving data from cache
+    // dispatching cache to cache
+    logic [$clog2(MAX_LOAD_INSTRS)-1:0] debug_dispatch_ptr; // debugging signal
     always_comb begin
         if (!exception_i) begin // possibly add extra conditions here!
             if (|masked_ready_arry) begin
                 for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
                     if (masked_ready_arry[i]) begin
                         lq_load_dispatch_pkt_o = set_lq_load_dispatch_pkt(lq[i], i);
+                        debug_dispatch_ptr = i;
                     end
                 end
             end else if (|ready_arry) begin
                 for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
                     if (ready_arry[i]) begin
                         lq_load_dispatch_pkt_o = set_lq_load_dispatch_pkt(lq[i], i);
+                        debug_dispatch_ptr = i;
                     end
                 end
             end
         end else begin
             lq_load_dispatch_pkt_o = '{default:'0};
+            debug_dispatch_ptr = '0;
+        end
+    end
+
+    // issueing load to wb stage
+    always_comb begin
+        if (!exception_i) begin // possibly add extra conditions here!
+            if (|masked_data_in_arry) begin
+                for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
+                    if (masked_data_in_arry[i]) begin
+                        lq_load_issue_pkt_o = set_lq_load_issue_pkt(lq[i], i);
+                    end
+                end
+            end else if (|ready_arry) begin
+                for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
+                    if (ready_arry[i]) begin
+                        lq_load_issue_pkt_o = set_lq_load_issue_pkt(lq[i], i);
+                    end
+                end
+            end
+        end else begin
+            lq_load_issue_pkt_o = '{default:'0};
         end
     end
 
@@ -607,7 +638,7 @@ import general_pkg::*;
     always_comb begin
         // determine next valid state of array
         next_valid_arry = valid_arry;
-        if (lq_commit_pkt_i.en) begin
+        if (lq_commit_pkt_i.en) begin // UPDATE THIS TO BE WHEN A ENTRY IS LEAVING, I.E. ITS BEING ISSUED
             next_valid_arry[lq_commit_pkt_i.ptr] = 1'b0; // Entry is leaving
         end
         if (lq_instant_pkt_i.wr_en && !full_o) begin
@@ -631,6 +662,22 @@ import general_pkg::*;
         end
     end
 
+    // masking for dispatching and issuing loads
+    logic [MAX_LOAD_INSTRS-1:0] overflow_ready_mask_arry;
+    logic [MAX_LOAD_INSTRS-1:0] issue_arry, masked_issue_arry, overflow_issue_mask_arry;
+    always_comb begin
+        for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
+            issue_arry[i] = lq[i].state == LOAD_RECEIVED || lq[i].state == LOAD_FORWARDED;
+        end
+
+        // masked_ready_arry = mask_arry & ready_arry;
+        overflow_ready_mask_arry = ~mask_arry & ready_arry;
+
+        masked_issue_arry = mask_arry & issue_arry;
+        overflow_issue_mask_arry = ~mask_arry & issue_arry;
+
+    end
+
     // buffer management
     always_ff @(posedge clk) begin
         if (rst || exception_i || mem_addr_conflict_pkt_o.en) begin
@@ -641,9 +688,11 @@ import general_pkg::*;
             // instantiation
             if (lq_instant_pkt_i.wr_en && !full_o) begin
                 lq[tail_ptr].state <= LOAD_PENDING;
+                lq[tail_ptr].lsq_ptr <= lq_instant_pkt_i.lsq_ptr;
                 // lq[tail_ptr].dest_ptr <= lq_instant_pkt_i.dest_ptr;
                 // head_ptr <= head_ptr + 1;
                 // head_ptr <= next_head_ptr;
+                lq[tail_ptr].e_counter <= lq_instant_pkt_i.e_counter;
                 tail_ptr <= tail_ptr + 1;
             end
             head_ptr <= next_head_ptr;
@@ -675,15 +724,23 @@ import general_pkg::*;
                 lq[issue_pkt_i.lq_ptr].pc               <= issue_pkt_i.pc;
                 lq[issue_pkt_i.lq_ptr].dest_ptr         <= issue_pkt_i.dest_ptr;
                 lq[issue_pkt_i.lq_ptr].data             <= issue_pkt_i.data;
-                lq[issue_pkt_i.lq_ptr].lsq_ptr          <= issue_pkt_i.lsq_ptr;
+                // lq[issue_pkt_i.lq_ptr].lsq_ptr          <= issue_pkt_i.lsq_ptr;
                 lq[issue_pkt_i.lq_ptr].load_byte_en     <= issue_pkt_i.load_byte_en;
                 lq[issue_pkt_i.lq_ptr].load_data_avail  <= issue_pkt_i.load_data_avail;
                 lq[issue_pkt_i.lq_ptr].lsq_src_arry     <= issue_pkt_i.load_data_byte_lsq_arry;
             end
 
+            // commtting
+            // UPDATE THIS TO BE WHEN A ENTRY IS LEAVING, I.E. ITS BEING ISSUED
+            if (lq_commit_pkt_i.en) begin
+                lq[lq_commit_pkt_i.lq_ptr].state <= INVALID;
+                head_ptr <= head_ptr + 1;
+            end
+
             // CHECK THESE
             // ALSO need to add forwarding
-            for (int i = 0; i < MAX_MEM_INSTRS; i++) begin
+            // state transitions
+            for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
                 if (lq[i].state == LOAD_UNSAFE) begin
                     // update data and load_data_avail
                     if (lq_store_snoop_pkt_i.en && lq_store_snoop_pkt_i.store_data_in) begin
@@ -698,25 +755,54 @@ import general_pkg::*;
                         lq[i].state <= LOAD_WAIT_ON_LSQ_ORDER;
                     end
                 end
-                
+
+                if (lq[i].state == LOAD_WAIT_ON_SNOOP) begin
+                    if (lq_store_snoop_pkt_i.en && lq_store_snoop_pkt_i.store_data_in) begin
+                        // forwarding?
+                        lq[i] <= lq_set_load_data(lq[i], lq_store_snoop_pkt_i);
+                    end
+                    if (data_safety_i.en && data_safety_i.lsq_ptr > lq[i].lsq_ptr) begin
+                        lq[i].state <= LOAD_FORWARDED;
+                    end
+                end
+
+                if (lq[i].state == LOAD_WAIT_ON_LSQ_ORDER) begin
+                    if (data_safety_i.en && data_safety_i.lsq_ptr > lq[i].lsq_ptr) begin
+                        lq[i].state <= LOAD_FORWARDED;
+                    end
+                end
             end
 
-
-            // store committed
-            // if (commit_stage_pkt_i.wr_en && commit_stage_pkt_i.store) begin /// use later
-            if (lq_commit_pkt_i.en) begin
-
-                // if (lsq[i].state == STORE_DATA_IN && lsq[i].src_ptr == commit_stage_pkt_i.phys_reg_addr) begin
-                // lsq[commit_stage_pkt_i.lsq_counter]; // work off this
-                    // COME BACK TO THIS
-                    // DISPATCH THE STORE TO THE STORE BUFFER, where it will then go to cache
-                    // ALSO RESET state of entry to be INVALID
-                // end
-                lsq[lq_commit_pkt_i.lq_ptr].state <= INVALID;
-                // lsq[]
+            // if a load is ready, dispatch it, in priority
+            for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
+                if (masked_ready_arry[i]) begin
+                    // dispatch the load instruction
+                    lq[i].state <= LOAD_DISPATCHED;
+                end
+            end
+            if (~|masked_ready_arry) begin
+                for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
+                    if (overflow_ready_mask_arry[i]) begin
+                        // dispatch load instruction
+                        lq[i].state <= LOAD_DISPATCHED;
+                    end
+                end
             end
 
-
+            // issue load that contains data
+            for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
+                if (masked_issue_arry[i]) begin
+                    // issue
+                end
+            end
+            if (~|masked_issue_arry) begin
+                for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
+                    if (overflow_issue_mask_arry[i]) begin
+                        // issue
+                    end
+                end
+            end
+        
 
         end
     end
@@ -777,6 +863,8 @@ import general_pkg::*;
         end
     end
 
+    assign lsq_ptr_incom_reply_o = lq[issue_pkt_i.lq_ptr].lsq_ptr;
+
 endmodule
 
 // NEED TO have outside a lsq pointer and be able to check stores that come only BEORE a given load
@@ -798,22 +886,14 @@ import writeback_pkg::*;
     // other
     output logic full_o,
     // checking store addresses for load operations in lq
-    input logic [DATA_WIDTH-1:0] load_addr_i,
-    input logic [1:0] load_width_i,
-    input logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr_i,
-    output logic [(DATA_WIDTH/8)-1:0] load_byte_en_o, // unsure if needed
-    output logic [(DATA_WIDTH/8)-1:0] load_data_avail_o,
-    output logic [(DATA_WIDTH/8)-1:0] [$clog2(MAX_LSQ_INSTRS)-1:0] load_data_byte_lsq_arry,
-    output logic [DATA_WIDTH-1:0] load_data_o,
-    output logic load_safe_o,
+    input sq_query_t sq_query_i,
+    output lq_query_resp_t lq_query_resp_o,
     // instantiation
     input sq_instantiation_pkt_t sq_instant_pkt_i,
     // address computation, and possibly store data
     input sq_pkt_t sq_pkt_i,
     // store data
-    input logic data_wr_en_i,
-    input logic [DATA_WIDTH-1:0] data_i,
-    input logic [$clog2(PRF_COUNT)-1:0] src_ptr_i,
+    input sq_data_snoop_pkt_t sq_data_snoop_pkt_i,
     // commiting
     input sq_commit_pkt_t sq_commit_pkt_i,
     // storing to cache
@@ -821,6 +901,10 @@ import writeback_pkg::*;
     // safety signals for entries
     output sq_entry_addr_safety_notify_pkt_t addr_safety_o,
     output sq_entry_data_safety_notify_pkt_t data_safety_o
+
+    // to load queue
+    // output logic sq_snoop_en_o,
+    // output logic [$clog2(MAX_MEM_INSTRS)-1:0] sq_snoop_lsq_ptr_o,
 
 );
 
@@ -859,13 +943,15 @@ import writeback_pkg::*;
     logic [MAX_STORE_INSTRS-1:0] non_empty_arry, masked_non_empty_arry;
     logic [MAX_STORE_INSTRS-1:0] mask_arry, valid_arry, masked_valid_arry;
     logic [MAX_STORE_INSTRS-1:0] overflow_mask_arry, overflow_valid_masked_arry;
+
+    // CAREFULL how you use this
     logic overflow_condition;
     // logic [$clog2]
     logic [DATA_WIDTH-1:0] pos_diff, neg_diff;
     logic [1:0] pos_byte_offset, neg_byte_offset;
     // logic 
     always_comb begin
-        // tail_ptr_diff_sign = lsq_ptr_i > sq[tail_ptr_lower].lsq_ptr; // wrong
+        // tail_ptr_diff_sign = sq_query_i.lsq_ptr > sq[tail_ptr_lower].lsq_ptr; // wrong
         committed_ptr_tail = '0;
 
         mask_arry = {MAX_STORE_INSTRS{1'b1}} << tail_ptr_lower;
@@ -903,10 +989,10 @@ import writeback_pkg::*;
             end
         end
 
-        tail_ptr_diff_sign = lsq_ptr_i > sq[committed_ptr_tail + 1].lsq_ptr;
+        tail_ptr_diff_sign = sq_query_i.lsq_ptr > sq[committed_ptr_tail + 1].lsq_ptr;
 
         for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
-            valid_arry[i] = sq[i].state != INVALID && (tail_ptr_diff_sign == (lsq_ptr_i > sq[i].lsq_ptr)) || (sq[i].state == STORE_COMMIT);
+            valid_arry[i] = sq[i].state != INVALID && (tail_ptr_diff_sign == (sq_query_i.lsq_ptr > sq[i].lsq_ptr)) || (sq[i].state == STORE_COMMIT);
         end
         masked_valid_arry = mask_arry & valid_arry;
         overflow_valid_masked_arry = overflow_mask_arry & valid_arry;
@@ -915,39 +1001,39 @@ import writeback_pkg::*;
         overflow_condition = valid_arry[MAX_STORE_INSTRS-1];
 
         if (|masked_valid_arry && !empty && !exception) begin
-            load_byte_en_o = '0;
-            load_data_o = '0;
-            load_data_avail_o = '0;
+            lq_query_resp_o.load_byte_en = '0;
+            lq_query_resp_o.load_data = '0;
+            lq_query_resp_o.load_data_avail = '0;
             for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
                 if (masked_valid_arry[i]) begin
                     // check if load address is within range of store address and width
-                    pos_diff = load_addr_i - sq[i].addr;
-                    neg_diff = sq[i].addr - load_addr_i;
+                    pos_diff = sq_query_i.load_addr - sq[i].addr;
+                    neg_diff = sq[i].addr - sq_query_i.load_addr;
                     pos_byte_offset = pos_diff[1:0];
                     neg_byte_offset = neg_diff[1:0];
-                    if (sq[i].state == STORE_ADDR_IN && (sq[i].addr >= load_addr_i
-                            ? neg_diff < load_width_i
-                            : pos_diff < load_width_i)) begin: WithinRange
-                        if (load_addr_i <= sq[i].addr) begin
-                            load_byte_en_o = load_byte_en_o | (sq[i].byte_wr_en << neg_byte_offset);
+                    if (sq[i].state == STORE_ADDR_IN && (sq[i].addr >= sq_query_i.load_addr
+                            ? neg_diff < sq_query_i.load_width
+                            : pos_diff < sq_query_i.load_width)) begin: WithinRange
+                        if (sq_query_i.load_addr <= sq[i].addr) begin
+                            lq_query_resp_o.load_byte_en = lq_query_resp_o.load_byte_en | (sq[i].byte_wr_en << neg_byte_offset);
                             if (sq[i].state == STORE_DATA_IN) begin
-                                load_data_avail_o = load_data_avail_o | (sq[i].byte_wr_en << neg_byte_offset);
+                                lq_query_resp_o.load_data_avail = lq_query_resp_o.load_data_avail | (sq[i].byte_wr_en << neg_byte_offset);
                             end
                             for (int j = 0; j < (DATA_WIDTH/8); j++) begin
                                 if ((sq[i].byte_wr_en << neg_byte_offset)[j]) begin
-                                    load_data_o[8*j+:8] = (sq[i].data << (8*neg_byte_offset))[8*j+:8];
-                                    load_data_byte_lsq_arry[j] = sq[i].lsq_ptr;
+                                    lq_query_resp_o.load_data[8*j+:8] = (sq[i].data << (8*neg_byte_offset))[8*j+:8];
+                                    lq_query_resp_o.load_data_byte_lsq_arry[j] = sq[i].lsq_ptr;
                                 end
                             end
                         end else begin
-                            load_byte_en_o = load_byte_en_o | (sq[i].byte_wr_en >> pos_byte_offset);
+                            lq_query_resp_o.load_byte_en = lq_query_resp_o.load_byte_en | (sq[i].byte_wr_en >> pos_byte_offset);
                             if (sq[i].state == STORE_DATA_IN) begin
-                                load_data_avail_o = load_data_avail_o | (sq[i].byte_wr_en >> pos_byte_offset);
+                                lq_query_resp_o.load_data_avail = lq_query_resp_o.load_data_avail | (sq[i].byte_wr_en >> pos_byte_offset);
                             end
                             for (int j = 0; j < (DATA_WIDTH/8); j++) begin
                                 if ((sq[i].byte_wr_en >> pos_byte_offset)[j]) begin
-                                    load_data_o[8*j+:8] = (sq[i].data >> (8*pos_byte_offset))[8*j+:8];
-                                    load_data_byte_lsq_arry[j] = sq[i].lsq_ptr;
+                                    lq_query_resp_o.load_data[8*j+:8] = (sq[i].data >> (8*pos_byte_offset))[8*j+:8];
+                                    lq_query_resp_o.load_data_byte_lsq_arry[j] = sq[i].lsq_ptr;
                                 end
                             end
                         end
@@ -958,33 +1044,33 @@ import writeback_pkg::*;
                 for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
                     if (overflow_valid_masked_arry[i]) begin
                         // check if load address is within range of store address and width
-                        pos_diff = load_addr_i - sq[i].addr;
-                        neg_diff = sq[i].addr - load_addr_i;
+                        pos_diff = sq_query_i.load_addr - sq[i].addr;
+                        neg_diff = sq[i].addr - sq_query_i.load_addr;
                         pos_byte_offset = pos_diff[1:0];
                         neg_byte_offset = neg_diff[1:0];
-                        if (sq[i].state == STORE_ADDR_IN && (sq[i].addr >= load_addr_i
-                                ? neg_diff < load_width_i
-                                : pos_diff < load_width_i)) begin: WithinRangeOverflow
-                            if (load_addr_i <= sq[i].addr) begin
-                                load_byte_en_o = load_byte_en_o | (sq[i].byte_wr_en << neg_byte_offset);
+                        if (sq[i].state == STORE_ADDR_IN && (sq[i].addr >= sq_query_i.load_addr
+                                ? neg_diff < sq_query_i.load_width
+                                : pos_diff < sq_query_i.load_width)) begin: WithinRangeOverflow
+                            if (sq_query_i.load_addr <= sq[i].addr) begin
+                                lq_query_resp_o.load_byte_en = lq_query_resp_o.load_byte_en | (sq[i].byte_wr_en << neg_byte_offset);
                                 if (sq[i].state == STORE_DATA_IN) begin
-                                    load_data_avail_o = load_data_avail_o | (sq[i].byte_wr_en << neg_byte_offset);
+                                    lq_query_resp_o.load_data_avail = lq_query_resp_o.load_data_avail | (sq[i].byte_wr_en << neg_byte_offset);
                                 end
                                 for (int j = 0; j < (DATA_WIDTH/8); j++) begin
                                     if ((sq[i].byte_wr_en << neg_byte_offset)[j]) begin
-                                        load_data_o[8*j+:8] = (sq[i].data << (8*neg_byte_offset))[8*j+:8];
-                                        load_data_byte_lsq_arry[j] = sq[i].lsq_ptr;
+                                        lq_query_resp_o.load_data[8*j+:8] = (sq[i].data << (8*neg_byte_offset))[8*j+:8];
+                                        lq_query_resp_o.load_data_byte_lsq_arry[j] = sq[i].lsq_ptr;
                                     end
                                 end
                             end else begin
-                                load_byte_en_o = load_byte_en_o | (sq[i].byte_wr_en >> pos_byte_offset);
+                                lq_query_resp_o.load_byte_en = lq_query_resp_o.load_byte_en | (sq[i].byte_wr_en >> pos_byte_offset);
                                 if (sq[i].state == STORE_DATA_IN) begin
-                                    load_data_avail_o = load_data_avail_o | (sq[i].byte_wr_en >> pos_byte_offset);
+                                    lq_query_resp_o.load_data_avail = lq_query_resp_o.load_data_avail | (sq[i].byte_wr_en >> pos_byte_offset);
                                 end
                                 for (int j = 0; j < (DATA_WIDTH/8); j++) begin
                                     if ((sq[i].byte_wr_en >> pos_byte_offset)[j]) begin
-                                        load_data_o[8*j+:8] = (sq[i].data >> (8*pos_byte_offset))[8*j+:8];
-                                        load_data_byte_lsq_arry[j] = sq[i].lsq_ptr;
+                                        lq_query_resp_o.load_data[8*j+:8] = (sq[i].data >> (8*pos_byte_offset))[8*j+:8];
+                                        lq_query_resp_o.load_data_byte_lsq_arry[j] = sq[i].lsq_ptr;
                                     end
                                 end
                             end
@@ -993,33 +1079,33 @@ import writeback_pkg::*;
                 end
             end
         end else begin
-            load_byte_en_o = '0;
-            load_data_o = '0;
-            load_data_avail_o = '0;
+            lq_query_resp_o.load_byte_en = '0;
+            lq_query_resp_o.load_data = '0;
+            lq_query_resp_o.load_data_avail = '0;
         end
     end
 
+
+    /*
+    THIS IS WRONG
+    We should only check sq entries whose lsq is older than the load in question.
+    Make an array for that
+    */
+    logic [MAX_STORE_INSTRS-1:0] sq_older_than_load_arry;
+    for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+        sq_older_than_load_arry[i] = (sq[i].lsq_ptr < sq_query_i.lsq_ptr);
+    end
+
     always_comb begin
-        if (|masked_valid_arry && !empty && !exception_i) begin
-            load_safe_o = 1'b1;
+        if (!empty && !exception_i) begin
+            lq_query_resp_o.load_safe = 1'b1;
             for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
-                if (masked_valid_arry[i]) begin
-                    if (sq[i].state == STORE_PENDING) begin
-                        load_safe_o = 1'b0;
-                    end
-                end
-            end
-            if (overflow_condition) begin
-                for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
-                    if (overflow_valid_masked_arry[i]) begin
-                        if (sq[i].state == STORE_PENDING) begin
-                            load_safe_o = 1'b0;
-                        end
-                    end
+                if (sq_older_than_load_arry[i] && sq[i].state == STORE_PENDING) begin
+                    lq_query_resp_o.load_safe = 1'b0;
                 end
             end
         end else begin
-            load_safe_o = 1'b0;
+            lq_query_resp_o.load_safe = 1'b0;
         end
     end
 
@@ -1099,7 +1185,6 @@ import writeback_pkg::*;
                 end
             end
         end
-
     end
 
     always_ff @(posedge clk) begin
@@ -1133,12 +1218,12 @@ import writeback_pkg::*;
             if (sq_pkt_i.wr_en) begin
                 sq[sq_pkt_i.sq_ptr] <= sq_set_entry_from_pkt(sq_pkt_i);
             end
-            // data incoming
-            if (data_wr_en_i) begin
+            // data incoming (what about forwarding)
+            if (sq_data_snoop_pkt_i.data_wr_en) begin
                 for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
-                    if (sq[i].state == STORE_ADDR_IN && sq[i].src_ptr == src_ptr_i) begin
+                    if (sq[i].state == STORE_ADDR_IN && sq[i].src_ptr == sq_data_snoop_pkt_i.src_ptr) begin
                         sq[i].state <= STORE_DATA_IN;
-                        sq[i].store_data <= data_i;
+                        sq[i].store_data <= sq_data_snoop_pkt_i.data;
                     end
                 end
             end
@@ -1154,9 +1239,164 @@ import writeback_pkg::*;
         end
     end
 
+    // data snoop alerts to load queue
+    always_comb begin
+        sq_snoop_en_o = 1'b0;
+        sq_snoop_lsq_ptr_o = '0;
+        for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+            if (sq[i].state == STORE_ADDR_IN && sq[i].src_ptr == sq_data_snoop_pkt_i.src_ptr && mask_arry[i]) begin
+                sq_snoop_en_o = 1'b1;
+                sq_snoop_lsq_ptr_o = sq[i].lsq_ptr;
+            end
+        end
+        if (sq[MAX_STORE_INSTRS-1].state == STORE_ADDR_IN) begin
+            for (int i = 0; i < MAX_STORE_INSTRS; i++) begin
+                if (sq[i].state == STORE_ADDR_IN && sq[i].src_ptr == sq_data_snoop_pkt_i.src_ptr && overflow_mask_arry[i]) begin
+                    sq_snoop_en_o = 1'b1;
+                    sq_snoop_lsq_ptr_o = sq[i].lsq_ptr;
+                end
+            end
+        end
+    end
+
 endmodule
 
+interface cache_if
+import decode_pkg::*;
+import general_pkg::*;
+import issue_pkg::*;
+import exec_mem_pkg::*;
+import writeback_pkg::*;
+(
+    input logic clk
+);
+    // request signals
+    logic [ADDR_WIDTH-1:0] addr;
+    logic wr_en;
+    logic [DATA_WIDTH-1:0] wr_data;
+    logic req_valid;
+    logic req_ready;
 
+    // response signals
+    logic [DATA_WIDTH-1:0] rd_data;
+    logic resp_valid;
+    logic resp_ready;
+
+    modport master (
+        input clk,
+        output addr,
+        output wr_en,
+        output wr_data,
+        output req_valid,
+        input req_ready,
+        input rd_data,
+        input resp_valid,
+        output resp_ready
+    );
+
+    modport slave (
+        input clk,
+        input addr,
+        input wr_en,
+        input wr_data,
+        input req_valid,
+        output req_ready,
+        output rd_data,
+        output resp_valid,
+        input resp_ready
+    );
+
+endinterface
+
+module mem_stage_cycle
+import decode_pkg::*;
+import general_pkg::*;
+import issue_pkg::*;
+import exec_mem_pkg::*;
+import writeback_pkg::*;
+(
+    input logic clk,
+    input logic rst,
+    input logic exception_i,
+    // mem_op instantiation
+    input mem_stage_instant_pkt_t mem_stage_instant_pkt_i,
+    // entry state data
+    input lq_sq_pkt_t lq_sq_pkt_i,
+    // store data snooping
+    input sq_data_snoop_pkt_t sq_data_snoop_pkt_i,
+    // store committing update
+    input sq_commit_pkt_t sq_commit_pkt_i,
+    // dispatching mem ops (to cache)
+    // recieving mem loads (from cache)
+    cache_if.master cache_master_if
+    // issuing mem ops
+
+);  
+    // load queue signals
+    lq_pkt_t lq_pkt;
+    logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr_reply;
+    lq_query_resp_t lq_query_resp;
+    logic lq_full;
+    lq_instantiation_pkt_t lq_instant_pkt;
+    lq_load_dispatch_pkt_t lq_load_dispatch_pkt;
+    lq_load_issue_pkt_t lq_load_issue_pkt;
+    lq_store_snoop_pkt_t lq_store_snoop_pkt;
+    sq_entry_addr_safety_notify_pkt_t lq_addr_safety;
+    sq_entry_data_safety_notify_pkt_t lq_data_safety;
+    always_comb begin
+        lq_pkt                          = set_lq_pkt(lq_sq_pkt_i);
+        lq_pkt.load_byte_en             = lq_query_resp.load_byte_en;
+        lq_pkt.load_data_avail          = lq_query_resp.load_data_avail;
+        lq_pkt.load_data_byte_lsq_arry  = lq_query_resp.load_data_byte_lsq_arry;
+        lq_pkt.load_data                = lq_query_resp.load_data;
+        lq_pkt.load_safe                = lq_query_resp.load_safe;
+        lq_instant_pkt.wr_en = mem_stage_instant_pkt_i.en && !mem_stage_instant_pkt_i.store;
+        lq_instant_pkt.lsq_ptr = mem_stage_instant_pkt_i.lsq_ptr;
+        lq_instant_pkt.e_counter = mem_stage_instant_pkt_i.e_counter;
+    end
+    load_queue load_queue_inst(
+        .clk(clk),
+        .rst(rst),
+        .exception_i(exception_i),
+        .issue_pkt_i(lq_pkt),
+        .lsq_ptr_incom_reply_o(lsq_ptr_reply),
+        .full_o(lq_full),
+        .lq_instant_pkt_i(lq_instant_pkt),
+        .lq_load_dispatch_pkt_o(lq_load_dispatch_pkt),
+        .lq_load_issue_pkt_o(lq_load_issue_pkt),
+        .lq_store_snoop_pkt_i(lq_store_snoop_pkt),
+        .addr_safety_i(lq_addr_safety),
+        .data_safety_i(lq_data_safety)
+    );
+
+    sq_query_t sq_query;
+    sq_instantiation_pkt_t sq_instant_pkt;
+    sq_pkt_t sq_pkt;
+    sq_dispatch_pkt_t sq_dispatch_pkt;
+    sq_entry_addr_safety_notify_pkt_t sq_addr_safety;
+    sq_entry_data_safety_notify_pkt_t sq_data_safety;
+    always_comb begin
+        sq_query = set_sq_query(sq_instant_pkt, lsq_ptr_reply);
+        sq_pkt = set_sq_pkt(sq_instant_pkt);
+    end
+    store_queue store_queue_inst(
+        .clk(clk),
+        .rst(rst),
+        .exception_i(exception_i),
+        .sq_query_i(sq_query),
+        .lq_query_resp_o(lq_query_resp),
+        .sq_instant_pkt_i(lsq_instant_pkt_i),
+        .sq_pkt_i(sq_pkt),
+        .sq_data_snoop_pkt_i(sq_data_snoop_pkt_i),
+        .sq_commit_pkt_i(sq_commit_pkt_i),
+        .sq_dispatch_pkt_o(sq_dispatch_pkt),
+        .addr_safety_o(sq_addr_safety),
+        .data_safety_o(sq_data_safety)
+    );
+
+
+
+endmodule
 
 // for now doing a simple memory, 2 cycles
 module mem_stage 

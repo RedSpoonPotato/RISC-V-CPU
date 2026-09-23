@@ -106,21 +106,32 @@ package exec_mem_pkg;
         logic [1:0] store_width_type;
     } lsq_pkt_t;
 
+    // typedef struct packed {
+
+    // } lq_
+
+    typedef struct packed {
+        logic en;
+        logic store;
+        logic [$clog2(MAX_MEM_INSTRS):0] lsq_ptr;
+        logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
+    } mem_stage_instant_pkt_t;
 
     typedef struct packed {
         logic wr_en;
         logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
         logic [2:0] funct_code;
-        logic [$clog2(MAX_MEM_INSTRS)-1:0] lq_ptr;
+        logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_ptr;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] pc;
         logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
-        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
+        logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
+        // logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr; // should just be able to grba from lsq_ptr
         // signals coming from store_queue
         logic [(DATA_WIDTH/8)-1:0] load_byte_en;
         logic [(DATA_WIDTH/8)-1:0] load_data_avail;
-        logic [(DATA_WIDTH/8)-1:0] [$clog2(MAX_LSQ_INSTRS)-1:0] load_data_byte_lsq_arry,
+        logic [(DATA_WIDTH/8)-1:0] [$clog2(MAX_LSQ_INSTRS)-1:0] load_data_byte_lsq_arry;
         logic [DATA_WIDTH-1:0] load_data;
         logic load_safe;
     } lq_pkt_t;
@@ -130,7 +141,7 @@ package exec_mem_pkg;
         logic wr_en;
         logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
         logic [2:0] funct_code;
-        logic [$clog2(MAX_MEM_INSTRS):0] sq_ptr;
+        logic [$clog2(MAX_STORE_INSTRS):0] sq_ptr;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] pc; // unsure if needed
@@ -142,6 +153,81 @@ package exec_mem_pkg;
 
         // logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
     } sq_pkt_t;
+
+    typedef struct packed {
+        logic [DATA_WIDTH-1:0] load_addr_i;
+        logic [1:0] load_width_i;
+        logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr_i;
+    } sq_query_t;
+
+    typedef struct packed {
+        logic [(DATA_WIDTH/8)-1:0] load_byte_en; // unsure if needed
+        logic [(DATA_WIDTH/8)-1:0] load_data_avail;
+        logic [(DATA_WIDTH/8)-1:0] [$clog2(MAX_LSQ_INSTRS)-1:0] load_data_byte_lsq_arry;
+        logic [DATA_WIDTH-1:0] load_data;
+        logic load_safe;
+    } lq_query_resp_t;
+
+    typedef struct packed {
+        logic en;
+        logic store;
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+        logic [2:0] funct_code;
+        logic [$clog2(MAX_INDV_MEM_BUFF_SIZES)-1:0] buffer_ptr;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [DATA_WIDTH-1:0] addr;
+        logic [DATA_WIDTH-1:0] pc; // unsure if needed
+        logic [$clog2(PRF_COUNT)-1:0] prf_ptr; // src for store, dst for load
+        // load specific signals
+        // ...
+        // store specific signals
+        logic store_data_in;
+        logic [DATA_WIDTH-1:0] store_data;
+        logic [1:0] store_width_type; // do i need this?
+    } lq_sq_pkt_t;
+
+    typedef struct packed {
+        logic sq_snoop_en;
+        logic [$clog2(PRF_COUNT)-1:0] sq_snoop_src_ptr;
+        logic [DATA_WIDTH-1:0] sq_snoop_data;
+    } sq_data_snoop_pkt_t;
+
+    function automatic lq_pkt_t set_lq_pkt(input lq_sq_pkt_t lq_sq_pkt_i);
+        lq_pkt_t lq_pkt;
+        lq_pkt.wr_en = lq_sq_pkt_i.en && !lq_sq_pkt_i.store;
+        lq_pkt.byte_wr_en = lq_sq_pkt_i.byte_wr_en;
+        lq_pkt.funct_code = lq_sq_pkt_i.funct_code;
+        lq_pkt.lq_ptr = lq_sq_pkt_i.buffer_ptr;
+        lq_pkt.rob_ptr = lq_sq_pkt_i.rob_ptr;
+        lq_pkt.addr = lq_sq_pkt_i.addr;
+        lq_pkt.pc = lq_sq_pkt_i.pc;
+        lq_pkt.dest_ptr = lq_sq_pkt_i.prf_ptr;
+        return lq_pkt;
+    endfunction
+
+    function automatic sq_pkt_t set_sq_pkt(input lq_sq_pkt_t lq_sq_pkt_i);
+        sq_pkt_t sq_pkt;
+        sq_pkt.wr_en = lq_sq_pkt_i.en && lq_sq_pkt_i.store;
+        sq_pkt.byte_wr_en = lq_sq_pkt_i.byte_wr_en;
+        sq_pkt.funct_code = lq_sq_pkt_i.funct_code;
+        sq_pkt.sq_ptr = lq_sq_pkt_i.buffer_ptr;
+        sq_pkt.rob_ptr = lq_sq_pkt_i.rob_ptr;
+        sq_pkt.addr = lq_sq_pkt_i.addr;
+        sq_pkt.pc = lq_sq_pkt_i.pc;
+        sq_pkt.src_ptr = lq_sq_pkt_i.prf_ptr;
+        sq_pkt.store_data_in = lq_sq_pkt_i.store_data_in;
+        sq_pkt.store_data = lq_sq_pkt_i.store_data;
+        sq_pkt.store_width_type = lq_sq_pkt_i.store_width_type;
+        return sq_pkt;
+    endfunction
+
+    function automatic sq_query_t set_sq_query(input lq_sq_pkt_t lq_sq_pkt_i, input logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr_i);
+        sq_query_t sq_query;
+        sq_query.load_addr_i = lq_sq_pkt_i.addr;
+        sq_query.load_width_i = lq_sq_pkt_i.funct_code[1:0];
+        sq_query.lsq_ptr_i = lsq_ptr_i;
+        return sq_query;
+    endfunction
 
     typedef enum {
         INVALID, 
@@ -156,10 +242,10 @@ package exec_mem_pkg;
         LOAD_UNSAFE,
         LOAD_WAIT_ON_SNOOP,
         LOAD_WAIT_ON_LSQ_ORDER,
-        LOAD_READY, LOAD_FORWARDED, LOAD_DISPATCHED, LOAD_RECIEVED, 
+        LOAD_FORWARDED,
+        LOAD_READY, LOAD_DISPATCHED, LOAD_RECEIVED, 
         LOAD_ISSUED // still neede b/c for stores that are older than it, but lests
     } lq_state_t;
-
     
     typedef struct packed {
         // logic valid;
@@ -176,7 +262,6 @@ package exec_mem_pkg;
         logic [DATA_WIDTH-1:0] data;
     // } mem_addr_entry_t;
     } lsq_entry_t;
-
 
     typedef struct packed {
         // logic valid;
@@ -214,13 +299,23 @@ package exec_mem_pkg;
         logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
         logic [2:0] funct_code;
         // logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr; // might not need as might need to store this in ROB
-        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        // logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
         logic [DATA_WIDTH-1:0] data;
     } lq_load_dispatch_pkt_t;
 
     typedef struct packed {
+        logic wr_en;
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+        logic [2:0] funct_code;
+        // logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr; // might not need as might need to store this in ROB
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [DATA_WIDTH-1:0] data;
+    } lq_load_issue_pkt_t;
+
+    typedef struct packed {
         logic en;
-        logic [$clog2(MAX_LOAD_INSTRS)-1:0] ptr;
+        logic [$clog2(MAX_STORE_INSTRS)-1:0] ptr;
     } sq_commit_pkt_t;
 
     function automatic logic [DATA_WIDTH-1:0] funct_code_to_width (
@@ -348,20 +443,31 @@ package exec_mem_pkg;
         return load_data;
     endfunction
 
+    // NEED TO DEFINE FOR CACHE
     function automatic lq_load_dispatch_pkt_t set_lq_load_dispatch_pkt (
         input lq_pkt_t lq_entry_i,
         input logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_ptr_i
     );
         lq_load_dispatch_pkt_t lq_load_dispatch_pkt;
-        lq_load_dispatch_pkt.wr_en = 1'b1;
-        lq_load_dispatch_pkt.byte_wr_en = lq_entry_i.byte_wr_en;
-        lq_load_dispatch_pkt.funct_code = lq_entry_i.funct_code;
-        lq_load_dispatch_pkt.lq_ptr = lq_ptr_i;
-        lq_load_dispatch_pkt.rob_ptr = lq_entry_i.rob_ptr;
-        lq_load_dispatch_pkt.data = sign_extend_load_data(lq_entry_i);
 
         return lq_load_dispatch_pkt;
     endfunction
+
+    function automatic lq_load_issue_pkt_t set_lq_load_issue_pkt (
+        input lq_pkt_t lq_entry_i,
+        input logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_ptr_i
+    );
+        lq_load_issue_pkt_t lq_load_issue_pkt;
+        lq_load_issue_pkt.wr_en = 1'b1;
+        lq_load_issue_pkt.byte_wr_en = lq_entry_i.byte_wr_en;
+        lq_load_issue_pkt.funct_code = lq_entry_i.funct_code;
+        lq_load_issue_pkt.lq_ptr = lq_ptr_i;
+        lq_load_issue_pkt.rob_ptr = lq_entry_i.rob_ptr;
+        lq_load_issue_pkt.data = sign_extend_load_data(lq_entry_i);
+
+        return lq_load_issue_pkt;
+    endfunction
+
 
     function automatic sq_set_entry_from_pkt (
         input sq_pkt_t sq_pkt_i
@@ -387,10 +493,12 @@ package exec_mem_pkg;
     typedef struct packed {
         logic wr_en;
         // logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
+        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
+        logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
     } lq_instantiation_pkt_t;
 
 
-    CHECK THIS PTR
+    // CHECK THIS PTR
     typedef struct packed {
         logic en;
         logic [$clog2(MAX_LOAD_INSTRS)-1:0] ptr;

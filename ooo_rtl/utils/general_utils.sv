@@ -21,9 +21,14 @@ package general_pkg;
     localparam FUNCT_COMB_WIDTH = 4; // representing funct3 + funct7
     localparam OUTCOME_DELAY = 3; // # of cycles until the "brnch_taken_i" result comes in  
     // localparam MAX_MEM_INSTRS = 32;
-    localparam MAX_LOAD_INSTRS  = 16;
-    localparam MAX_STORE_INSTRS = 16;
+    localparam MAX_INDV_MEM_BUFF_SIZES = 16;
+    localparam MAX_LOAD_INSTRS  = MAX_INDV_MEM_BUFF_SIZES;
+    // localparam MAX_STORE_INSTRS = 16;
+    localparam MAX_STORE_INSTRS = MAX_LOAD_INSTRS;
+    // for now making MAX_STORE_INSTRS equal to MAX_LOAD_INSTRS b/c we can save on signal widths in mem_stage input
+
     localparam MAX_LSQ_INSTRS = MAX_LOAD_INSTRS + MAX_STORE_INSTRS;
+    localparam EXCEPTION_COUNTER_MAX = 16;
 
     typedef enum logic [6:0] {
         7'b0110011 = ALU_OP, // R-type
