@@ -540,7 +540,14 @@ import general_pkg::*;
     // output logic load_addr_conflict_o,
     // output logic [DATA_WIDTH-1:0] pc_o,
 
+    // load dispatching to cache
     output lq_load_dispatch_pkt_t lq_load_dispatch_pkt_o,
+    output logic lq_dispatch_ready_o,
+    output logic [$clog2(MAX_MEM_INSTRS)-1:0] lq_lowest_lsq_ready_ptr_o,
+    input logic lq_dispatch_cmd_i,
+    // load recieving from cache
+    input lq_load_resp_pkt_t lq_load_resp_pkt_i,
+    output logic load_e_counter_mismatch_o,
 
     output lq_load_issue_pkt_t lq_load_issue_pkt_o,
 
@@ -589,27 +596,31 @@ import general_pkg::*;
     end
 
     // dispatching cache to cache
-    logic [$clog2(MAX_LOAD_INSTRS)-1:0] debug_dispatch_ptr; // debugging signal
+    logic [$clog2(MAX_LOAD_INSTRS)-1:0] dispatch_ptr; // debugging signal
     always_comb begin
-        if (!exception_i) begin // possibly add extra conditions here!
-            if (|masked_ready_arry) begin
-                for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
-                    if (masked_ready_arry[i]) begin
-                        lq_load_dispatch_pkt_o = set_lq_load_dispatch_pkt(lq[i], i);
-                        debug_dispatch_ptr = i;
-                    end
-                end
-            end else if (|ready_arry) begin
-                for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
-                    if (ready_arry[i]) begin
-                        lq_load_dispatch_pkt_o = set_lq_load_dispatch_pkt(lq[i], i);
-                        debug_dispatch_ptr = i;
-                    end
+        lq_load_dispatch_pkt_o = '{default:'0};
+        lq_dispatch_ready_o = 1'b0;
+        lq_lowest_lsq_ready_ptr_o = '0;
+        dispatch_ptr = '0;
+    // if (!exception_i) begin // possibly add extra conditions here!
+        if (|masked_ready_arry) begin
+            for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
+                if (masked_ready_arry[i]) begin
+                    lq_load_dispatch_pkt_o = set_lq_load_dispatch_pkt(lq[i], i);
+                    lq_dispatch_ready_o = 1'b1;
+                    lq_lowest_lsq_ready_ptr_o = lq[i].lsq_ptr;
+                    dispatch_ptr = i;
                 end
             end
-        end else begin
-            lq_load_dispatch_pkt_o = '{default:'0};
-            debug_dispatch_ptr = '0;
+        end else if (|ready_arry) begin
+            for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
+                if (ready_arry[i]) begin
+                    lq_load_dispatch_pkt_o = set_lq_load_dispatch_pkt(lq[i], i);
+                    lq_dispatch_ready_o = 1'b1;
+                    lq_lowest_lsq_ready_ptr_o = lq[i].lsq_ptr;
+                    dispatch_ptr = i;
+                end
+            end
         end
     end
 
@@ -678,6 +689,66 @@ import general_pkg::*;
 
     end
 
+    assert property (
+        @(posedge clk) disable iff (rst || exception_i)
+        (!(issue_pkt_i.wr_en && issue_pkt_i.is_store) || lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].state == STORE_PENDING)
+    );
+
+    assert property (
+        @(posedge clk) disable iff (rst || exception_i)
+        (!(issue_pkt_i.wr_en && !issue_pkt_i.is_store) || lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].state == LOAD_PENDING)
+    );
+
+    assert property (
+        @(posedge clk) disable iff (rst || exception_i)
+        (!(commit_stage_pkt_i.wr_en && commit_stage_pkt_i.store) || lsq[commit_stage_pkt_i.lsq_counter].state == STORE_DATA_IN)
+    );
+
+
+
+    // determining memory conflict
+    logic [MAX_MEM_INSTRS-1:0] cnflct_arry;
+    logic frwd_cnflct;
+    always_comb begin
+        cnflct_arry = '0;
+        frwd_cnflct = '0;
+        if (commit_en_i && !exception_i && store_commit_en_i) begin
+            for (int i = 0; i < MAX_MEM_INSTRS; i++) begin
+                cnflct_arry[i] = lsq[i].valid &&
+                    i != tail_ptr_lower &&
+                    !lsq[i].is_store &&
+                    lsq[i].addr == lsq[tail_ptr_lower].addr;
+            end
+            frwd_cnflct = mem_addr_pkt_i.wr_en &&
+                // mem_addr_pkt_i.valid && 
+                !mem_addr_pkt_i.is_store &&
+                mem_addr_pkt_i.addr == lsq[tail_ptr_lower].addr &&
+                lsq[tail_ptr_lower].valid;
+
+            mem_addr_conflict_pkt_o.en = |cnflct_arry || frwd_cnflct;
+        end else begin
+            mem_addr_conflict_pkt_o.en = '0;
+        end
+        
+        mem_addr_conflict_pkt_o.pc = lsq[tail_ptr_lower].pc;
+    end
+
+    // setting store pkt when commiting
+    always_comb begin
+        if (commit_en_i && !exception_i && store_commit_en_i) begin
+            // store_buffer_commit_pkt_o.en = 1'b1;
+            store_buffer_commit_pkt_o.byte_wr_en = lsq[tail_ptr_lower].byte_wr_en;
+            store_buffer_commit_pkt_o.addr = lsq[tail_ptr_lower].addr;
+            store_buffer_commit_pkt_o.data = lsq[tail_ptr_lower].store_data;
+        end else begin
+            store_buffer_commit_pkt_o = '{default:'0};
+        end
+    end
+
+    assign lsq_ptr_incom_reply_o = lq[issue_pkt_i.lq_ptr].lsq_ptr;
+
+    assign load_e_counter_mismatch_o = (lq_load_resp_pkt_i.wr_en && lq[lq_load_resp_pkt_i.lq_ptr].e_counter != lq_load_resp_pkt_i.e_counter);
+
     // buffer management
     always_ff @(posedge clk) begin
         if (rst || exception_i || mem_addr_conflict_pkt_o.en) begin
@@ -735,6 +806,11 @@ import general_pkg::*;
             if (lq_commit_pkt_i.en) begin
                 lq[lq_commit_pkt_i.lq_ptr].state <= INVALID;
                 head_ptr <= head_ptr + 1;
+            end
+
+            // cache response
+            if (lq_load_resp_pkt_i.wr_en && !load_e_counter_mismatch_o) begin
+                lq[lq_load_resp_pkt_i.lq_ptr].data <= lq_load_resp_pkt_i.data;
             end
 
             // CHECK THESE
@@ -802,68 +878,17 @@ import general_pkg::*;
                     end
                 end
             end
-        
-
         end
     end
 
-    assert property (
-        @(posedge clk) disable iff (rst || exception_i)
-        (!(issue_pkt_i.wr_en && issue_pkt_i.is_store) || lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].state == STORE_PENDING)
-    );
-
-    assert property (
-        @(posedge clk) disable iff (rst || exception_i)
-        (!(issue_pkt_i.wr_en && !issue_pkt_i.is_store) || lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].state == LOAD_PENDING)
-    );
-
-    assert property (
-        @(posedge clk) disable iff (rst || exception_i)
-        (!(commit_stage_pkt_i.wr_en && commit_stage_pkt_i.store) || lsq[commit_stage_pkt_i.lsq_counter].state == STORE_DATA_IN)
-    );
-
-
-
-    // determining memory conflict
-    logic [MAX_MEM_INSTRS-1:0] cnflct_arry;
-    logic frwd_cnflct;
-    always_comb begin
-        cnflct_arry = '0;
-        frwd_cnflct = '0;
-        if (commit_en_i && !exception_i && store_commit_en_i) begin
-            for (int i = 0; i < MAX_MEM_INSTRS; i++) begin
-                cnflct_arry[i] = lsq[i].valid &&
-                    i != tail_ptr_lower &&
-                    !lsq[i].is_store &&
-                    lsq[i].addr == lsq[tail_ptr_lower].addr;
+    // dispatching, which is independent of exceptions
+    always_ff @(posedge clk) begin
+        if (!rst) begin
+            if (sq_dispatch_cmd_i) begin
+                sq[tail_ptr_lower].state <= STORE_DISPATCHED;
             end
-            frwd_cnflct = mem_addr_pkt_i.wr_en &&
-                // mem_addr_pkt_i.valid && 
-                !mem_addr_pkt_i.is_store &&
-                mem_addr_pkt_i.addr == lsq[tail_ptr_lower].addr &&
-                lsq[tail_ptr_lower].valid;
-
-            mem_addr_conflict_pkt_o.en = |cnflct_arry || frwd_cnflct;
-        end else begin
-            mem_addr_conflict_pkt_o.en = '0;
-        end
-        
-        mem_addr_conflict_pkt_o.pc = lsq[tail_ptr_lower].pc;
-    end
-
-    // setting store pkt when commiting
-    always_comb begin
-        if (commit_en_i && !exception_i && store_commit_en_i) begin
-            // store_buffer_commit_pkt_o.en = 1'b1;
-            store_buffer_commit_pkt_o.byte_wr_en = lsq[tail_ptr_lower].byte_wr_en;
-            store_buffer_commit_pkt_o.addr = lsq[tail_ptr_lower].addr;
-            store_buffer_commit_pkt_o.data = lsq[tail_ptr_lower].store_data;
-        end else begin
-            store_buffer_commit_pkt_o = '{default:'0};
         end
     end
-
-    assign lsq_ptr_incom_reply_o = lq[issue_pkt_i.lq_ptr].lsq_ptr;
 
 endmodule
 
@@ -898,6 +923,10 @@ import writeback_pkg::*;
     input sq_commit_pkt_t sq_commit_pkt_i,
     // storing to cache
     output sq_dispatch_pkt_t sq_dispatch_pkt_o,
+    output logic sq_dispatch_ready_o,
+    output logic [$clog2(MAX_MEM_INSTRS)-1:0] sq_lowest_lsq_ready_ptr_o,
+    input logic sq_dispatch_cmd_i,
+
     // safety signals for entries
     output sq_entry_addr_safety_notify_pkt_t addr_safety_o,
     output sq_entry_data_safety_notify_pkt_t data_safety_o
@@ -1232,10 +1261,14 @@ import writeback_pkg::*;
         if (sq_commit_pkt_i.en) begin
             sq[tail_ptr_lower].state <= STORE_COMMIT;
         end
-        // sending to cache
-        if (sq[tail_ptr_lower].state == STORE_COMMIT) begin
-            sq[tail_ptr_lower].state <= INVALID;
-            tail_ptr <= tail_ptr + 1;
+    end
+
+    always_ff @(posedge clk) begin
+        if (!rst) begin
+            if (sq_dispatch_cmd_i) begin
+                sq[tail_ptr_lower].state <= INVALID;
+                tail_ptr <= tail_ptr + 1;
+            end
         end
     end
 
@@ -1259,6 +1292,11 @@ import writeback_pkg::*;
         end
     end
 
+    always_comb begin
+        sq_dispatch_ready_o = sq[tail_ptr_lower].state == STORE_COMMIT;
+        sq_lowest_lsq_ready_ptr_o = sq[tail_ptr_lower].lsq_ptr;
+    end
+
 endmodule
 
 interface cache_if
@@ -1271,36 +1309,42 @@ import writeback_pkg::*;
     input logic clk
 );
     // request signals
-    logic [ADDR_WIDTH-1:0] addr;
     logic wr_en;
+    logic [ADDR_WIDTH-1:0] addr;
     logic [DATA_WIDTH-1:0] wr_data;
+    logic [MEM_OP_INFO_WIDTH-1:0] mem_op_info;
     logic req_valid;
     logic req_ready;
 
     // response signals
     logic [DATA_WIDTH-1:0] rd_data;
+    logic [MEM_RESP_INFO_WIDTH-1:0] mem_resp_info;
     logic resp_valid;
     logic resp_ready;
 
     modport master (
         input clk,
-        output addr,
         output wr_en,
+        output addr,
         output wr_data,
+        output mem_op_info,
         output req_valid,
         input req_ready,
         input rd_data,
+        input mem_resp_info,
         input resp_valid,
         output resp_ready
     );
 
     modport slave (
         input clk,
-        input addr,
         input wr_en,
+        input addr,
         input wr_data,
+        input mem_op_info,
         input req_valid,
         output req_ready,
+        output mem_resp_info,
         output rd_data,
         output resp_valid,
         input resp_ready
@@ -1328,9 +1372,10 @@ import writeback_pkg::*;
     input sq_commit_pkt_t sq_commit_pkt_i,
     // dispatching mem ops (to cache)
     // recieving mem loads (from cache)
-    cache_if.master cache_master_if
+    cache_if.master cache_master,
     // issuing mem ops
-
+    // other
+    logic load_e_counter_mismatch_o
 );  
     // load queue signals
     lq_pkt_t lq_pkt;
@@ -1339,6 +1384,10 @@ import writeback_pkg::*;
     logic lq_full;
     lq_instantiation_pkt_t lq_instant_pkt;
     lq_load_dispatch_pkt_t lq_load_dispatch_pkt;
+    logic lq_dispatch_ready;
+    logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_lowest_lsq_ready_ptr;
+    logic lq_dispatch_cmd;
+    lq_load_resp_pkt_t lq_load_resp_pkt; // need to connect
     lq_load_issue_pkt_t lq_load_issue_pkt;
     lq_store_snoop_pkt_t lq_store_snoop_pkt;
     sq_entry_addr_safety_notify_pkt_t lq_addr_safety;
@@ -1363,6 +1412,11 @@ import writeback_pkg::*;
         .full_o(lq_full),
         .lq_instant_pkt_i(lq_instant_pkt),
         .lq_load_dispatch_pkt_o(lq_load_dispatch_pkt),
+        .lq_dispatch_ready_o(lq_dispatch_ready),
+        .lq_lowest_lsq_ready_ptr_o(lq_lowest_lsq_ready_ptr),
+        .lq_dispatch_cmd_i(lq_dispatch_cmd),
+        .lq_load_resp_pkt_i(lq_load_resp_pkt),
+        .load_e_counter_mismatch_o(load_e_counter_mismatch_o),
         .lq_load_issue_pkt_o(lq_load_issue_pkt),
         .lq_store_snoop_pkt_i(lq_store_snoop_pkt),
         .addr_safety_i(lq_addr_safety),
@@ -1373,11 +1427,16 @@ import writeback_pkg::*;
     sq_instantiation_pkt_t sq_instant_pkt;
     sq_pkt_t sq_pkt;
     sq_dispatch_pkt_t sq_dispatch_pkt;
+    logic sq_dispatch_ready;
+    logic [$clog2(MAX_MEM_INSTRS)-1:0] sq_lowest_lsq_ready_ptr;
+    logic sq_dispatch_cmd;
     sq_entry_addr_safety_notify_pkt_t sq_addr_safety;
     sq_entry_data_safety_notify_pkt_t sq_data_safety;
     always_comb begin
-        sq_query = set_sq_query(sq_instant_pkt, lsq_ptr_reply);
-        sq_pkt = set_sq_pkt(sq_instant_pkt);
+        sq_query = set_sq_query(lq_sq_pkt_i, lsq_ptr_reply);
+        sq_pkt = set_sq_pkt(lq_sq_pkt_i);
+        sq_instant_pkt.en = mem_stage_instant_pkt_i.en && mem_stage_instant_pkt_i.store;
+        sq_instant_pkt.lsq_ptr = mem_stage_instant_pkt_i.lsq_ptr;
     end
     store_queue store_queue_inst(
         .clk(clk),
@@ -1385,16 +1444,65 @@ import writeback_pkg::*;
         .exception_i(exception_i),
         .sq_query_i(sq_query),
         .lq_query_resp_o(lq_query_resp),
-        .sq_instant_pkt_i(lsq_instant_pkt_i),
+        .sq_instant_pkt_i(sq_instant_pkt),
         .sq_pkt_i(sq_pkt),
         .sq_data_snoop_pkt_i(sq_data_snoop_pkt_i),
         .sq_commit_pkt_i(sq_commit_pkt_i),
         .sq_dispatch_pkt_o(sq_dispatch_pkt),
+        .sq_dispatch_en_o(sq_dispatch_ready),
+        .sq_lowest_lsq_ready_ptr_o(sq_lowest_lsq_ready_ptr),
+        .sq_dispatch_cmd_i(sq_dispatch_cmd),
         .addr_safety_o(sq_addr_safety),
         .data_safety_o(sq_data_safety)
     );
 
+    logic dispatch_en, dispatch_store;
+    assign dispatch_en = (sq_dispatch_ready || lq_dispatch_ready) && cache_master.req_ready;
+    assign dispatch_store = sq_dispatch_ready;
+    always_comb begin
+        sq_dispatch_cmd = 1'b0;
+        lq_dispatch_cmd = 1'b0;
+        if (dispatch_en) begin
+            if (sq_dispatch_ready && lq_dispatch_ready) begin
+                if (sq_lowest_lsq_ready_ptr > lq_lowest_lsq_ready_ptr) begin
+                    sq_dispatch_cmd = 1'b1;
+                end else begin
+                    lq_dispatch_cmd = 1'b1;
+                end
+            end else if (sq_dispatch_ready) begin
+                sq_dispatch_cmd = 1'b1;
+            end else if (lq_dispatch_ready) begin
+                lq_dispatch_cmd = 1'b1;
+            end
+        end
 
+        cache_master.wr_en = '0;
+        cache_master.addr = '0;
+        cache_master.wr_data = '0;
+        cache_master.req_valid = '0;
+        cache_master.resp_ready = 1'b1;
+        cache_master.mem_op_info = '0;
+        if (dispatch_en) begin
+            cache_master.req_valid = 1'b1;
+            if (dispatch_store) begin
+                cache_master.wr_en = 1'b1;
+                cache_master.addr = sq_dispatch_pkt.addr;
+                cache_master.wr_data = sq_dispatch_pkt.data;
+                cache_master.mem_op_info = {SQ_DISPATCH_PKT_PAD_WIDTH{1'b0}, sq_dispatch_pkt.funct_code, sq_dispatch_pkt.lsq_ptr};
+            end else begin
+                cache_master.addr = lq_load_dispatch_pkt.addr;
+                cache_master.wr_data = lq_load_dispatch_pkt.data;
+                cache_master.mem_op_info = {LQ_DISPATCH_PKT_PAD_WIDTH{1'b0}, lq_load_dispatch_pkt.e_counter, lq_load_dispatch_pkt.lsq_ptr};
+            end
+        end
+
+        lq_load_resp_pkt.wr_en = cache_master.resp_valid;
+        lq_load_resp_pkt.e_counter = cache_master.mem_resp_info[$clog2(EXCEPTION_COUNTER_MAX)-1:$clog2(MAX_LOAD_INSTRS)];
+        lq_load_resp_pkt.lq_ptr = cache_master.mem_resp_info[$clog2(MAX_LOAD_INSTRS)-1:0];
+        lq_load_resp_pkt.data = cache_master.rd_data;
+
+    end
+    
 
 endmodule
 

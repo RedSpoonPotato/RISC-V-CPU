@@ -295,14 +295,22 @@ package exec_mem_pkg;
 
 
     typedef struct packed {
-        logic wr_en;
+        // logic wr_en; // controlled by exterior logic
         logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
-        logic [2:0] funct_code;
+        // logic [2:0] funct_code;
         // logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr; // might not need as might need to store this in ROB
         // logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
         logic [DATA_WIDTH-1:0] data;
+        logic [DATA_WIDTH-1:0] addr;
     } lq_load_dispatch_pkt_t;
+
+    typedef struct packed {
+        logic wr_en;
+        logic [DATA_WIDTH-1:0] data;
+        logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_ptr;
+        logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
+    } lq_load_resp_pkt_t;
 
     typedef struct packed {
         logic wr_en;
@@ -317,6 +325,7 @@ package exec_mem_pkg;
         logic en;
         logic [$clog2(MAX_STORE_INSTRS)-1:0] ptr;
     } sq_commit_pkt_t;
+
 
     function automatic logic [DATA_WIDTH-1:0] funct_code_to_width (
         input [2:0] funct_code
@@ -397,13 +406,23 @@ package exec_mem_pkg;
     endfunction
 
     typedef struct packed {
-        logic en;
+        // logic en; // conotrlled by logic right outside queue
         logic [2:0] funct_code;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] data;
         logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
         // logic 
     } sq_dispatch_pkt_t;
+
+    localparam MEM_OP_INFO_WIDTH = ($bits(sq_dispatch_pkt_t) > $bits(lq_load_dispatch_pkt_t)) ?
+        ($bits(sq_dispatch_pkt_t) - 2*DATA_WIDTH) : 
+        ($bits(lq_load_dispatch_pkt_t) - 2*DATA_WIDTH);
+
+    localparam SQ_DISPATCH_PKT_PAD_WIDTH = MEM_OP_INFO_WIDTH - ($bits(sq_dispatch_pkt_t) - 2*DATA_WIDTH);
+    localparam LQ_DISPATCH_PKT_PAD_WIDTH = MEM_OP_INFO_WIDTH - ($bits(lq_load_dispatch_pkt_t) - 2*DATA_WIDTH);
+
+    localparam MEM_RESP_INFO_WIDTH = $clog2(EXCEPTION_COUNTER_MAX) + $clog2(MAX_LOAD_INSTRS);
+    
 
     typedef struct packed {
         logic en;
@@ -449,7 +468,9 @@ package exec_mem_pkg;
         input logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_ptr_i
     );
         lq_load_dispatch_pkt_t lq_load_dispatch_pkt;
-
+        lq_load_dispatch_pkt.e_counter = lq_entry_i.e_counter;
+        lq_load_dispatch_pkt.data = lq_entry_i.data;
+        lq_load_dispatch_pkt.addr = lq_entry_i.addr;
         return lq_load_dispatch_pkt;
     endfunction
 
@@ -507,10 +528,8 @@ package exec_mem_pkg;
     typedef struct packed {
         logic en;
         logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
-    } sq_instantiation_pkt_t;
-
-
-    
+        // does cahce need e-counter for stores?
+    } sq_instantiation_pkt_t; 
 
 
     function automatic ex_mem_scoreboard_data_t set_ex_mem_scoreboard_data (
