@@ -123,6 +123,7 @@ package exec_mem_pkg;
         logic [2:0] funct_code;
         logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_ptr;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] pc;
         logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
@@ -175,6 +176,26 @@ package exec_mem_pkg;
         logic [2:0] funct_code;
         logic [$clog2(MAX_INDV_MEM_BUFF_SIZES)-1:0] buffer_ptr;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+        // logic [DATA_WIDTH-1:0] addr;
+        logic [DATA_WIDTH-1:0] imm;
+        logic [DATA_WIDTH-1:0] base_addr;
+        logic [DATA_WIDTH-1:0] pc; // unsure if needed
+        logic [$clog2(PRF_COUNT)-1:0] prf_ptr; // src for store, dst for load
+        // load specific signals
+        // ...
+        // store specific signals
+        logic store_data_in;
+        logic [DATA_WIDTH-1:0] store_data;
+        logic [1:0] store_width_type; // do i need this?
+    } lq_sq_data_and_addr_pkt_t;
+
+    typedef struct packed {
+        logic en;
+        logic store;
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+        logic [2:0] funct_code;
+        logic [$clog2(MAX_INDV_MEM_BUFF_SIZES)-1:0] buffer_ptr;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] pc; // unsure if needed
         logic [$clog2(PRF_COUNT)-1:0] prf_ptr; // src for store, dst for load
@@ -186,11 +207,69 @@ package exec_mem_pkg;
         logic [1:0] store_width_type; // do i need this?
     } lq_sq_pkt_t;
 
+    function automatic logic [(DATA_WIDTH/8)-1:0] get_byte_wr_en(
+        logic [2:0] funct_code_i
+    );
+        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
+        case (funct_code_i)
+            3'b000: byte_wr_en = 4'b0001; // byte
+            3'b001: byte_wr_en = 4'b0011; // half-word
+            3'b010: byte_wr_en = 4'b1111; // word
+            3'b100: byte_wr_en = 4'b0001; // byte
+            3'b101: byte_wr_en = 4'b0011; // half-word
+            default: byte_wr_en = 4'b0000;
+        endcase
+        return byte_wr_en;
+    endfunction
+
+    function automatic lq_sq_data_and_addr_pkt_t set_lq_sq_data_and_addr_pkt(
+        input fetch_packet_t fetch_pkt_i, 
+        input logic en_i
+    );
+        lq_sq_data_and_addr_pkt_t lq_sq_data_and_addr_pkt;
+        lq_sq_data_and_addr_pkt.en = en_i;
+        lq_sq_data_and_addr_pkt.store = fetch_pkt_i.store;
+        lq_sq_data_and_addr_pkt.byte_wr_en = get_byte_wr_en(fetch_pkt_i.funct_code);
+        lq_sq_data_and_addr_pkt.funct_code = fetch_pkt_i.funct_code;
+        // lq_sq_data_and_addr_pkt.buffer_ptr = fetch_pkt_i.lsq_ptr;
+        lq_sq_data_and_addr_pkt.buffer_ptr = fetch_pkt_i.buffer_ptr; // chagne name
+        lq_sq_data_and_addr_pkt.rob_ptr = fetch_pkt_i.rob_ptr;
+        lq_sq_data_and_addr_pkt.base_addr = fetch_pkt_i.src0_data;
+        lq_sq_data_and_addr_pkt.imm = fetch_pkt_i.imm;
+        lq_sq_data_and_addr_pkt.pc = fetch_pkt_i.pc;
+        lq_sq_data_and_addr_pkt.prf_ptr = fetch_pkt_i.dest_ptr;
+        lq_sq_data_and_addr_pkt.store_data_in = fetch_pkt_i.store_data_in;
+        lq_sq_data_and_addr_pkt.store_data = fetch_pkt_i.src1_data;
+        lq_sq_data_and_addr_pkt.store_width_type = fetch_pkt_i.store_width_type;
+
+        return lq_sq_data_and_addr_pkt;
+    endfunction
+
     typedef struct packed {
         logic sq_snoop_en;
         logic [$clog2(PRF_COUNT)-1:0] sq_snoop_src_ptr;
         logic [DATA_WIDTH-1:0] sq_snoop_data;
     } sq_data_snoop_pkt_t;
+
+    function automatic lq_sq_pkt_t set_lq_sq_pkt_and_calc_addr(
+        input lq_sq_data_and_addr_pkt_t lq_sq_data_and_addr_pkt_i
+    );
+        lq_sq_pkt_t lq_sq_pkt;
+        lq_sq_pkt.en = lq_sq_data_and_addr_pkt_i.en;
+        lq_sq_pkt.store = lq_sq_data_and_addr_pkt_i.store;
+        lq_sq_pkt.byte_wr_en = get_byte_wr_en(lq_sq_data_and_addr_pkt_i.funct_code);
+        lq_sq_pkt.funct_code = lq_sq_data_and_addr_pkt_i.funct_code;
+        lq_sq_pkt.buffer_ptr = lq_sq_data_and_addr_pkt_i.buffer_ptr;
+        lq_sq_pkt.rob_ptr = lq_sq_data_and_addr_pkt_i.rob_ptr;
+        lq_sq_pkt.addr = lq_sq_data_and_addr_pkt_i.imm + lq_sq_data_and_addr_pkt_i.base_addr;
+        lq_sq_pkt.pc = lq_sq_data_and_addr_pkt_i.pc;
+        lq_sq_pkt.prf_ptr = lq_sq_data_and_addr_pkt_i.dest_ptr;
+        lq_sq_pkt.store_data_in = lq_sq_data_and_addr_pkt_i.store_data_in;
+        lq_sq_pkt.store_data = lq_sq_data_and_addr_pkt_i.store_data;
+        lq_sq_pkt.store_width_type = lq_sq_data_and_addr_pkt_i.store_width_type;
+        return lq_sq_pkt;
+    endfunction
+
 
     function automatic lq_pkt_t set_lq_pkt(input lq_sq_pkt_t lq_sq_pkt_i);
         lq_pkt_t lq_pkt;
@@ -314,17 +393,48 @@ package exec_mem_pkg;
 
     typedef struct packed {
         logic wr_en;
-        logic [(DATA_WIDTH/8)-1:0] byte_wr_en;
-        logic [2:0] funct_code;
+        // logic [(DATA_WIDTH/8)-1:0] byte_wr_en; 
+        // logic [2:0] funct_code;
         // logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr; // might not need as might need to store this in ROB
+        logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
         logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
         logic [DATA_WIDTH-1:0] data;
     } lq_load_issue_pkt_t;
 
     typedef struct packed {
+        logic wr_en;
+        logic [$clog2(ROB_COUNT)-1:0] rob_ptr;
+    } lq_issue_notif_pkt_t;
+
+    typedef struct packed {
+        logic wr_en;
+        logic [$clog2(PRF_COUNT)-1:0] prf_ptr;
+        logic [DATA_WIDTH-1:0] data;
+    } lq_issue_data_pkt_t;
+
+    typedef struct packed {
         logic en;
         logic [$clog2(MAX_STORE_INSTRS)-1:0] ptr;
     } sq_commit_pkt_t;
+
+    function automatic lq_issue_notif_pkt_t set_lq_issue_notif_pkt (
+        input lq_load_issue_pkt_t lq_issue_pkt_i
+    );
+        lq_issue_notif_pkt_t lq_issue_notif_pkt_o;
+        lq_issue_notif_pkt_o.wr_en = lq_issue_pkt_i.wr_en;
+        lq_issue_notif_pkt_o.rob_ptr = lq_issue_pkt_i.rob_ptr;
+        return lq_issue_notif_pkt_o;
+    endfunction
+
+    function automatic lq_issue_data_pkt_t set_lq_issue_data_pkt (
+        input lq_load_issue_pkt_t lq_issue_pkt_i
+    );
+        lq_issue_data_pkt_t lq_issue_data_pkt_o;
+        lq_issue_data_pkt_o.wr_en = lq_issue_pkt_i.wr_en;
+        lq_issue_data_pkt_o.prf_ptr = lq_issue_pkt_i.prf_ptr;
+        lq_issue_data_pkt_o.data = lq_issue_pkt_i.data;
+        return lq_issue_data_pkt_o;
+    endfunction
 
 
     function automatic logic [DATA_WIDTH-1:0] funct_code_to_width (
@@ -480,9 +590,10 @@ package exec_mem_pkg;
     );
         lq_load_issue_pkt_t lq_load_issue_pkt;
         lq_load_issue_pkt.wr_en = 1'b1;
-        lq_load_issue_pkt.byte_wr_en = lq_entry_i.byte_wr_en;
-        lq_load_issue_pkt.funct_code = lq_entry_i.funct_code;
-        lq_load_issue_pkt.lq_ptr = lq_ptr_i;
+        // lq_load_issue_pkt.byte_wr_en = lq_entry_i.byte_wr_en;
+        // lq_load_issue_pkt.funct_code = lq_entry_i.funct_code;
+        // lq_load_issue_pkt.lq_ptr = lq_ptr_i;
+        lq_load_issue_pkt.prf_ptr = lq_entry_i.prf_ptr;
         lq_load_issue_pkt.rob_ptr = lq_entry_i.rob_ptr;
         lq_load_issue_pkt.data = sign_extend_load_data(lq_entry_i);
 

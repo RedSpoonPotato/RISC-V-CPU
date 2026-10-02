@@ -28,6 +28,7 @@ import instr_fetch_pkg::*;
     output wb_phys_reg_pkt_t wb_phys_reg_pkt_o,
     // updating pending state in issue queue and rename table
     output rt_and_iq_pending_update_pkt_t rt_iq_update_pkt_o,
+    output rt_and_iq_pending_update_pkt_t rt_iq_update_load_op_pkt_o,
     // spec exec answer buffer
     input spec_exec_buffer_instance_pkt_t spec_exec_buffer_instance_pkt_i,
     input spec_exec_answr_pkt_t spec_exec_answr_i,
@@ -41,7 +42,10 @@ import instr_fetch_pkg::*;
     input mem_addr_pkt_t mem_addr_pkt_i,
     // output logic load_addr_conflict_o
     output mem_addr_conflict_pkt_t mem_addr_conflict_pkt_o,
-    output store_buffer_commit_pkt_t store_buffer_commit_pkt_o
+    output store_buffer_commit_pkt_t store_buffer_commit_pkt_o,
+
+    // input lq_load_issue_pkt_t lq_load_issue_pkt_i
+    input lq_issue_notif_pkt_t lq_issue_notif_pkt_i
 );
     // rob_instance_pkt_t rob_instance_pkt_ff; not gonna use b/c can save on flipflops while still functional
     ex_mem_stage_pkt_t ex_mem_stage_pkt_ff;
@@ -70,7 +74,9 @@ import instr_fetch_pkg::*;
         .wb_phys_reg_pkt_o(wb_phys_reg_pkt_o),
         // updating pending state in issue queue and rename table
         .rt_iq_update_pkt_o(rt_iq_update_pkt_o),
-        .exception_i(exception_i)
+        .rt_iq_update_load_op_pkt_o(rt_iq_update_load_op_pkt_o),
+        .exception_i(exception_i),
+        .lq_issue_notif_pkt_i(lq_issue_notif_pkt_i)
     );
 
     spec_exec_answer_buffer spec_exec_answer_buffer_inst (
@@ -340,8 +346,11 @@ import issue_pkg::*;
     output wb_phys_reg_pkt_t wb_phys_reg_pkt_o,
     // updating pending state in issue queue and rename table
     output rt_and_iq_pending_update_pkt_t rt_iq_update_pkt_o,
+    output rt_and_iq_pending_update_pkt_t rt_iq_update_load_op_pkt_o,
     
-    input logic exception_i
+    input logic exception_i,
+    // input lq_load_issue_pkt_t lq_load_issue_pkt_i
+    input lq_issue_notif_pkt_t lq_issue_notif_pkt_i
 );
 
     rob_entry_t reorder_buffer [0:ROB_COUNT-1];
@@ -377,6 +386,9 @@ import issue_pkg::*;
             // updating state
             if (ex_mem_stage_pkt_i.instr_valid) begin
                 reorder_buffer[ex_mem_stage_pkt_i.rob_ptr].state <= FINISHED;
+            end
+            if (lq_issue_notif_pkt_i.wr_en) begin
+                reorder_buffer[lq_issue_notif_pkt_i.rob_ptr].state <= FINISHED;
             end
             // committing
             if (reorder_buffer[tail_ptr_lower].state == FINISHED) begin
@@ -423,5 +435,18 @@ import issue_pkg::*;
             rt_iq_update_pkt_o.arf_ptr = '{default:'0};
         end
     end
+
+    always_comb begin
+        if (lq_issue_notif_pkt_i.wr_en && !exception_i) begin
+            rt_iq_update_load_op_pkt_o.wr_en = 1;
+            rt_iq_update_load_op_pkt_o.prf_ptr = reorder_buffer[lq_issue_notif_pkt_i.rob_ptr].phys_reg_addr;
+            rt_iq_update_load_op_pkt_o.arf_ptr = reorder_buffer[lq_issue_notif_pkt_i.rob_ptr].arch_reg_addr;
+        end else begin
+            rt_iq_update_load_op_pkt_o.wr_en = 0;
+            rt_iq_update_load_op_pkt_o.prf_ptr = '{default:'0};
+            rt_iq_update_load_op_pkt_o.arf_ptr = '{default:'0};
+        end
+    end
+
 
 endmodule

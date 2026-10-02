@@ -43,11 +43,21 @@ import issue_pkg::*;
     input logic exception_i,
 
     // input logic mem_buff_wr_en_i,
-    output mem_addr_pkt_t mem_addr_pkt_o,
-    input store_buffer_commit_pkt_t store_buffer_commit_pkt_i,
+    // output mem_addr_pkt_t mem_addr_pkt_o,
+    // input store_buffer_commit_pkt_t store_buffer_commit_pkt_i,
 
     // not sure if should be Flipfloped
-    input lsq_instantiation_pkt_t lsq_instant_pkt_i,
+    // input lsq_instantiation_pkt_t lsq_instant_pkt_i,
+
+    // output to wb stage for load instructions only
+    output lq_issue_notif_pkt_t lq_issue_notif_pkt_o;
+    output lq_issue_data_pkt_t lq_issue_data_pkt_o;
+
+    input mem_stage_instant_pkt_t mem_stage_instant_pkt_i,
+    input sq_data_snoop_pkt_t sq_data_snoop_pkt_i,
+    input sq_commit_pkt_t sq_commit_pkt_i,
+    cache_if.master cache_master,
+    output logic load_e_counter_mismatch_o
 );
 
     fetch_packet_t fetch_pkt_ff;
@@ -92,25 +102,41 @@ import issue_pkg::*;
         .zero_o(alu_zero)
     );
     
-    // mem path (atleast 2 cycles: add, then memory access)
-            
-    // logic [DATA_WIDTH-1:0] mem_load_data;
-    mem_stage mem_stage_inst (
+    // mem path (atleast 2 cycles: add, then memory access)            
+    // mem_stage mem_stage_inst (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .en_i(fetch_pkt_ff.funct_unit_one_hot[MEM]),
+    //     .store_i(fetch_pkt_ff.store),
+    //     .pc_i(fetch_pkt_ff.pc),
+    //     .lsq_ptr_i(fetch_pkt_ff.lsq_ptr),
+    //     .funct_code_i(fetch_pkt_ff.funct_code),
+    //     .base_addr_i(fetch_pkt_ff.src0_data),
+    //     .offset_i(fetch_pkt_ff.mem_offset_or_brnch_imm), // for now, just using imm_compr as offset, will change later
+    //     .store_data_i(fetch_pkt_ff.src1_data), // for store instructions
+    //     .data_o(result_arry[1]), // will connect this to writeback stage later
+    //     .mem_addr_pkt_o(mem_addr_pkt_o),
+    //     .store_buffer_commit_pkt_i(store_buffer_commit_pkt_i),
+    //     .exception_i(exception_i),
+    //     .lsq_instant_pkt_i(lsq_instant_pkt_i)
+    // );
+
+    lq_load_issue_pkt_t lq_load_issue_pkt;
+    always_comb begin
+        lq_issue_notif_pkt_o = set_lq_issue_notif_pkt(lq_load_issue_pkt);
+        lq_issue_data_pkt_o = set_lq_issue_data_pkt(lq_load_issue_pkt);
+    end
+    mem_stage_multi_cycle mem_stage_inst (
         .clk(clk),
         .rst(rst),
-        .en_i(fetch_pkt_ff.funct_unit_one_hot[MEM]),
-        .store_i(fetch_pkt_ff.store),
-        .pc_i(fetch_pkt_ff.pc),
-        .lsq_ptr_i(fetch_pkt_ff.lsq_ptr),
-        .funct_code_i(fetch_pkt_ff.funct_code),
-        .base_addr_i(fetch_pkt_ff.src0_data),
-        .offset_i(fetch_pkt_ff.mem_offset_or_brnch_imm), // for now, just using imm_compr as offset, will change later
-        .store_data_i(fetch_pkt_ff.src1_data), // for store instructions
-        .data_o(result_arry[1]), // will connect this to writeback stage later
-        .mem_addr_pkt_o(mem_addr_pkt_o),
-        .store_buffer_commit_pkt_i(store_buffer_commit_pkt_i),
         .exception_i(exception_i),
-        .lsq_instant_pkt_i(lsq_instant_pkt_i)
+        .mem_stage_instant_pkt_i(mem_stage_instant_pkt_i),
+        .lq_sq_data_and_addr_pkt_i(set_lq_sq_data_and_addr_pkt(fetch_pkt_ff, fetch_pkt_ff.funct_unit_one_hot[MEM])),
+        .sq_data_snoop_pkt_i(sq_data_snoop_pkt_i),
+        .sq_commit_pkt_i(sq_commit_pkt_i),
+        .cache_master(cache_master),
+        .lq_load_issue_pkt_o(lq_load_issue_pkt;),
+        .load_e_counter_mismatch_o(load_e_counter_mismatch_o)
     );
 
     // branch path (1 cycle for now): if(rs1 == rs2) PC += imm
@@ -658,7 +684,7 @@ import general_pkg::*;
         // compute next head position
         masked_valid_arry = mask_arry & next_valid_arry;
         next_head_ptr = head_ptr;
-        if (|masked_valid_arry) begin
+        if (|masked_valid_arry) begin // why do this?
             for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
                 if (masked_valid_arry[i]) begin
                     next_head_ptr = i;
@@ -766,7 +792,7 @@ import general_pkg::*;
                 lq[tail_ptr].e_counter <= lq_instant_pkt_i.e_counter;
                 tail_ptr <= tail_ptr + 1;
             end
-            head_ptr <= next_head_ptr;
+            head_ptr <= next_head_ptr; // is this PROPER?
             // issued
             if (issue_pkt_i.wr_en) begin
 
@@ -1352,7 +1378,7 @@ import writeback_pkg::*;
 
 endinterface
 
-module mem_stage_cycle
+module mem_stage_multi_cycle
 import decode_pkg::*;
 import general_pkg::*;
 import issue_pkg::*;
@@ -1365,7 +1391,8 @@ import writeback_pkg::*;
     // mem_op instantiation
     input mem_stage_instant_pkt_t mem_stage_instant_pkt_i,
     // entry state data
-    input lq_sq_pkt_t lq_sq_pkt_i,
+    // input lq_sq_pkt_t lq_sq_pkt_i,
+    input lq_sq_data_and_addr_pkt_t lq_sq_data_and_addr_pkt_i,
     // store data snooping
     input sq_data_snoop_pkt_t sq_data_snoop_pkt_i,
     // store committing update
@@ -1374,9 +1401,20 @@ import writeback_pkg::*;
     // recieving mem loads (from cache)
     cache_if.master cache_master,
     // issuing mem ops
+    output lq_load_issue_pkt_t lq_load_issue_pkt_o,
     // other
-    logic load_e_counter_mismatch_o
-);  
+    output logic load_e_counter_mismatch_o
+);
+
+    lq_sq_pkt_t lq_sq_pkt_ff;
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst || exception_i) begin
+            lq_sq_pkt_ff <= '0;
+        end else begin
+            lq_sq_pkt_ff <= set_lq_sq_pkt_and_calc_addr(lq_sq_data_and_addr_pkt_i);
+        end
+    end
+
     // load queue signals
     lq_pkt_t lq_pkt;
     logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr_reply;
@@ -1388,12 +1426,12 @@ import writeback_pkg::*;
     logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_lowest_lsq_ready_ptr;
     logic lq_dispatch_cmd;
     lq_load_resp_pkt_t lq_load_resp_pkt; // need to connect
-    lq_load_issue_pkt_t lq_load_issue_pkt;
+    // lq_load_issue_pkt_t lq_load_issue_pkt;
     lq_store_snoop_pkt_t lq_store_snoop_pkt;
     sq_entry_addr_safety_notify_pkt_t lq_addr_safety;
     sq_entry_data_safety_notify_pkt_t lq_data_safety;
     always_comb begin
-        lq_pkt                          = set_lq_pkt(lq_sq_pkt_i);
+        lq_pkt                          = set_lq_pkt(lq_sq_pkt_ff);
         lq_pkt.load_byte_en             = lq_query_resp.load_byte_en;
         lq_pkt.load_data_avail          = lq_query_resp.load_data_avail;
         lq_pkt.load_data_byte_lsq_arry  = lq_query_resp.load_data_byte_lsq_arry;
@@ -1417,7 +1455,7 @@ import writeback_pkg::*;
         .lq_dispatch_cmd_i(lq_dispatch_cmd),
         .lq_load_resp_pkt_i(lq_load_resp_pkt),
         .load_e_counter_mismatch_o(load_e_counter_mismatch_o),
-        .lq_load_issue_pkt_o(lq_load_issue_pkt),
+        .lq_load_issue_pkt_o(lq_load_issue_pkt_o),
         .lq_store_snoop_pkt_i(lq_store_snoop_pkt),
         .addr_safety_i(lq_addr_safety),
         .data_safety_i(lq_data_safety)
@@ -1433,8 +1471,8 @@ import writeback_pkg::*;
     sq_entry_addr_safety_notify_pkt_t sq_addr_safety;
     sq_entry_data_safety_notify_pkt_t sq_data_safety;
     always_comb begin
-        sq_query = set_sq_query(lq_sq_pkt_i, lsq_ptr_reply);
-        sq_pkt = set_sq_pkt(lq_sq_pkt_i);
+        sq_query = set_sq_query(lq_sq_pkt_ff, lsq_ptr_reply);
+        sq_pkt = set_sq_pkt(lq_sq_pkt_ff);
         sq_instant_pkt.en = mem_stage_instant_pkt_i.en && mem_stage_instant_pkt_i.store;
         sq_instant_pkt.lsq_ptr = mem_stage_instant_pkt_i.lsq_ptr;
     end
@@ -1502,7 +1540,7 @@ import writeback_pkg::*;
         lq_load_resp_pkt.data = cache_master.rd_data;
 
     end
-    
+     
 
 endmodule
 

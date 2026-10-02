@@ -223,9 +223,12 @@ module register_file_async_read #(
     output logic [DATA_WIDTH-1:0] data_r_2_o,
 
     // writing
-    input write_en_i,
-    input [REG_ADDR_WIDTH-1:0] addr_w_i,
-    input [DATA_WIDTH-1:0] data_w_i
+    input write_en_1_i,
+    input [REG_ADDR_WIDTH-1:0] addr_w_1_i,
+    input [DATA_WIDTH-1:0] data_w_1_i,
+    input write_en_2_i,
+    input [REG_ADDR_WIDTH-1:0] addr_w_2_i,
+    input [DATA_WIDTH-1:0] data_w_2_i
 );
     localparam ENTRIES = 2 ** REG_ADDR_WIDTH;
 
@@ -235,8 +238,11 @@ module register_file_async_read #(
         if (rst) begin
             reg_mem <= '{default:'0};
         end else begin
-            if (write_en_i && addr_w_i != '0) begin
-                reg_mem[addr_w_i] <= data_w_i;
+            if (write_en_1_i && addr_w_1_i != '0) begin
+                reg_mem[addr_w_1_i] <= data_w_1_i;
+            end
+            if (write_en_2_i && addr_w_2_i != '0) begin
+                reg_mem[addr_w_2_i] <= data_w_2_i;
             end
         end
     end

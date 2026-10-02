@@ -50,6 +50,7 @@ import core_pkg::*;
 
     // commit_stage_pkt_t commit_decode_pkt; // RESTORE LATER
     rt_and_iq_pending_update_pkt_t commit_rt_iq_update_pkt;
+    rt_and_iq_pending_update_pkt_t wb_rt_iq_update_load_op_pkt;
     iq_output_t decode_instr;
     rob_instance_pkt_t decode_rob_instance_pkt;
     spec_exec_buffer_instance_pkt_t decode_spec_exec_buffer_instance_pkt;
@@ -61,6 +62,7 @@ import core_pkg::*;
         .if_input_i(instr_fetch_output_pkt),
         .decode_commit_pkt_i(commit_decode_pkt), // For now(), will not use flipflops
         .rt_iq_update_pkt_i(commit_rt_iq_update_pkt),
+        .rt_iq_update_load_op_pkt_i(wb_rt_iq_update_load_op_pkt),
         .decode_instr_o(decode_instr),
         .rob_instance_pkt_o(decode_rob_instance_pkt),
         .is_spec_instr_o(decode_is_spec_instr),
@@ -74,6 +76,7 @@ import core_pkg::*;
 
     fetch_packet_t issue_fetch_pkt;
     wb_phys_reg_pkt_t writeback_phys_reg_pkt;
+    lq_issue_data_pkt_t exec_mem_lq_issue_data_pkt_i;
     issue_stage issue_stage_inst (
         .clk(clk),
         .rst(rst),
@@ -82,13 +85,15 @@ import core_pkg::*;
         .wb_phys_reg_pkt_i(writeback_phys_reg_pkt),
         .buff_inst_i(decode_pc_buff_inst),
         .exception_i(instr_fetch_exception),
-        .stall_o(issue_stall)
+        .stall_o(issue_stall),
+        .lq_issue_data_pkt_i(exec_mem_lq_issue_data_pkt_i)
     );
 
     ex_mem_stage_pkt_t exec_mem_stage_pkt;
     spec_exec_answr_pkt_t exec_mem_spec_exec_answr;
-    mem_addr_pkt_t mem_op_addr_pkt;
-    store_buffer_commit_pkt_t store_buffer_commit_pkt;
+    // mem_addr_pkt_t mem_op_addr_pkt;
+    // store_buffer_commit_pkt_t store_buffer_commit_pkt;
+    lq_issue_notif_pkt_t exec_mem_lq_issue_notif_pkt_i;
     execute_memory_stage execute_memory_stage_inst (
         .clk(clk),
         .rst(rst),
@@ -96,10 +101,10 @@ import core_pkg::*;
         .ex_mem_stage_pkt_o(exec_mem_stage_pkt),
         .spec_exec_answr_o(exec_mem_spec_exec_answr),
         .exception_i(instr_fetch_exception),
-        .mem_addr_pkt_o(mem_op_addr_pkt),
-        .store_buffer_commit_pkt_i(store_buffer_commit_pkt)
-    );
+        // .mem_addr_pkt_o(mem_op_addr_pkt),
+        // .store_buffer_commit_pkt_i(store_buffer_commit_pkt)
 
+    );
 
     writeback_stage writeback_stage_inst (
         .clk(clk),
@@ -109,6 +114,7 @@ import core_pkg::*;
         .commit_stage_pkt_o(commit_decode_pkt),
         .wb_phys_reg_pkt_o(writeback_phys_reg_pkt),
         .rt_iq_update_pkt_o(commit_rt_iq_update_pkt),
+        .rt_iq_update_load_op_pkt_o(wb_rt_iq_update_load_op_pkt),
         .spec_exec_buffer_instance_pkt_i(decode_spec_exec_buffer_instance_pkt),
         .spec_exec_answr_i(exec_mem_spec_exec_answr),
         .spec_exec_answr_pkt_o(commit_spec_exec_answr_pkt),

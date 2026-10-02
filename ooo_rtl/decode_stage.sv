@@ -50,6 +50,7 @@ module decode_stage
     // output logic free_list_empty_o;
 
     input rt_and_iq_pending_update_pkt_t rt_iq_update_pkt_i,
+    input rt_and_iq_pending_update_pkt_t rt_iq_update_load_op_pkt_i,
 
     // output logic
     // output logic decode_instr_valid_o,
@@ -74,7 +75,9 @@ module decode_stage
     input logic exception_i, // not sure if we need to flipflop this
     output logic stall_o,
 
-    input logic stall_i
+    input logic stall_i,
+
+    input 
 );
 
     /* input flip flops */
@@ -84,6 +87,7 @@ module decode_stage
     // rename_table_update_pkt_t rename_table_update_pkt_ff;
     // issue_queue_update_pkt_t issue_queue_update_pkt_ff;
     rt_and_iq_pending_update_pkt_t rt_iq_update_pkt_ff;
+    rt_and_iq_pending_update_pkt_t rt_iq_update_load_op_pkt_ff;
     // logic exception_ff;
 
     always_ff @(posedge clk) begin
@@ -94,6 +98,7 @@ module decode_stage
         // rename_table_update_pkt_ff <= rename_table_update_pkt_i;
         // issue_queue_update_pkt_ff <= issue_queue_update_pkt_i;
         rt_iq_update_pkt_ff <= rt_iq_update_pkt_i;
+        rt_iq_update_load_op_pkt_ff <= rt_iq_update_load_op_pkt_i;
         // exception_ff <= exception_i;
     end
 
@@ -148,6 +153,7 @@ module decode_stage
         .prf_ptr_sb_i(rt_iq_update_pkt_ff.prf_ptr),
         .arf_ptr_sb_i(rt_iq_update_pkt_ff.arf_ptr),
         .writeback_en_i(rt_iq_update_pkt_ff.wr_en),
+        .rt_iq_update_load_op_pkt_i(rt_iq_update_load_op_pkt_ff),
         // ports for issue queue to read from 
         .arf_src0_i(rename_table_arf_src0),
         .arf_src1_i(rename_table_arf_src1),
@@ -182,6 +188,7 @@ module decode_stage
         // for writing from right before writeback stage into decode stage
         .prf_dst_i(rt_iq_update_pkt_ff.prf_ptr),
         .prf_wr_en_i(rt_iq_update_pkt_ff.wr_en),
+        .rt_iq_update_load_op_pkt_i(rt_iq_update_load_op_pkt_ff),
         // for checking for structural hazards
         .future_exec_stage_slots_i(issue_queue_future_exec_stage_slots),      
         .instr_o(issue_queue_instr_out),
@@ -508,6 +515,7 @@ import decode_pkg::*;
     input logic [$clog2(PRF_COUNT)-1:0] prf_ptr_sb_i,
     input logic [4:0] arf_ptr_sb_i,
     input logic writeback_en_i,
+    input rt_and_iq_pending_update_pkt_t rt_iq_update_load_op_pkt_i,
     // ports for issue queue to read from 
     input logic [4:0] arf_src0_i,
     input logic [4:0] arf_src1_i,
@@ -561,6 +569,12 @@ import decode_pkg::*;
                         rename_table[arf_ptr_sb_i].pending <= 1'b0;
                     end
                 end
+                if (rt_iq_update_load_op_pkt_i.wr_en) begin
+                    if (rename_table[rt_iq_update_load_op_pkt_i.arf_ptr].prf_ptr == rt_iq_update_load_op_pkt_i.prf_ptr 
+                        && (rt_iq_update_load_op_pkt_i.arf_ptr != arf_ptr_i || !decode_en_i)) begin
+                        rename_table[rt_iq_update_load_op_pkt_i.arf_ptr].pending <= 1'b0;
+                    end
+                end
                 if (decode_en_i && arf_ptr_i != '0) begin
                     rename_table[arf_ptr_i].prf_ptr <= prf_ptr_i;
                     rename_table[arf_ptr_i].pending <= 1'b1;
@@ -603,11 +617,17 @@ import decode_pkg::*;
     always_comb begin
         if (writeback_en_i && rename_table[arf_src0_i].prf_ptr == prf_ptr_sb_i) begin
             src0_pending_o = 1'b0;
+        end else if (rt_iq_update_load_op_pkt_i.wr_en && 
+                        rename_table[arf_src0_i].prf_ptr == rt_iq_update_load_op_pkt_i.prf_ptr) begin
+            src0_pending_o = 1'b0;
         end else begin
             src0_pending_o = rename_table[arf_src0_i].pending;
         end
 
         if (writeback_en_i && rename_table[arf_src1_i].prf_ptr == prf_ptr_sb_i) begin
+            src1_pending_o = 1'b0;
+        end else if (rt_iq_update_load_op_pkt_i.wr_en && 
+                        rename_table[arf_src1_i].prf_ptr == rt_iq_update_load_op_pkt_i.prf_ptr) begin
             src1_pending_o = 1'b0;
         end else begin
             src1_pending_o = rename_table[arf_src1_i].pending;
@@ -633,6 +653,7 @@ module issue_queue
     // for writing from right before writeback stage into decode stage
     input logic [$clog2(PRF_COUNT)-1:0] prf_dst_i,
     input logic prf_wr_en_i,
+    input rt_iq_update_load_op_pkt_t rt_iq_update_load_op_pkt_i,
     // for checking for structural hazards
     // 1 extra: 1 for reg fetch stage
     input logic [MAX_EXEC_CYCLE+1:0] future_exec_stage_slots_i,
@@ -644,6 +665,67 @@ module issue_queue
     output logic all_stalled_o, // when all current entries are still stalling, does also account for input "prf_dst_i"
     input logic exception_i
 );  
+
+    logic [$clog2(IQ_SIZE)-1:0] head_ptr;
+    logic [$clog2(IQ_SIZE)-1:0] tail_ptr;
+    // masking signals
+    logic [IQ_SIZE-1:0] mask_array, ready_array, masked_ready_array;
+    logic [IQ_SIZE-1:0] inv_mask_array, inv_masked_ready_array;
+    logic [$clog2(IQ_SIZE)-1:0] select_ptr;
+    always_comb begin
+        mask_array = {IQ_SIZE{1'b1}} << head_ptr;
+        masked_ready_array = mask_array & ready_array;
+        inv_mask_array = ~mask_array;
+        inv_masked_ready_array = inv_mask_array & ready_array;
+        select_ptr = '0;
+        for (int i = 0; i < IQ_SIZE; i++) begin
+            if (masked_ready_array[i]) begin
+                select_ptr = i;
+                break;
+            end
+        end
+        if (!(|masked_ready_array)) begin
+            for (int i = 0; i < IQ_SIZE; i++) begin
+                if (inv_masked_ready_array[i]) begin
+                    select_ptr = i;
+                    break;
+                end
+            end
+        end
+    end
+
+    // determining next head ptr
+    logic [$clog2(IQ_SIZE)-1:0] next_head_ptr;
+    logic [IQ_SIZE-1:0] valid_array, next_valid_array;
+    logic [IQ_SIZE-1:0] next_masked_valid_array;
+    always_comb begin
+        for (int i = 0; i < IQ_SIZE; i++) begin
+            valid_array[i] = iq[i].valid;
+        end
+        next_valid_array = valid_array;
+        if (|ready_array) begin
+            next_valid_array[select_ptr] = 1'b0;
+        end
+        if (wr_en && !full_o) begin
+            next_valid_array[tail_ptr] = 1'b1;
+        end
+        // compute next head position
+        next_masked_valid_array = mask_array & next_valid_array;
+        next_head_ptr = head_ptr;
+        if (|next_masked_valid_array) begin
+            for (int i = IQ_SIZE-1; i >= 0; i--) begin
+                if (next_masked_valid_array[i]) begin
+                    next_head_ptr = i;
+                end
+            end
+        end else if (|next_valid_array) begin
+            for (int i = IQ_SIZE-1; i >= 0; i--) begin
+                if (next_valid_array[i]) begin
+                    next_head_ptr = i;
+                end
+            end
+        end
+    end
 
     iq_entry_t iq [0:IQ_SIZE-1];
 
@@ -659,37 +741,40 @@ module issue_queue
             valid_array[i] = iq[i].valid;
         end
     end
-    assign empty_o = ~(|valid_array);
+    assign empty_o = !(|valid_array);
     assign full_o = &valid_array;
 
-    logic [IQ_SIZE-1:0] ready_array;
+    // logic [IQ_SIZE-1:0] ready_array;
     // expensive, see if can optimize
     always_comb begin
         for (int i = 0; i < IQ_SIZE; i++) begin
             ready_array[i] = (
-                (!iq[i].src0_valid || !iq[i].src0_pending || ((iq[i].src0_ptr == prf_dst_i) && prf_wr_en_i)) &&
-                (!iq[i].src1_valid || !iq[i].src1_pending || ((iq[i].src1_ptr == prf_dst_i) && prf_wr_en_i) || iq[i].store) &&
+                (!iq[i].src0_valid || !iq[i].src0_pending || ((iq[i].src0_ptr == prf_dst_i) && prf_wr_en_i) 
+                    || rt_iq_update_load_op_pkt_i.wr_en && (iq[i].src0_ptr == rt_iq_update_load_op_pkt_i.prf_ptr)) &&
+                (!iq[i].src1_valid || !iq[i].src1_pending || ((iq[i].src1_ptr == prf_dst_i) && prf_wr_en_i) 
+                    || rt_iq_update_load_op_pkt_i.wr_en && (iq[i].src1_ptr == rt_iq_update_load_op_pkt_i.prf_ptr) || iq[i].store) &&
                 (iq[i].valid) &&
                 (future_exec_stage_slots_i[iq[i].exec_dur] == 0)
             );
         end
-        all_stalled_o = ~(|ready_array);
+        all_stalled_o = !(|ready_array);
     end
 
     // asynch read
-    logic [IQ_SIZE-1:0] priority_ready_array;
+    // logic [IQ_SIZE-1:0] priority_ready_array;
     always_comb begin
-        priority_ready_array = '{default:'0};
+        // priority_ready_array = '{default:'0};
         instr_o = '{default:'0}; 
         if (!empty_o && !all_stalled_o) begin
             // search for highest priority "ready" entry
-            for (int i = 0; i < IQ_SIZE; i++) begin
-                if (ready_array[i]) begin
-                    priority_ready_array[i] = 1;
-                    instr_o = entry_to_output(iq[i]);
-                    break;
-                end
-            end
+            // for (int i = 0; i < IQ_SIZE; i++) begin
+            //     if (ready_array[i]) begin
+            //         priority_ready_array[i] = 1;
+            //         instr_o = entry_to_output(iq[i]);
+            //         break;
+            //     end
+            // end
+            instr_o = entry_to_output(iq[select_ptr]);
         end
     end
 
@@ -700,9 +785,13 @@ module issue_queue
             // empty_o <= 1;
             // full_o <= 0;
             // all_stalled_o <= 0;
+            head_ptr <= '{default:'0};
+            tail_ptr <= '{default:'0};
         end 
         else begin
+            head_ptr <= next_head_ptr;
             if (wr_en && !full_o) begin
+
                 // find first empty slot and write instruction
                 for (int i = 0; i < IQ_SIZE; i++) begin
                     if (!iq[i].valid) begin
@@ -711,6 +800,7 @@ module issue_queue
                         break;
                     end
                 end
+                tail_ptr <= tail_ptr + 1;
             end
             // updating pending state
             if (prf_wr_en_i) begin
@@ -721,13 +811,22 @@ module issue_queue
                         iq[i].src1_pending <= 0;
                 end
             end
+            if (rt_iq_update_load_op_pkt_i.wr_en) begin
+                for (int i = 0; i < IQ_SIZE; i++) begin
+                    if (iq[i].src0_valid && iq[i].src0_pending && iq[i].src0_ptr == rt_iq_update_load_op_pkt_i.prf_ptr)
+                        iq[i].src0_pending <= 0;
+                    if (iq[i].src1_valid && iq[i].src1_pending && iq[i].src1_ptr == rt_iq_update_load_op_pkt_i.prf_ptr)
+                        iq[i].src1_pending <= 0;
+                end
+            end
             // synchronously updating validity
             if (!empty_o && !all_stalled_o) begin
-                for (int i = 0; i < IQ_SIZE; i++) begin
-                    if (priority_ready_array[i]) begin
-                        iq[i].valid <= 0;
-                    end
-                end
+                // for (int i = 0; i < IQ_SIZE; i++) begin
+                //     if (priority_ready_array[i]) begin
+                //         iq[i].valid <= 0;
+                //     end
+                // end
+                iq[select_ptr].valid <= 0;
             end
         end
     end

@@ -44,7 +44,10 @@ import issue_pkg::*;
     // input logic [$clog2(MAX_PC_INSTRS)-1:0] rd_ptr_i
     // input logic pc_instr_i
     input logic exception_i,
-    output logic stall_o
+    output logic stall_o,
+
+    // register data coming from load operations
+    input lq_issue_data_pkt_t lq_issue_data_pkt_i
 );
 
     iq_output_t instr_ff;
