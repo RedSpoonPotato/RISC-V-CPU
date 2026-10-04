@@ -25,7 +25,7 @@ package writeback_pkg;
         logic [4:0] arch_reg_addr;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
         // logic [$clog2(ROB_COUNT)-1:0] rob_count;
-        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_counter;
+        // logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_counter;
 
         `ifdef DEBUG
         logic [DATA_WIDTH-1:0] pc;
@@ -54,7 +54,7 @@ package writeback_pkg;
         logic [4:0] arch_reg_addr;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
         // logic [$clog2(ROB_COUNT)-1:0] rob_count;
-        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_counter;
+        // logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_counter;
 
         `ifdef DEBUG
         logic [DATA_WIDTH-1:0] pc;
@@ -77,7 +77,7 @@ package writeback_pkg;
         logic [$clog2(PRF_COUNT)-1:0] phys_reg_addr;
         logic [4:0] arch_reg_addr;
         logic [$clog2(PRF_COUNT)-1:0] prev_phys_reg_addr;
-        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_counter;
+        // logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_counter;
 
         `ifdef DEBUG
         logic [DATA_WIDTH-1:0] pc;

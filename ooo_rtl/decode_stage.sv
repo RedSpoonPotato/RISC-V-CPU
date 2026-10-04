@@ -70,14 +70,16 @@ module decode_stage
     output pc_buff_instance_pkt_t pc_buff_inst_o,
 
     // output logic mem_buff_wr_en_o,
-    output lsq_instantiation_pkt_t lsq_instant_pkt_o,
+    // output lsq_instantiation_pkt_t lsq_instant_pkt_o,
+    output mem_stage_instant_pkt_t mem_stage_instant_pkt_o,
 
     input logic exception_i, // not sure if we need to flipflop this
     output logic stall_o,
 
     input logic stall_i,
 
-    input 
+    // NEEDS TO ROUTE BACK TO exception_i
+    output logic exception_o
 );
 
     /* input flip flops */
@@ -304,15 +306,27 @@ module decode_stage
     logic [$clog2(MAX_SPEC_EXEC_INSTRS):0] spec_exec_counter;
     logic [$clog2(MAX_PC_INSTRS)-1:0] pc_instr_counter;
     // logic [$clog2(MAX_MEM_INSTRS):0] mem_buff_counter;
-    // logic [$clog2(MAX_MEM_INSTRS):0] lsq_counter;
     // need to instiatiate seperate load and store counterd. Mind the fect that store queue is not ciruclar, so +1
-    
+    logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_counter;
+    logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_counter;
+    logic [$clog2(MAX_STORE_INSTRS)-1:0] sq_counter, sq_commit_counter;
+
     always_ff @(posedge clk) begin
+        if (rst) begin
+            sq_commit_counter <= '{default:'0};
+        end else begin
+            if (decode_commmit_pkt_i.store) begin
+                sq_commit_counter <= sq_commit_counter + 1;
+            end
+        end
+        
         if (rst || exception_i) begin
             rob_head_counter <= '{default:'0};
             spec_exec_counter <= '{default:'0};
             pc_instr_counter <= '{default:'0};
             lsq_counter <= '{default:'0};
+            lq_counter <= '{default:'0};
+            sq_counter <= sq_commit_counter;
         end else begin
             if (master_instr_valid) begin
                 rob_head_counter <= rob_head_counter + 1;
@@ -322,12 +336,37 @@ module decode_stage
                 if (pc_instr) begin
                     pc_instr_counter <= pc_instr_counter + 1;
                 end 
-
-                // NEED TO TAKE A LOOK AT THIS
                 if (mem_instr) begin
                     lsq_counter <= lsq_counter + 1;
+                    if (issue_queue_entry.store) begin
+                        sq_counter <= sq_counter + 1;
+                    end else begin
+                        lq_counter <= lq_counter + 1;
+                    end
                 end
             end
+        end
+    end
+
+    // through signal to reset counter since logic in lq and sq rely on lsq_counter 
+    always_comb begin
+        exception_o = 0;
+        if (lsq_counter == MAX_LSQ_INSTRS-1) begin
+            exception_o = 1;
+        end
+    end
+
+    logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            e_counter <= '{default:'0};
+        end else if (exception_i) begin
+            e_counter <= e_counter + 1;
+        end
+    end
+    always_comb begin
+        if (e_counter == EXCEPTION_COUNTER_MAX-1) begin
+            // DO WE NEED TO DO SOMETHNIG???
         end
     end
 
@@ -353,6 +392,14 @@ module decode_stage
             issue_queue_entry.pc_instr = pc_instr;
             issue_queue_entry.pc_buff_ptr = pc_instr ? pc_instr_counter : '{default:'0};
             issue_queue_entry.mem_buff_ptr = mem_instr ? lsq_counter : '{default:'0};
+            // issue_queue_entry.buffer_ptr = mem_instr && store? lsq_counter : '{default:'0};
+            if (mem_instr && issue_queue_entry.store) begin
+                issue_queue_entry.buffer_ptr = {($clog2(MAX_INDV_MEM_BUFF_SIZES)-$clog2(MAX_STORE_INSTRS)){1'b0}, sq_counter};
+            end else if (mem_instr) begin
+                issue_queue_entry.buffer_ptr = {($clog2(MAX_INDV_MEM_BUFF_SIZES)-$clog2(MAX_LOAD_INSTRS)){1'b0}, lq_counter};
+            end else begin
+                issue_queue_entry.buffer_ptr = '{default:'0};
+            end
         end else begin
             issue_queue_entry = '{default: '0};
         end
@@ -387,7 +434,7 @@ module decode_stage
             rob_instance_pkt_o.phys_reg_addr = issue_queue_entry.dest_ptr;
             rob_instance_pkt_o.arch_reg_addr = instr_ff[11:7];
             rob_instance_pkt_o.prev_phys_reg_addr = rename_table_rob_dest_prf; /// what about J and U types
-            rob_instance_pkt_o.lsq_counter = lsq_counter;
+            // rob_instance_pkt_o.lsq_counter = lsq_counter;
             `ifdef DEBUG
             rob_instance_pkt_o.pc = if_input_ff.pc;
             `endif
@@ -402,9 +449,13 @@ module decode_stage
             // to ex_mem
             // mem_buff_wr_en_o = mem_instr;
 
-            lsq_instant_pkt_o.wr_en = mem_instr;
-            lsq_instant_pkt_o.store = decode_instr_o.store;
-            lsq_instant_pkt_o.src_ptr = decode_instr_o.src1_ptr;
+            // lsq_instant_pkt_o.wr_en = mem_instr;
+            // lsq_instant_pkt_o.store = decode_instr_o.store;
+            // lsq_instant_pkt_o.src_ptr = decode_instr_o.src1_ptr;
+            mem_stage_instant_pkt_o.en = mem_instr;
+            mem_stage_instant_pkt_o.store = decode_instr_o.store;
+            mem_stage_instant_pkt_o.lsq_ptr = lsq_counter;
+            mem_stage_instant_pkt_o.e_counter = e_counter;
 
         end else begin
             rob_instance_pkt_o = '{default:'0};
@@ -413,7 +464,7 @@ module decode_stage
             pc_buff_inst_o = '{default:'0};
             is_spec_instr_o = '0;
             // mem_buff_wr_en_o = '0;
-            lsq_instant_pkt_o = '{default:'0};
+            // lsq_instant_pkt_o = '{default:'0};
         end
     end
 

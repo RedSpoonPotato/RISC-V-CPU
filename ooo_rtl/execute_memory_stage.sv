@@ -135,7 +135,7 @@ import issue_pkg::*;
         .sq_data_snoop_pkt_i(sq_data_snoop_pkt_i),
         .sq_commit_pkt_i(sq_commit_pkt_i),
         .cache_master(cache_master),
-        .lq_load_issue_pkt_o(lq_load_issue_pkt;),
+        .lq_load_issue_pkt_o(lq_load_issue_pkt),
         .load_e_counter_mismatch_o(load_e_counter_mismatch_o)
     );
 
@@ -600,12 +600,12 @@ import general_pkg::*;
     // assign full_o = 
     //     tail_ptr_lower == head_ptr_lower
     //      && tail_ptr[$clog2(MAX_MEM_INSTRS)] != head_ptr[$clog2(MAX_MEM_INSTRS)];
-    assign full_o = lq[tail_ptr].state == INVALID;
+    assign full_o = lq[tail_ptr].state != INVALID;
 
     // logic empty;
     // assign empty = tail_ptr == head_ptr;
 
-    logic [MAX_LOAD_INSTRS-1:0] valid_arry, next_valid_arry, masked_valid_arry, mask_arry, ready_arry, masked_ready_arry;
+    logic [MAX_LOAD_INSTRS-1:0] valid_arry, next_valid_arry, next_masked_valid_arry, mask_arry, ready_arry, masked_ready_arry;
     logic [$clog2(MAX_LOAD_INSTRS)-1:0] select_ptr;
     logic [MAX_LOAD_INSTRS-1:0] data_in_arry, masked_data_in_arry;
 
@@ -621,7 +621,7 @@ import general_pkg::*;
         masked_data_in_arry = mask_arry & data_in_arry;
     end
 
-    // dispatching cache to cache
+    // dispatching loads to cache
     logic [$clog2(MAX_LOAD_INSTRS)-1:0] dispatch_ptr; // debugging signal
     always_comb begin
         lq_load_dispatch_pkt_o = '{default:'0};
@@ -636,6 +636,7 @@ import general_pkg::*;
                     lq_dispatch_ready_o = 1'b1;
                     lq_lowest_lsq_ready_ptr_o = lq[i].lsq_ptr;
                     dispatch_ptr = i;
+                    break;
                 end
             end
         end else if (|ready_arry) begin
@@ -645,6 +646,7 @@ import general_pkg::*;
                     lq_dispatch_ready_o = 1'b1;
                     lq_lowest_lsq_ready_ptr_o = lq[i].lsq_ptr;
                     dispatch_ptr = i;
+                    break;
                 end
             end
         end
@@ -671,7 +673,7 @@ import general_pkg::*;
         end
     end
 
-    // determine next head_ptr 
+    // determine next head_ptr
     always_comb begin
         // determine next valid state of array
         next_valid_arry = valid_arry;
@@ -682,18 +684,20 @@ import general_pkg::*;
             next_valid_arry[tail_ptr] = 1'b1;      // Entry is arriving
         end
         // compute next head position
-        masked_valid_arry = mask_arry & next_valid_arry;
+        next_masked_valid_arry = mask_arry & next_valid_arry;
         next_head_ptr = head_ptr;
-        if (|masked_valid_arry) begin // why do this?
-            for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
-                if (masked_valid_arry[i]) begin
+        if (|next_masked_valid_arry) begin // why do this?
+            for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
+                if (next_masked_valid_arry[i]) begin
                     next_head_ptr = i;
+                    break;
                 end
             end
         end else if (|next_valid_arry) begin
-            for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
+            for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
                 if (next_valid_arry[i]) begin
                     next_head_ptr = i;
+                    break;
                 end
             end
         end
@@ -707,7 +711,6 @@ import general_pkg::*;
             issue_arry[i] = lq[i].state == LOAD_RECEIVED || lq[i].state == LOAD_FORWARDED;
         end
 
-        // masked_ready_arry = mask_arry & ready_arry;
         overflow_ready_mask_arry = ~mask_arry & ready_arry;
 
         masked_issue_arry = mask_arry & issue_arry;
@@ -715,61 +718,20 @@ import general_pkg::*;
 
     end
 
-    assert property (
-        @(posedge clk) disable iff (rst || exception_i)
-        (!(issue_pkt_i.wr_en && issue_pkt_i.is_store) || lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].state == STORE_PENDING)
-    );
+    // assert property (
+    //     @(posedge clk) disable iff (rst || exception_i)
+    //     (!(issue_pkt_i.wr_en && issue_pkt_i.is_store) || lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].state == STORE_PENDING)
+    // );
 
-    assert property (
-        @(posedge clk) disable iff (rst || exception_i)
-        (!(issue_pkt_i.wr_en && !issue_pkt_i.is_store) || lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].state == LOAD_PENDING)
-    );
+    // assert property (
+    //     @(posedge clk) disable iff (rst || exception_i)
+    //     (!(issue_pkt_i.wr_en && !issue_pkt_i.is_store) || lsq[issue_pkt_i.lsq_ptr[$clog2(MAX_MEM_INSTRS)-1:0]].state == LOAD_PENDING)
+    // );
 
-    assert property (
-        @(posedge clk) disable iff (rst || exception_i)
-        (!(commit_stage_pkt_i.wr_en && commit_stage_pkt_i.store) || lsq[commit_stage_pkt_i.lsq_counter].state == STORE_DATA_IN)
-    );
-
-
-
-    // determining memory conflict
-    logic [MAX_MEM_INSTRS-1:0] cnflct_arry;
-    logic frwd_cnflct;
-    always_comb begin
-        cnflct_arry = '0;
-        frwd_cnflct = '0;
-        if (commit_en_i && !exception_i && store_commit_en_i) begin
-            for (int i = 0; i < MAX_MEM_INSTRS; i++) begin
-                cnflct_arry[i] = lsq[i].valid &&
-                    i != tail_ptr_lower &&
-                    !lsq[i].is_store &&
-                    lsq[i].addr == lsq[tail_ptr_lower].addr;
-            end
-            frwd_cnflct = mem_addr_pkt_i.wr_en &&
-                // mem_addr_pkt_i.valid && 
-                !mem_addr_pkt_i.is_store &&
-                mem_addr_pkt_i.addr == lsq[tail_ptr_lower].addr &&
-                lsq[tail_ptr_lower].valid;
-
-            mem_addr_conflict_pkt_o.en = |cnflct_arry || frwd_cnflct;
-        end else begin
-            mem_addr_conflict_pkt_o.en = '0;
-        end
-        
-        mem_addr_conflict_pkt_o.pc = lsq[tail_ptr_lower].pc;
-    end
-
-    // setting store pkt when commiting
-    always_comb begin
-        if (commit_en_i && !exception_i && store_commit_en_i) begin
-            // store_buffer_commit_pkt_o.en = 1'b1;
-            store_buffer_commit_pkt_o.byte_wr_en = lsq[tail_ptr_lower].byte_wr_en;
-            store_buffer_commit_pkt_o.addr = lsq[tail_ptr_lower].addr;
-            store_buffer_commit_pkt_o.data = lsq[tail_ptr_lower].store_data;
-        end else begin
-            store_buffer_commit_pkt_o = '{default:'0};
-        end
-    end
+    // assert property (
+    //     @(posedge clk) disable iff (rst || exception_i)
+    //     (!(commit_stage_pkt_i.wr_en && commit_stage_pkt_i.store) || lsq[commit_stage_pkt_i.lsq_counter].state == STORE_DATA_IN)
+    // );
 
     assign lsq_ptr_incom_reply_o = lq[issue_pkt_i.lq_ptr].lsq_ptr;
 
@@ -777,7 +739,7 @@ import general_pkg::*;
 
     // buffer management
     always_ff @(posedge clk) begin
-        if (rst || exception_i || mem_addr_conflict_pkt_o.en) begin
+        if (rst || exception_i) begin
             lq <= '{state: INVALID, default:'0};
             head_ptr <= '{default:'0};
             tail_ptr <= '{default:'0};
@@ -786,9 +748,6 @@ import general_pkg::*;
             if (lq_instant_pkt_i.wr_en && !full_o) begin
                 lq[tail_ptr].state <= LOAD_PENDING;
                 lq[tail_ptr].lsq_ptr <= lq_instant_pkt_i.lsq_ptr;
-                // lq[tail_ptr].dest_ptr <= lq_instant_pkt_i.dest_ptr;
-                // head_ptr <= head_ptr + 1;
-                // head_ptr <= next_head_ptr;
                 lq[tail_ptr].e_counter <= lq_instant_pkt_i.e_counter;
                 tail_ptr <= tail_ptr + 1;
             end
@@ -822,7 +781,7 @@ import general_pkg::*;
                 lq[issue_pkt_i.lq_ptr].dest_ptr         <= issue_pkt_i.dest_ptr;
                 lq[issue_pkt_i.lq_ptr].data             <= issue_pkt_i.data;
                 // lq[issue_pkt_i.lq_ptr].lsq_ptr          <= issue_pkt_i.lsq_ptr;
-                lq[issue_pkt_i.lq_ptr].load_byte_en     <= issue_pkt_i.load_byte_en;
+                // lq[issue_pkt_i.lq_ptr].load_byte_en     <= issue_pkt_i.load_byte_en;
                 lq[issue_pkt_i.lq_ptr].load_data_avail  <= issue_pkt_i.load_data_avail;
                 lq[issue_pkt_i.lq_ptr].lsq_src_arry     <= issue_pkt_i.load_data_byte_lsq_arry;
             end
@@ -831,7 +790,6 @@ import general_pkg::*;
             // UPDATE THIS TO BE WHEN A ENTRY IS LEAVING, I.E. ITS BEING ISSUED
             if (lq_commit_pkt_i.en) begin
                 lq[lq_commit_pkt_i.lq_ptr].state <= INVALID;
-                head_ptr <= head_ptr + 1;
             end
 
             // cache response
@@ -849,7 +807,8 @@ import general_pkg::*;
                         // forwarding?
                         lq[i] <= lq_set_load_data(lq[i], lq_store_snoop_pkt_i);
                     end
-                    if (data_safety_i.en && data_safety_i.lsq_ptr > lq[i].lsq_ptr && lq[i].load_data_avail == lq[i].load_byte_en) begin
+                    // if (data_safety_i.en && data_safety_i.lsq_ptr > lq[i].lsq_ptr && lq[i].load_data_avail == lq[i].load_byte_en) begin
+                    if (data_safety_i.en && data_safety_i.lsq_ptr > lq[i].lsq_ptr && lq[i].load_data_avail == lq[i].byte_wr_en) begin
                         lq[i].state <= LOAD_FORWARDED;
                     end else if (data_safety_i.en && data_safety_i.lsq_ptr > lq[i].lsq_ptr && lq[i].load_data_avail == '0) begin
                         lq[i].state <= LOAD_READY;
@@ -880,13 +839,15 @@ import general_pkg::*;
                 if (masked_ready_arry[i]) begin
                     // dispatch the load instruction
                     lq[i].state <= LOAD_DISPATCHED;
+                    break;
                 end
             end
-            if (~|masked_ready_arry) begin
+            if (!|masked_ready_arry) begin
                 for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
                     if (overflow_ready_mask_arry[i]) begin
                         // dispatch load instruction
                         lq[i].state <= LOAD_DISPATCHED;
+                        break;
                     end
                 end
             end
@@ -897,21 +858,12 @@ import general_pkg::*;
                     // issue
                 end
             end
-            if (~|masked_issue_arry) begin
+            if (!|masked_issue_arry) begin
                 for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
                     if (overflow_issue_mask_arry[i]) begin
                         // issue
                     end
                 end
-            end
-        end
-    end
-
-    // dispatching, which is independent of exceptions
-    always_ff @(posedge clk) begin
-        if (!rst) begin
-            if (sq_dispatch_cmd_i) begin
-                sq[tail_ptr_lower].state <= STORE_DISPATCHED;
             end
         end
     end
@@ -1285,7 +1237,7 @@ import writeback_pkg::*;
         end 
         // committing (UNSURE ABOUT TIMING OF THIS, when exception happens)
         if (sq_commit_pkt_i.en) begin
-            sq[tail_ptr_lower].state <= STORE_COMMIT;
+            sq[committed_ptr_tail + 1].state <= STORE_COMMIT;
         end
     end
 

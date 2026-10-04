@@ -131,6 +131,7 @@ import issue_pkg::*;
             end
             fetch_pkt_o.mem_offset_or_brnch_imm = (fetch_pkt_o.funct_unit == MEM || fetch_pkt_o.funct_unit == BRANCH) ? format_20b_to_datawidth(imm_compr_ff, instr_op_ff) : '{default:'0};
             // assert ((instr_ff.imm_valid == 1 && instr_ff.store == 1) || instr_ff.store == 0);
+            fetch_pkt_o.buffer_ptr = instr_ff.buffer_ptr;
         end
     end
 
