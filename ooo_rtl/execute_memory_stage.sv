@@ -570,6 +570,7 @@ import general_pkg::*;
     output lq_load_dispatch_pkt_t lq_load_dispatch_pkt_o,
     output logic lq_dispatch_ready_o,
     output logic [$clog2(MAX_MEM_INSTRS)-1:0] lq_lowest_lsq_ready_ptr_o,
+    output logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] lq_lowest_e_counter_o,
     input logic lq_dispatch_cmd_i,
     // load recieving from cache
     input lq_load_resp_pkt_t lq_load_resp_pkt_i,
@@ -605,7 +606,7 @@ import general_pkg::*;
     // logic empty;
     // assign empty = tail_ptr == head_ptr;
 
-    logic [MAX_LOAD_INSTRS-1:0] valid_arry, next_valid_arry, next_masked_valid_arry, mask_arry, ready_arry, masked_ready_arry;
+    logic [MAX_LOAD_INSTRS-1:0] valid_arry, next_valid_arry, next_masked_valid_arry, mask_arry, ready_arry, masked_ready_arry, wait_on_lsq_order_arry;
     logic [$clog2(MAX_LOAD_INSTRS)-1:0] select_ptr;
     logic [MAX_LOAD_INSTRS-1:0] data_in_arry, masked_data_in_arry;
 
@@ -616,18 +617,38 @@ import general_pkg::*;
             valid_arry[i] = lq[i].state != INVALID;
             ready_arry[i] = lq[i].state == LOAD_READY;
             data_in_arry[i] = lq[i].state == LOAD_RECEIVED || lq[i].state == LOAD_FORWARDED;
+            wait_on_lsq_order_arry[i] = lq[i].state == LOAD_WAIT_ON_LSQ_ORDER;
         end
         masked_ready_arry = mask_arry & ready_arry;
+        masked_wait_on_lsq_order_arry = mask_arry & wait_on_lsq_order_arry;
         masked_data_in_arry = mask_arry & data_in_arry;
     end
+
+
+    WAIT, Need to dispatch "load_wait_on_load" instr before others IF its ready
+
 
     // dispatching loads to cache
     logic [$clog2(MAX_LOAD_INSTRS)-1:0] dispatch_ptr; // debugging signal
     always_comb begin
         lq_load_dispatch_pkt_o = '{default:'0};
         lq_dispatch_ready_o = 1'b0;
+        lq_lowest_e_counter_o = '0;
         lq_lowest_lsq_ready_ptr_o = '0;
         dispatch_ptr = '0;
+
+        WORK ON THISs
+
+        if (|masked_wait_on_lsq_order_arry) begin
+            for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
+                if (masked_wait_on_lsq_order_arry[i]) begin
+                    lq_lowest_lsq_ready_ptr_o = lq[i].lsq_ptr;
+                    lq_lowest_e_counter_o = lq[i].e_counter;
+                    break;
+                end
+            end
+        end
+
     // if (!exception_i) begin // possibly add extra conditions here!
         if (|masked_ready_arry) begin
             for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
@@ -752,20 +773,19 @@ import general_pkg::*;
                 tail_ptr <= tail_ptr + 1;
             end
             head_ptr <= next_head_ptr; // is this PROPER?
-            // issued
+            // incoming issue
             if (issue_pkt_i.wr_en) begin
-
                 if (!issue_pkt_i.load_safe) begin
                     // stall and check until its safe, then make a decision
                     lq[issue_pkt_i.lq_ptr].state <= LOAD_UNSAFE;
                 end else if (issue_pkt_i.byte_wr_en == issue_pkt_i.load_data_avail) begin
-                    // grab data; state = READY (ACUTLLAY MAYBE SHOULD BE A DIFF STATE;
+                    // grab data
                     lq[issue_pkt_i.lq_ptr].state <= LOAD_FORWARDED;
                 end else if (issue_pkt_i.byte_wr_en == issue_pkt_i.load_byte_en) begin
                     // stall, data will eventually come, so snoop
                     lq[issue_pkt_i.lq_ptr].state <= LOAD_WAIT_ON_SNOOP;
                 end else if (!(|issue_pkt_i.load_byte_en)) begin
-                    // no overlap, so state = READY
+                    // no overlap, so state = READY (to dispatch to cache)
                     lq[issue_pkt_i.lq_ptr].state <= LOAD_READY;
                 end else begin
                     // there is partial overlap, so must wait until all stores have been dispatched that have ...
@@ -808,11 +828,13 @@ import general_pkg::*;
                         lq[i] <= lq_set_load_data(lq[i], lq_store_snoop_pkt_i);
                     end
                     // if (data_safety_i.en && data_safety_i.lsq_ptr > lq[i].lsq_ptr && lq[i].load_data_avail == lq[i].load_byte_en) begin
-                    if (data_safety_i.en && data_safety_i.lsq_ptr > lq[i].lsq_ptr && lq[i].load_data_avail == lq[i].byte_wr_en) begin
+                    if (data_safety_i.en && (data_safety_i.e_counter > lq[i].e_counter || data_safety_i.lsq_ptr > lq[i].lsq_ptr && data_safety_i.e_counter == lq[i].e_counter) 
+                            && lq[i].load_data_avail == lq[i].byte_wr_en) begin
                         lq[i].state <= LOAD_FORWARDED;
-                    end else if (data_safety_i.en && data_safety_i.lsq_ptr > lq[i].lsq_ptr && lq[i].load_data_avail == '0) begin
+                    end else if (data_safety_i.en && (data_safety_i.e_counter > lq[i].e_counter || data_safety_i.lsq_ptr > lq[i].lsq_ptr && data_safety_i.e_counter == lq[i].e_counter) 
+                            && lq[i].load_data_avail == '0) begin
                         lq[i].state <= LOAD_READY;
-                    end else if (data_safety_i.en && data_safety_i.lsq_ptr > lq[i].lsq_ptr) begin
+                    end else if (data_safety_i.en && (data_safety_i.e_counter > lq[i].e_counter || data_safety_i.lsq_ptr > lq[i].lsq_ptr && data_safety_i.e_counter == lq[i].e_counter)) begin
                         lq[i].state <= LOAD_WAIT_ON_LSQ_ORDER;
                     end
                 end
@@ -822,16 +844,17 @@ import general_pkg::*;
                         // forwarding?
                         lq[i] <= lq_set_load_data(lq[i], lq_store_snoop_pkt_i);
                     end
-                    if (data_safety_i.en && data_safety_i.lsq_ptr > lq[i].lsq_ptr) begin
+                    if (data_safety_i.en && (data_safety_i.e_counter > lq[i].e_counter || data_safety_i.lsq_ptr > lq[i].lsq_ptr && data_safety_i.e_counter == lq[i].e_counter)) begin
                         lq[i].state <= LOAD_FORWARDED;
                     end
                 end
 
                 if (lq[i].state == LOAD_WAIT_ON_LSQ_ORDER) begin
-                    if (data_safety_i.en && data_safety_i.lsq_ptr > lq[i].lsq_ptr) begin
+                    if () begin
                         lq[i].state <= LOAD_FORWARDED;
                     end
                 end
+
             end
 
             // if a load is ready, dispatch it, in priority
@@ -1180,6 +1203,7 @@ import writeback_pkg::*;
             if (lq_store_snoop_data_arry_pos_change[i] && overflow_mask_arry[i]) begin
                 data_safety_o.en = 1'b1;
                 data_safety_o.lsq_ptr = sq[i].lsq_ptr;
+                data_safety_o.e_counter = sq[i].e_counter;
                 break;
             end
         end
@@ -1188,6 +1212,7 @@ import writeback_pkg::*;
                 if (lq_store_snoop_data_arry_pos_change[i] && mask_arry[i]) begin
                     data_safety_o.en = 1'b1;
                     data_safety_o.lsq_ptr = sq[i].lsq_ptr;
+                    data_safety_o.e_counter = sq[i].e_counter;
                     break;
                 end
             end
@@ -1420,8 +1445,6 @@ import writeback_pkg::*;
     logic sq_dispatch_ready;
     logic [$clog2(MAX_MEM_INSTRS)-1:0] sq_lowest_lsq_ready_ptr;
     logic sq_dispatch_cmd;
-    sq_entry_addr_safety_notify_pkt_t sq_addr_safety;
-    sq_entry_data_safety_notify_pkt_t sq_data_safety;
     always_comb begin
         sq_query = set_sq_query(lq_sq_pkt_ff, lsq_ptr_reply);
         sq_pkt = set_sq_pkt(lq_sq_pkt_ff);
@@ -1442,8 +1465,8 @@ import writeback_pkg::*;
         .sq_dispatch_en_o(sq_dispatch_ready),
         .sq_lowest_lsq_ready_ptr_o(sq_lowest_lsq_ready_ptr),
         .sq_dispatch_cmd_i(sq_dispatch_cmd),
-        .addr_safety_o(sq_addr_safety),
-        .data_safety_o(sq_data_safety)
+        .addr_safety_o(lq_addr_safety),
+        .data_safety_o(lq_data_safety)
     );
 
     logic dispatch_en, dispatch_store;

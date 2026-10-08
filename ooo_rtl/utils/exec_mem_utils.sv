@@ -436,7 +436,6 @@ package exec_mem_pkg;
         return lq_issue_data_pkt_o;
     endfunction
 
-
     function automatic logic [DATA_WIDTH-1:0] funct_code_to_width (
         input [2:0] funct_code
     );
@@ -472,11 +471,13 @@ package exec_mem_pkg;
                 ? neg_diff < load_width
                 : pos_diff < load_width) begin
             // if (snoop_pkt_i.addr <= lq_entry_i.addr) begin
-            if (lq_entry_i.addr <= snoop_pkt_i.addr) begin
+            // if (lq_entry_i.addr <= snoop_pkt_i.addr) begin
+            if (snoop_pkt_i.addr >= lq_entry_i.addr) begin
                 // lq_entry_o.load_byte_en = lq_entry_o.load_byte_en | (lq_entry_i.byte_wr_en << neg_byte_offset);
                 // lq_entry_o.load_data_avail = lq_entry_o.load_data_avail | (lq_entry_i.byte_wr_en << neg_byte_offset);
                 for (int j = 0; j < (DATA_WIDTH/8); j++) begin
-                    if ((snoop_pkt_i.byte_wr_en << neg_byte_offset)[j] && lq_entry_i.byte_wr_en[j] && lq_entry_i.lsq_ptr > snoop_pkt_i.lsq_ptr
+                    if ((snoop_pkt_i.byte_wr_en << neg_byte_offset)[j] && lq_entry_i.byte_wr_en[j] 
+                        && (lq_entry_i.e_counter > snoop_pkt_i.e_counter || lq_entry_i.lsq_ptr > snoop_pkt_i.lsq_ptr && lq_entry_i.e_counter == snoop_pkt_i.e_counter)
                         && (lq_entry_i.lsq_src_arry[j] < snoop_pkt_i.lsq_ptr || lq_entry_i.load_data_avail[j] == 0)
                     ) begin
                         lq_entry_o.data[8*j+:8] = (snoop_pkt_i.data << (8*neg_byte_offset))[8*j+:8];
@@ -490,7 +491,8 @@ package exec_mem_pkg;
                 // lq_entry_o.load_byte_en = lq_entry_o.load_byte_en | (snoop_pkt_i.byte_wr_en >> pos_byte_offset);
                 // lq_entry_o.load_data_avail = lq_entry_o.load_data_avail | (snoop_pkt_i.byte_wr_en >> pos_byte_offset);
                 for (int j = 0; j < (DATA_WIDTH/8); j++) begin
-                    if ((snoop_pkt_i.byte_wr_en >> pos_byte_offset)[j] && lq_entry_i.byte_wr_en[j] && lq_entry_i.lsq_ptr > snoop_pkt_i.lsq_ptr
+                    if ((snoop_pkt_i.byte_wr_en >> pos_byte_offset)[j] && lq_entry_i.byte_wr_en[j] 
+                        && (lq_entry_i.e_counter > snoop_pkt_i.e_counter || lq_entry_i.lsq_ptr > snoop_pkt_i.lsq_ptr && lq_entry_i.e_counter == snoop_pkt_i.e_counter)
                         && (lq_entry_i.lsq_src_arry[j] < snoop_pkt_i.lsq_ptr || lq_entry_i.load_data_avail[j] == 0)
                     ) begin
                         lq_entry_o.data[8*j+:8] = (snoop_pkt_i.data >> (8*pos_byte_offset))[8*j+:8];
@@ -539,21 +541,24 @@ package exec_mem_pkg;
     typedef struct packed {
         logic en;
         logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr;
+        logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
     } sq_entry_addr_safety_notify_pkt_t;
 
     typedef struct packed {
         logic en;
         logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr;
+        logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
     } sq_entry_data_safety_notify_pkt_t;
 
 
     typedef struct packed {
-        input logic en;
-        input logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr;
-        input logic [DATA_WIDTH-1:0] addr;
-        input logic [DATA_WIDTH-1:0] data;
-        input logic [DATA_WIDTH/8-1:0] byte_wr_en;
-        input logic store_data_in;
+        logic en;
+        logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr;
+        logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
+        logic [DATA_WIDTH-1:0] addr;
+        logic [DATA_WIDTH-1:0] data;
+        logic [DATA_WIDTH/8-1:0] byte_wr_en;
+        logic store_data_in;
     } lq_store_snoop_pkt_t;
 
     // CHECK THIS CASE
