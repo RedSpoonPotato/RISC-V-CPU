@@ -115,6 +115,7 @@ package exec_mem_pkg;
         logic store;
         logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr;
         logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
+        logic [$clog2(LSQ_BUFF_SIZE)-1:0] lsq_ptr_2;
     } mem_stage_instant_pkt_t;
 
     typedef struct packed {
@@ -128,6 +129,7 @@ package exec_mem_pkg;
         logic [DATA_WIDTH-1:0] pc;
         logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
         logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
+        logic [$clog2(LSQ_BUFF_SIZE)-1:0] lsq_ptr_2;
         // logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr; // should just be able to grba from lsq_ptr
         // signals coming from store_queue
         logic [(DATA_WIDTH/8)-1:0] load_byte_en;
@@ -308,6 +310,15 @@ package exec_mem_pkg;
         return sq_query;
     endfunction
 
+    function automatic lsq_instantiation_pkt_t set_lsq_cntrl_instantiation_pkt(input mem_stage_instant_pkt_t mem_stage_instant_pkt_i);
+        lsq_instantiation_pkt_t lsq_instantiation_pkt;
+        lsq_instantiation_pkt.en = mem_stage_instant_pkt_i.en;
+        lsq_instantiation_pkt.lsq_ptr = mem_stage_instant_pkt_i.lsq_ptr;
+        lsq_instantiation_pkt.store = mem_stage_instant_pkt_i.store;
+        lsq_instantiation_pkt.e_counter = mem_stage_instant_pkt_i.e_counter;
+        return lsq_instantiation_pkt;
+    endfunction
+
     typedef enum {
         INVALID, 
         STORE_PENDING, STORE_ADDR_IN, STORE_DATA_IN, 
@@ -366,6 +377,7 @@ package exec_mem_pkg;
         logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
         logic [DATA_WIDTH-1:0] data;
         logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr;
+        logic [$clog2(LSQ_BUFF_SIZE)-1:0] lsq_ptr_2;
         // added
         // logic [(DATA_WIDTH/8)-1:0] load_byte_en; // might not need this
         logic [(DATA_WIDTH/8)-1:0] load_data_avail;
@@ -382,6 +394,7 @@ package exec_mem_pkg;
         logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
         logic [DATA_WIDTH-1:0] data;
         logic [DATA_WIDTH-1:0] addr;
+        logic [$clog2(LSQ_BUFF_SIZE)-1:0] lsq_ptr_2;
     } lq_load_dispatch_pkt_t;
 
     typedef struct packed {
@@ -434,6 +447,21 @@ package exec_mem_pkg;
         lq_issue_data_pkt_o.prf_ptr = lq_issue_pkt_i.prf_ptr;
         lq_issue_data_pkt_o.data = lq_issue_pkt_i.data;
         return lq_issue_data_pkt_o;
+    endfunction
+
+    function automatic logic lsq_is_less_or_equal(
+        input [$clog2(MAX_LSQ_INSTRS)-1:0] a_lsq,
+        input [$clog2(EXCEPTION_COUNTER_MAX)-1:0] a_e,
+        input [$clog2(MAX_LSQ_INSTRS)-1:0] b_lsq,
+        input [$clog2(EXCEPTION_COUNTER_MAX)-1:0] b_e
+    );
+        if (a_e < b_e) begin
+            return 1'b0;
+        end else if (a_e > b_e) begin
+            return 1'b1;
+        end else begin
+            return a_lsq <= b_lsq;
+        end
     endfunction
 
     function automatic logic [DATA_WIDTH-1:0] funct_code_to_width (
@@ -506,6 +534,21 @@ package exec_mem_pkg;
         return lq_entry_o;
     endfunction
 
+
+    typedef struct packed {
+        // logic en;
+        logic store;
+        logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr;
+        logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
+    } lsq_dispatch_cmd_pkt_t;
+
+    typedef struct packed {
+        logic valid;
+        logic store;
+        logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr;
+        logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
+    } lsq_buff_pkt_t;
+
     function automatic sq_dispatch_pkt_t get_store_data_from_sq_entry (
         input sq_entry_t sq_entry_i
     );
@@ -519,7 +562,7 @@ package exec_mem_pkg;
     endfunction
 
     typedef struct packed {
-        // logic en; // conotrlled by logic right outside queue
+        logic en; // conotrlled by logic right outside queue
         logic [2:0] funct_code;
         logic [DATA_WIDTH-1:0] addr;
         logic [DATA_WIDTH-1:0] data;
@@ -581,18 +624,19 @@ package exec_mem_pkg;
 
     // NEED TO DEFINE FOR CACHE
     function automatic lq_load_dispatch_pkt_t set_lq_load_dispatch_pkt (
-        input lq_pkt_t lq_entry_i,
+        input lq_entry_t lq_entry_i,
         input logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_ptr_i
     );
         lq_load_dispatch_pkt_t lq_load_dispatch_pkt;
         lq_load_dispatch_pkt.e_counter = lq_entry_i.e_counter;
         lq_load_dispatch_pkt.data = lq_entry_i.data;
         lq_load_dispatch_pkt.addr = lq_entry_i.addr;
+        lq_load_dispatch_pkt.lsq_ptr_2 = lq_entry_i.lsq_ptr_2;
         return lq_load_dispatch_pkt;
     endfunction
 
     function automatic lq_load_issue_pkt_t set_lq_load_issue_pkt (
-        input lq_pkt_t lq_entry_i,
+        input lq_entry_t lq_entry_i,
         input logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_ptr_i
     );
         lq_load_issue_pkt_t lq_load_issue_pkt;
@@ -634,6 +678,7 @@ package exec_mem_pkg;
         // logic [$clog2(PRF_COUNT)-1:0] dest_ptr;
         logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
         logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
+        logic [$clog2(LSQ_BUFF_SIZE)-1:0] lsq_ptr_2;
     } lq_instantiation_pkt_t;
 
 
@@ -648,6 +693,14 @@ package exec_mem_pkg;
         logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
         // does cahce need e-counter for stores?
     } sq_instantiation_pkt_t; 
+
+    typedef struct packed {
+        logic en;
+        logic [$clog2(MAX_MEM_INSTRS)-1:0] lsq_ptr;
+        logic store;
+        logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] e_counter;
+        // logic [$clog2(LSQ_BUFF_SIZE)-1:0] lsq_ptr_2;
+    } lsq_instantiation_pkt_t;
 
 
     function automatic ex_mem_scoreboard_data_t set_ex_mem_scoreboard_data (

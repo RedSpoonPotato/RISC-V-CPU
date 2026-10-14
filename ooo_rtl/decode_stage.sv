@@ -310,13 +310,18 @@ module decode_stage
     logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_counter;
     logic [$clog2(MAX_LOAD_INSTRS)-1:0] lq_counter;
     logic [$clog2(MAX_STORE_INSTRS)-1:0] sq_counter, sq_commit_counter;
+    logic [$clog2(LSQ_BUFF_SIZE)-1:0] lsq_ptr_2_counter, lsq_ptr_2_commit_counter; // is allowed to wrap around
 
     always_ff @(posedge clk) begin
         if (rst) begin
             sq_commit_counter <= '{default:'0};
+            lsq_ptr_2_commit_counter <= '{default:'0};
         end else begin
-            if (decode_commmit_pkt_i.store) begin
+            if (decode_commit_pkt_i.wr_en && decode_commit_pkt_i.store) begin
                 sq_commit_counter <= sq_commit_counter + 1;
+            end
+            if (decode_commit_pkt_i.wr_en && decode_commit_pkt_i.mem_op) begin
+                lsq_ptr_2_commit_counter <= lsq_ptr_2_commit_counter + 1;
             end
         end
         
@@ -327,6 +332,7 @@ module decode_stage
             lsq_counter <= '{default:'0};
             lq_counter <= '{default:'0};
             sq_counter <= sq_commit_counter;
+            lsq_ptr_2_counter <= lsq_ptr_2_commit_counter;
         end else begin
             if (master_instr_valid) begin
                 rob_head_counter <= rob_head_counter + 1;
@@ -338,6 +344,7 @@ module decode_stage
                 end 
                 if (mem_instr) begin
                     lsq_counter <= lsq_counter + 1;
+                    lsq_ptr_2_counter <= lsq_ptr_2_counter + 1;
                     if (issue_queue_entry.store) begin
                         sq_counter <= sq_counter + 1;
                     end else begin
@@ -456,6 +463,7 @@ module decode_stage
             mem_stage_instant_pkt_o.store = decode_instr_o.store;
             mem_stage_instant_pkt_o.lsq_ptr = lsq_counter;
             mem_stage_instant_pkt_o.e_counter = e_counter;
+            mem_stage_instant_pkt_o.lsq_ptr_2 = lsq_ptr_2_counter;
 
         end else begin
             rob_instance_pkt_o = '{default:'0};

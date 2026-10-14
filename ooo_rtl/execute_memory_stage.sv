@@ -568,10 +568,13 @@ import general_pkg::*;
 
     // load dispatching to cache
     output lq_load_dispatch_pkt_t lq_load_dispatch_pkt_o,
-    output logic lq_dispatch_ready_o,
-    output logic [$clog2(MAX_MEM_INSTRS)-1:0] lq_lowest_lsq_ready_ptr_o,
-    output logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] lq_lowest_e_counter_o,
-    input logic lq_dispatch_cmd_i,
+    // output logic lq_dispatch_ready_o,
+    // output logic [$clog2(MAX_MEM_INSTRS)-1:0] lq_lowest_lsq_ready_ptr_o,
+    // output logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] lq_lowest_e_counter_o,
+    // input logic lq_dispatch_cmd_i,
+    input lsq_dispatch_cmd_pkt_t lsq_dispatch_cmd_pkt_i,
+    input logic dispatch_avail_i,
+    
     // load recieving from cache
     input lq_load_resp_pkt_t lq_load_resp_pkt_i,
     output logic load_e_counter_mismatch_o,
@@ -609,7 +612,8 @@ import general_pkg::*;
     logic [MAX_LOAD_INSTRS-1:0] valid_arry, next_valid_arry, next_masked_valid_arry, mask_arry, ready_arry, masked_ready_arry, wait_on_lsq_order_arry;
     logic [$clog2(MAX_LOAD_INSTRS)-1:0] select_ptr;
     logic [MAX_LOAD_INSTRS-1:0] data_in_arry, masked_data_in_arry;
-
+    logic [MAX_LOAD_INSTRS-1:0] masked_wait_on_lsq_order_arry, inv_masked_wait_on_lsq_order_arry;
+    logic [MAX_LOAD_INSTRS-1:0] inv_masked_ready_arry;
     // common signals
     always_comb begin
         mask_arry = {MAX_LOAD_INSTRS{1'b1}} << head_ptr;
@@ -620,58 +624,79 @@ import general_pkg::*;
             wait_on_lsq_order_arry[i] = lq[i].state == LOAD_WAIT_ON_LSQ_ORDER;
         end
         masked_ready_arry = mask_arry & ready_arry;
+        inv_masked_ready_arry = ~mask_arry & ready_arry;
         masked_wait_on_lsq_order_arry = mask_arry & wait_on_lsq_order_arry;
+        inv_masked_wait_on_lsq_order_arry = ~mask_arry & wait_on_lsq_order_arry;
         masked_data_in_arry = mask_arry & data_in_arry;
     end
 
 
-    WAIT, Need to dispatch "load_wait_on_load" instr before others IF its ready
+    // WAIT, Need to dispatch "load_wait_on_load" instr before others IF its ready
 
 
     // dispatching loads to cache
     logic [$clog2(MAX_LOAD_INSTRS)-1:0] dispatch_ptr; // debugging signal
+    logic [$clog2(MAX_LSQ_INSTRS)-1:0] lq_lowest_lsq_avil_ptr;
+    logic [$clog2(EXCEPTION_COUNTER_MAX)-1:0] lq_lowest_e_counter;
     always_comb begin
+
         lq_load_dispatch_pkt_o = '{default:'0};
-        lq_dispatch_ready_o = 1'b0;
-        lq_lowest_e_counter_o = '0;
-        lq_lowest_lsq_ready_ptr_o = '0;
+        // lq_dispatch_ready = 1'b0;
+        // lq_lowest_e_counter_o = '0;
+        // lq_lowest_lsq_ready_ptr_o = '0;
         dispatch_ptr = '0;
 
-        WORK ON THISs
+    // if (!exception_i) begin // possibly add extra conditions here!
 
+        // Determine the lowest LSQ pointer and exception counter for loads waiting on LSQ order
         if (|masked_wait_on_lsq_order_arry) begin
             for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
                 if (masked_wait_on_lsq_order_arry[i]) begin
-                    lq_lowest_lsq_ready_ptr_o = lq[i].lsq_ptr;
-                    lq_lowest_e_counter_o = lq[i].e_counter;
+                    lq_lowest_lsq_avil_ptr = lq[i].lsq_ptr;
+                    lq_lowest_e_counter = lq[i].e_counter;
+                    dispatch_ptr = i;
+                    break;
+                end
+            end
+        end else if (|inv_masked_wait_on_lsq_order_arry) begin
+            for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
+                if (inv_masked_wait_on_lsq_order_arry[i]) begin
+                    lq_lowest_lsq_avil_ptr = lq[i].lsq_ptr;
+                    lq_lowest_e_counter = lq[i].e_counter;
+                    dispatch_ptr = i;
                     break;
                 end
             end
         end
-
-    // if (!exception_i) begin // possibly add extra conditions here!
-        if (|masked_ready_arry) begin
-            for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
-                if (masked_ready_arry[i]) begin
-                    lq_load_dispatch_pkt_o = set_lq_load_dispatch_pkt(lq[i], i);
-                    lq_dispatch_ready_o = 1'b1;
-                    lq_lowest_lsq_ready_ptr_o = lq[i].lsq_ptr;
-                    dispatch_ptr = i;
-                    break;
+        // If store is not disptaching and no load is ready on LSQ order, and a ready load is available, select it for dispatch
+        if (dispatch_avail_i) begin
+            if (|masked_ready_arry) begin
+                for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
+                    if (masked_ready_arry[i]) begin
+                        dispatch_ptr = i;
+                        break;
+                    end
+                end
+            end else if (|inv_masked_ready_arry) begin
+                for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
+                    if (inv_masked_ready_arry[i]) begin
+                        dispatch_ptr = i;
+                        break;
+                    end
                 end
             end
-        end else if (|ready_arry) begin
-            for (int i = MAX_LOAD_INSTRS-1; i >= 0; i--) begin
-                if (ready_arry[i]) begin
-                    lq_load_dispatch_pkt_o = set_lq_load_dispatch_pkt(lq[i], i);
-                    lq_dispatch_ready_o = 1'b1;
-                    lq_lowest_lsq_ready_ptr_o = lq[i].lsq_ptr;
-                    dispatch_ptr = i;
-                    break;
-                end
+        end
+        // dispatch load
+        if (!lsq_dispatch_cmd_pkt_i.store && (|masked_wait_on_lsq_order_arry || |inv_masked_wait_on_lsq_order_arry)) begin
+            if (lsq_is_less_or_equal(lq_lowest_lsq_avil_ptr, lq_lowest_e_counter, lsq_dispatch_cmd_pkt_i.lsq_ptr, lsq_dispatch_cmd_pkt_i.e_counter)) begin
+                lq_load_dispatch_pkt_o = set_lq_load_dispatch_pkt(lq[dispatch_ptr], dispatch_ptr);
             end
+        end else if (dispatch_avail_i && (|masked_ready_arry || |inv_masked_ready_arry)) begin
+            lq_load_dispatch_pkt_o = set_lq_load_dispatch_pkt(lq[dispatch_ptr], dispatch_ptr);
         end
     end
+
+
 
     // issueing load to wb stage
     always_comb begin
@@ -770,6 +795,7 @@ import general_pkg::*;
                 lq[tail_ptr].state <= LOAD_PENDING;
                 lq[tail_ptr].lsq_ptr <= lq_instant_pkt_i.lsq_ptr;
                 lq[tail_ptr].e_counter <= lq_instant_pkt_i.e_counter;
+                lq[tail_ptr].lsq_ptr_2 <= lq_instant_pkt_i.lsq_ptr_2;
                 tail_ptr <= tail_ptr + 1;
             end
             head_ptr <= next_head_ptr; // is this PROPER?
@@ -849,31 +875,20 @@ import general_pkg::*;
                     end
                 end
 
-                if (lq[i].state == LOAD_WAIT_ON_LSQ_ORDER) begin
-                    if () begin
-                        lq[i].state <= LOAD_FORWARDED;
-                    end
-                end
+                // if (lq[i].state == LOAD_WAIT_ON_LSQ_ORDER) begin
+                //     if () begin
+                //         lq[i].state <= LOAD_FORWARDED;
+                //     end
+                // end
 
             end
 
-            // if a load is ready, dispatch it, in priority
-            for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
-                if (masked_ready_arry[i]) begin
-                    // dispatch the load instruction
-                    lq[i].state <= LOAD_DISPATCHED;
-                    break;
-                end
+            // for dispatching
+            if (|lq_load_dispatch_pkt.byte_wr_en) begin
+                lq[dispatch_ptr].state <= LOAD_DISPATCHED;
             end
-            if (!|masked_ready_arry) begin
-                for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
-                    if (overflow_ready_mask_arry[i]) begin
-                        // dispatch load instruction
-                        lq[i].state <= LOAD_DISPATCHED;
-                        break;
-                    end
-                end
-            end
+
+            SHOULD DO A ASIMILAR HING FOR ISSUEING THAT WE DID RIGHT ABOVE FOR DISPATCHING
 
             // issue load that contains data
             for (int i = 0; i < MAX_LOAD_INSTRS; i++) begin
@@ -925,9 +940,8 @@ import writeback_pkg::*;
     // storing to cache
     output sq_dispatch_pkt_t sq_dispatch_pkt_o,
     output logic sq_dispatch_ready_o,
-    output logic [$clog2(MAX_MEM_INSTRS)-1:0] sq_lowest_lsq_ready_ptr_o,
+    // output logic [$clog2(MAX_MEM_INSTRS)-1:0] sq_lowest_lsq_ready_ptr_o,
     input logic sq_dispatch_cmd_i,
-
     // safety signals for entries
     output sq_entry_addr_safety_notify_pkt_t addr_safety_o,
     output sq_entry_data_safety_notify_pkt_t data_safety_o
@@ -935,7 +949,6 @@ import writeback_pkg::*;
     // to load queue
     // output logic sq_snoop_en_o,
     // output logic [$clog2(MAX_MEM_INSTRS)-1:0] sq_snoop_lsq_ptr_o,
-
 );
 
     sq_entry_t sq [0:MAX_STORE_INSTRS-1];
@@ -1268,7 +1281,7 @@ import writeback_pkg::*;
 
     always_ff @(posedge clk) begin
         if (!rst) begin
-            if (sq_dispatch_cmd_i) begin
+            if (sq_dispatch_cmd_i && sq[tail_ptr_lower].state == STORE_COMMIT) begin
                 sq[tail_ptr_lower].state <= INVALID;
                 tail_ptr <= tail_ptr + 1;
             end
@@ -1299,6 +1312,95 @@ import writeback_pkg::*;
         sq_dispatch_ready_o = sq[tail_ptr_lower].state == STORE_COMMIT;
         sq_lowest_lsq_ready_ptr_o = sq[tail_ptr_lower].lsq_ptr;
     end
+
+endmodule
+
+module lsq_controller
+import decode_pkg::*;
+import general_pkg::*;
+import issue_pkg::*;
+import exec_mem_pkg::*;
+import writeback_pkg::*;
+(
+    input logic clk,
+    input logic rst,
+    input lsq_instantiation_pkt_t lsq_instantiation_pkt_i,
+    input lq_load_dispatch_pkt_t load_dispatch_pkt_i,
+    input sq_dispatch_pkt_t sq_dispatch_pkt_i,
+    output lsq_dispatch_cmd_pkt_t lsq_dispatch_cmd_pkt_o,
+    output logic full_o
+);
+
+    logic [$clog2(LSQ_BUFF_SIZE)-1:0] head_ptr, tail_ptr, count;
+    logic empty;
+    assign full_o = count == LSQ_BUFF_SIZE-1;
+    assign empty = count == 0;
+    
+    lsq_buff_pkt_t lsq_cmd_buff [LSQ_BUFF_SIZE];
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            lsq_cmd_buff = '{default:'0};
+            tail_ptr <= '0;
+            count <= '0;
+        end else begin
+            if (lsq_instantiation_pkt_i.en && !full_o) begin
+                lsq_cmd_buff[tail_ptr].valid <= 1'b1;
+                lsq_cmd_buff[tail_ptr].store <= lsq_instantiation_pkt_i.store;
+                lsq_cmd_buff[tail_ptr].lsq_ptr <= lsq_instantiation_pkt_i.lsq_ptr;
+                lsq_cmd_buff[tail_ptr].e_counter <= lsq_instantiation_pkt_i.e_counter;
+                tail_ptr <= tail_ptr + 1'b1;
+                count <= count + 1'b1;
+            end
+            if (|load_dispatch_pkt_i.wr_en) begin
+                lsq_cmd_buff[load_dispatch_pkt_i.lsq_ptr_2].valid <= 1'b0;
+                count <= count - 1'b1;
+            end
+            if (sq_dispatch_pkt_i.en) begin
+                lsq_cmd_buff[sq_dispatch_pkt_i.lsq_ptr_2].valid <= 1'b0;
+                count <= count - 1'b1;  
+            end
+        end
+    end
+
+    // pointer should simply find next valid entry
+    logic [LSQ_BUFF_SIZE-1:0] mask, inv_mask;
+    logic found;
+    always_comb begin
+        mask = {LSQ_BUFF_SIZE{1'b1}} << (LSQ_BUFF_SIZE - 1 - tail_ptr);
+        inv_mask = ~mask;
+        head_ptr = tail_ptr;
+        found = 1'b0;
+        if (!full_o) begin
+            for (int i = 0; i < LSQ_BUFF_SIZE; i++) begin
+                if (lsq_cmd_buff[i].valid && inv_mask[i]) begin
+                    head_ptr = i;
+                    found = 1'b1;
+                    break;
+                end
+            end
+            if (!found) begin
+                for (int i = 0; i < LSQ_BUFF_SIZE; i++) begin
+                    if (lsq_cmd_buff[i].valid && mask[i]) begin
+                        head_ptr = i;
+                        found = 1'b1;
+                        break;
+                    end
+                end
+            end
+        end
+    end
+
+    // output of cmd module
+    always_comb begin
+        lsq_dispatch_cmd_pkt_o = '0;
+        if (!empty) begin
+            // lsq_dispatch_cmd_pkt_o.valid = 1'b1;
+            lsq_dispatch_cmd_pkt_o.store = lsq_cmd_buff[head_ptr].store;
+            lsq_dispatch_cmd_pkt_o.lsq_ptr = lsq_cmd_buff[head_ptr].lsq_ptr;
+            lsq_dispatch_cmd_pkt_o.e_counter = lsq_cmd_buff[head_ptr].e_counter;
+        end
+    end
+    
 
 endmodule
 
@@ -1417,6 +1519,7 @@ import writeback_pkg::*;
         lq_instant_pkt.wr_en = mem_stage_instant_pkt_i.en && !mem_stage_instant_pkt_i.store;
         lq_instant_pkt.lsq_ptr = mem_stage_instant_pkt_i.lsq_ptr;
         lq_instant_pkt.e_counter = mem_stage_instant_pkt_i.e_counter;
+        lq_instant_pkt.lsq_ptr_2 = mem_stage_instant_pkt_i.lsq_ptr_2;
     end
     load_queue load_queue_inst(
         .clk(clk),
@@ -1427,9 +1530,11 @@ import writeback_pkg::*;
         .full_o(lq_full),
         .lq_instant_pkt_i(lq_instant_pkt),
         .lq_load_dispatch_pkt_o(lq_load_dispatch_pkt),
-        .lq_dispatch_ready_o(lq_dispatch_ready),
-        .lq_lowest_lsq_ready_ptr_o(lq_lowest_lsq_ready_ptr),
-        .lq_dispatch_cmd_i(lq_dispatch_cmd),
+        // .lq_dispatch_ready_o(lq_dispatch_ready),
+        // .lq_lowest_lsq_ready_ptr_o(lq_lowest_lsq_ready_ptr),
+        // .lq_dispatch_cmd_i(lq_dispatch_cmd),
+        .lsq_dispatch_cmd_pkt_i(lsq_cntrl_dispatch_cmd_pkt),
+        .dispatch_avail_i(lsq_dispatch_avail),
         .lq_load_resp_pkt_i(lq_load_resp_pkt),
         .load_e_counter_mismatch_o(load_e_counter_mismatch_o),
         .lq_load_issue_pkt_o(lq_load_issue_pkt_o),
@@ -1450,6 +1555,7 @@ import writeback_pkg::*;
         sq_pkt = set_sq_pkt(lq_sq_pkt_ff);
         sq_instant_pkt.en = mem_stage_instant_pkt_i.en && mem_stage_instant_pkt_i.store;
         sq_instant_pkt.lsq_ptr = mem_stage_instant_pkt_i.lsq_ptr;
+        sq_dispatch_cmd = lsq_cntrl_dispatch_cmd_pkt.store;
     end
     store_queue store_queue_inst(
         .clk(clk),
@@ -1462,33 +1568,41 @@ import writeback_pkg::*;
         .sq_data_snoop_pkt_i(sq_data_snoop_pkt_i),
         .sq_commit_pkt_i(sq_commit_pkt_i),
         .sq_dispatch_pkt_o(sq_dispatch_pkt),
-        .sq_dispatch_en_o(sq_dispatch_ready),
-        .sq_lowest_lsq_ready_ptr_o(sq_lowest_lsq_ready_ptr),
+        // .sq_dispatch_en_o(sq_dispatch_ready),
+        // .sq_lowest_lsq_ready_ptr_o(sq_lowest_lsq_ready_ptr),
+        .sq_dispatch_ready_o(sq_dispatch_ready),
         .sq_dispatch_cmd_i(sq_dispatch_cmd),
         .addr_safety_o(lq_addr_safety),
         .data_safety_o(lq_data_safety)
     );
 
-    logic dispatch_en, dispatch_store;
-    assign dispatch_en = (sq_dispatch_ready || lq_dispatch_ready) && cache_master.req_ready;
-    assign dispatch_store = sq_dispatch_ready;
+    lsq_instantiation_pkt_t lsq_instantiation_pkt;
+    lsq_dispatch_cmd_pkt_t lsq_cntrl_dispatch_cmd_pkt;
+    logic lsq_dispatch_avail;
+    logic lsq_cntrl_full;
     always_comb begin
-        sq_dispatch_cmd = 1'b0;
-        lq_dispatch_cmd = 1'b0;
-        if (dispatch_en) begin
-            if (sq_dispatch_ready && lq_dispatch_ready) begin
-                if (sq_lowest_lsq_ready_ptr > lq_lowest_lsq_ready_ptr) begin
-                    sq_dispatch_cmd = 1'b1;
-                end else begin
-                    lq_dispatch_cmd = 1'b1;
-                end
-            end else if (sq_dispatch_ready) begin
-                sq_dispatch_cmd = 1'b1;
-            end else if (lq_dispatch_ready) begin
-                lq_dispatch_cmd = 1'b1;
-            end
-        end
+        lsq_instantiation_pkt = set_lsq_cntrl_instantiation_pkt(mem_stage_instant_pkt_i);
+        lsq_dispatch_avail = !(sq_dispatch_ready && lsq_cntrl_dispatch_cmd_pkt.store);
+    end
+    lsq_controller lsq_controller_inst(
+        .clk(clk),
+        .rst(rst),
+        .lsq_instantiation_pkt_i(lsq_instantiation_pkt),
+        .load_dispatch_pkt_i(load_dispatch_pkt),
+        .sq_dispatch_pkt_i(sq_dispatch_pkt),
+        .lsq_dispatch_cmd_pkt_o(lsq_cntrl_dispatch_cmd_pkt),
+        .full_o(lsq_cntrl_full)
+    );
 
+
+
+
+    logic dispatch_en, dispatch_store, dispatch_load;
+    assign dispatch_load = |(lq_load_dispatch_pkt.byte_wr_en);
+    // assign dispatch_en = (sq_dispatch_ready || lq_dispatch_ready) && cache_master.req_ready;
+    assign dispatch_en = (sq_dispatch_ready && lsq_cntrl_dispatch_cmd_pkt.store) || dispatch_load;
+    assign dispatch_store = sq_dispatch_ready && lsq_cntrl_dispatch_cmd_pkt.store;
+    always_comb begin
         cache_master.wr_en = '0;
         cache_master.addr = '0;
         cache_master.wr_data = '0;
@@ -1513,7 +1627,6 @@ import writeback_pkg::*;
         lq_load_resp_pkt.e_counter = cache_master.mem_resp_info[$clog2(EXCEPTION_COUNTER_MAX)-1:$clog2(MAX_LOAD_INSTRS)];
         lq_load_resp_pkt.lq_ptr = cache_master.mem_resp_info[$clog2(MAX_LOAD_INSTRS)-1:0];
         lq_load_resp_pkt.data = cache_master.rd_data;
-
     end
      
 

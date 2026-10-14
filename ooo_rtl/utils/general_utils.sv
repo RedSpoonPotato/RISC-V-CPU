@@ -29,6 +29,7 @@ package general_pkg;
 
     localparam MAX_LSQ_INSTRS = MAX_LOAD_INSTRS + MAX_STORE_INSTRS;
     localparam EXCEPTION_COUNTER_MAX = 16;
+    localparam LSQ_BUFF_SIZE = MAX_LSQ_INSTRS; // not neccesarily always the same. MAX_LSQ_INSTRS keeps track of mem op order, while LSQ_BUFF_SIZE gets used as acutal pointers
 
     typedef enum logic [6:0] {
         7'b0110011 = ALU_OP, // R-type
