@@ -336,6 +336,11 @@ package exec_mem_pkg;
         LOAD_READY, LOAD_DISPATCHED, LOAD_RECEIVED, 
         LOAD_ISSUED // still neede b/c for stores that are older than it, but lests
     } lq_state_t;
+
+    typedef struct packed {
+            
+    } cache_internal_if_in;
+
     
     typedef struct packed {
         // logic valid;

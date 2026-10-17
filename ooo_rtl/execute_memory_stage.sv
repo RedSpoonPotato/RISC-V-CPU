@@ -1404,59 +1404,6 @@ import writeback_pkg::*;
 
 endmodule
 
-interface cache_if
-import decode_pkg::*;
-import general_pkg::*;
-import issue_pkg::*;
-import exec_mem_pkg::*;
-import writeback_pkg::*;
-(
-    input logic clk
-);
-    // request signals
-    logic wr_en;
-    logic [ADDR_WIDTH-1:0] addr;
-    logic [DATA_WIDTH-1:0] wr_data;
-    logic [MEM_OP_INFO_WIDTH-1:0] mem_op_info;
-    logic req_valid;
-    logic req_ready;
-
-    // response signals
-    logic [DATA_WIDTH-1:0] rd_data;
-    logic [MEM_RESP_INFO_WIDTH-1:0] mem_resp_info;
-    logic resp_valid;
-    logic resp_ready;
-
-    modport master (
-        input clk,
-        output wr_en,
-        output addr,
-        output wr_data,
-        output mem_op_info,
-        output req_valid,
-        input req_ready,
-        input rd_data,
-        input mem_resp_info,
-        input resp_valid,
-        output resp_ready
-    );
-
-    modport slave (
-        input clk,
-        input wr_en,
-        input addr,
-        input wr_data,
-        input mem_op_info,
-        input req_valid,
-        output req_ready,
-        output mem_resp_info,
-        output rd_data,
-        output resp_valid,
-        input resp_ready
-    );
-
-endinterface
-
 module mem_stage_multi_cycle
 import decode_pkg::*;
 import general_pkg::*;

@@ -9,8 +9,6 @@ package issue_pkg;
     import general_pkg::*;
     export general_pkg::*;
 
-
-
     // localparam DATA_WIDTH = 32;
     // localparam IQ_SIZE = 16;
     // localparam ROB_COUNT = 32;

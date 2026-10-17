@@ -103,7 +103,6 @@ import core_pkg::*;
         .exception_i(instr_fetch_exception),
         // .mem_addr_pkt_o(mem_op_addr_pkt),
         // .store_buffer_commit_pkt_i(store_buffer_commit_pkt)
-
     );
 
     writeback_stage writeback_stage_inst (
