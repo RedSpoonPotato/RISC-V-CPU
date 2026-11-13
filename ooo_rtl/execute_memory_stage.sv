@@ -17,6 +17,8 @@
     implement store buffer in order to handle spec execution (need to send exception signal into mem stage, 
     unless store buffer is in wb stage)
 
+    NEW Problem: need to handle load queue receiving data from cache, speicifcally the byte_wr_en
+
 */
 
 module execute_memory_stage 
@@ -1566,7 +1568,8 @@ import writeback_pkg::*;
             end else begin
                 cache_master.addr = lq_load_dispatch_pkt.addr;
                 cache_master.wr_data = lq_load_dispatch_pkt.data;
-                cache_master.mem_op_info = {LQ_DISPATCH_PKT_PAD_WIDTH{1'b0}, lq_load_dispatch_pkt.e_counter, lq_load_dispatch_pkt.lsq_ptr};
+                cache_master.mem_op_info = {LQ_DISPATCH_PKT_PAD_WIDTH{1'b0}, lq_load_dispatch_pkt.byte_wr_en, 
+                                            lq_load_dispatch_pkt.e_counter, lq_load_dispatch_pkt.lq_ptr};
             end
         end
 

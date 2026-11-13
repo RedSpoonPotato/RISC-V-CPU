@@ -400,6 +400,8 @@ package exec_mem_pkg;
         logic [DATA_WIDTH-1:0] data;
         logic [DATA_WIDTH-1:0] addr;
         logic [$clog2(LSQ_BUFF_SIZE)-1:0] lsq_ptr_2;
+        // logic [$clog2(MAX_LSQ_INSTRS)-1:0] lsq_ptr;
+        logic [$clog2(MAX_LQ_INSTRS)-1:0] lq_ptr;
     } lq_load_dispatch_pkt_t;
 
     typedef struct packed {
@@ -575,9 +577,11 @@ package exec_mem_pkg;
         // logic 
     } sq_dispatch_pkt_t;
 
+
+    // NOTE: if sq_dispatch_pkt_t is larger, mgiht wantt to remove "en"
     localparam MEM_OP_INFO_WIDTH = ($bits(sq_dispatch_pkt_t) > $bits(lq_load_dispatch_pkt_t)) ?
-        ($bits(sq_dispatch_pkt_t) - 2*DATA_WIDTH) : 
-        ($bits(lq_load_dispatch_pkt_t) - 2*DATA_WIDTH);
+        ($bits(sq_dispatch_pkt_t) - 2*DATA_WIDTH - 1) : 
+        ($bits(lq_load_dispatch_pkt_t) - 2*DATA_WIDTH - $clog2(LSQ_BUFF_SIZE));
 
     localparam SQ_DISPATCH_PKT_PAD_WIDTH = MEM_OP_INFO_WIDTH - ($bits(sq_dispatch_pkt_t) - 2*DATA_WIDTH);
     localparam LQ_DISPATCH_PKT_PAD_WIDTH = MEM_OP_INFO_WIDTH - ($bits(lq_load_dispatch_pkt_t) - 2*DATA_WIDTH);
@@ -637,6 +641,7 @@ package exec_mem_pkg;
         lq_load_dispatch_pkt.data = lq_entry_i.data;
         lq_load_dispatch_pkt.addr = lq_entry_i.addr;
         lq_load_dispatch_pkt.lsq_ptr_2 = lq_entry_i.lsq_ptr_2;
+        lq_load_dispatch_pkt.lq_ptr = lq_ptr_i;
         return lq_load_dispatch_pkt;
     endfunction
 
